@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flora — Dev Journal</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0F0F0E;
+  --bg2: #181817;
+  --bg3: #222220;
+  --line: #2A2A28;
+  --line2: #333331;
+  --ink: #E8E6E0;
+  --ink2: #8A887E;
+  --ink3: #55534E;
+  --g: #2A9D6A;
+  --glt: #0D2B1E;
+  --gdim: #1A5C3E;
+  --a: #D4880A;
+  --alt: #2B1E06;
+  --p: #7B5FCC;
+  --plt: #1A1330;
+  --b: #3B82C4;
+  --blt: #0D1E33;
+  --r: #D45A4A;
+  --rlt: #2B1210;
+  --t: #2ABCBC;
+  --tlt: #0A2222;
+  --mono: 'JetBrains Mono', monospace;
+  --sans: 'Inter', sans-serif;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { font-family: var(--sans); background: var(--bg); color: var(--ink); min-height: 100vh; }
+
+/* LAYOUT */
+.shell { display: grid; grid-template-columns: 260px 1fr; min-height: 100vh; }
+
+/* SIDEBAR */
+.sidebar { background: var(--bg2); border-right: 1px solid var(--line); padding: 28px 0; position: sticky; top: 0; height: 100vh; overflow-y: auto; display: flex; flex-direction: column; }
+.sidebar::-webkit-scrollbar { width: 0; }
+.logo { padding: 0 24px 24px; border-bottom: 1px solid var(--line); margin-bottom: 16px; }
+.logo-mark { font-family: var(--mono); font-size: 22px; font-weight: 700; color: var(--g); letter-spacing: -1px; }
+.logo-sub { font-size: 11px; color: var(--ink3); margin-top: 2px; letter-spacing: .04em; }
+.sidebar-section { padding: 8px 24px 4px; font-size: 10px; font-weight: 600; color: var(--ink3); text-transform: uppercase; letter-spacing: .1em; margin-top: 8px; }
+.nav-item { display: flex; align-items: center; gap: 10px; padding: 8px 24px; cursor: pointer; border-left: 2px solid transparent; transition: all .15s; text-decoration: none; }
+.nav-item:hover { background: var(--bg3); }
+.nav-item.active { border-left-color: var(--g); background: var(--glt); }
+.nav-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+.nav-text { font-size: 12.5px; color: var(--ink2); line-height: 1.35; }
+.nav-text strong { display: block; font-size: 12px; font-weight: 500; color: var(--ink); }
+.nav-item.active .nav-text, .nav-item.active .nav-text strong { color: var(--g); }
+.sidebar-footer { margin-top: auto; padding: 20px 24px 0; border-top: 1px solid var(--line); }
+.progress-label { font-size: 11px; color: var(--ink3); margin-bottom: 8px; display: flex; justify-content: space-between; }
+.progress-track { height: 4px; background: var(--bg3); border-radius: 2px; overflow: hidden; }
+.progress-fill { height: 100%; background: var(--g); border-radius: 2px; width: 2%; transition: width .4s; }
+.progress-phases { display: flex; gap: 6px; margin-top: 10px; }
+.ph { flex: 1; height: 3px; border-radius: 2px; background: var(--bg3); }
+.ph.done { background: var(--g); }
+.ph.active { background: var(--a); }
+
+/* MAIN */
+.main { padding: 48px 56px; max-width: 860px; }
+
+/* HEADER */
+.page-header { margin-bottom: 48px; }
+.page-eyebrow { font-family: var(--mono); font-size: 11px; color: var(--g); letter-spacing: .08em; margin-bottom: 10px; }
+.page-title { font-size: 32px; font-weight: 600; color: var(--ink); letter-spacing: -1px; line-height: 1.1; margin-bottom: 10px; }
+.page-sub { font-size: 14px; color: var(--ink2); line-height: 1.7; max-width: 560px; }
+
+/* STATS ROW */
+.stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 48px; }
+.stat { background: var(--bg2); border: 1px solid var(--line); border-radius: 10px; padding: 16px; }
+.stat-n { font-family: var(--mono); font-size: 28px; font-weight: 700; line-height: 1; margin-bottom: 4px; }
+.stat-l { font-size: 11px; color: var(--ink3); letter-spacing: .04em; }
+
+/* SECTION HEADING */
+.sec-head { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+.sec-line { flex: 1; height: 1px; background: var(--line); }
+.sec-label { font-family: var(--mono); font-size: 11px; color: var(--ink3); letter-spacing: .08em; white-space: nowrap; }
+
+/* DAY ENTRY */
+.day-entry { margin-bottom: 40px; }
+.day-header { display: flex; align-items: flex-start; gap: 16px; margin-bottom: 16px; }
+.day-badge { font-family: var(--mono); font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 5px; white-space: nowrap; margin-top: 2px; }
+.day-badge.done { background: var(--glt); color: var(--g); border: 1px solid var(--gdim); }
+.day-badge.today { background: var(--alt); color: var(--a); border: 1px solid #4A3010; }
+.day-badge.upcoming { background: var(--bg3); color: var(--ink3); border: 1px solid var(--line); }
+.day-title-text { font-size: 17px; font-weight: 600; color: var(--ink); letter-spacing: -.3px; }
+.day-date { font-size: 12px; color: var(--ink3); margin-top: 2px; font-family: var(--mono); }
+.day-body { padding-left: 0; }
+
+/* ENTRY BLOCK */
+.block { background: var(--bg2); border: 1px solid var(--line); border-radius: 10px; margin-bottom: 10px; overflow: hidden; }
+.block-head { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .08em; padding: 8px 14px; border-bottom: 1px solid var(--line); }
+.block-body { padding: 14px; }
+.block.built .block-head { color: var(--g); background: var(--glt); }
+.block.learned .block-head { color: var(--p); background: var(--plt); }
+.block.next .block-head { color: var(--a); background: var(--alt); }
+.block.note .block-head { color: var(--ink2); background: var(--bg3); }
+
+/* LIST */
+.elist { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+.elist li { display: flex; gap: 10px; font-size: 13px; color: var(--ink2); line-height: 1.6; align-items: flex-start; }
+.elist li::before { content: ''; width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; margin-top: 7px; }
+.block.built .elist li::before { background: var(--g); }
+.block.learned .elist li::before { background: var(--p); }
+.block.next .elist li::before { background: var(--a); }
+.block.note .elist li::before { background: var(--ink3); }
+.elist li span { color: var(--ink); font-weight: 500; }
+
+/* CODE SNIPPET */
+.snippet { background: var(--bg); border: 1px solid var(--line2); border-radius: 8px; padding: 14px 16px; margin: 10px 0; overflow-x: auto; }
+.snippet pre { font-family: var(--mono); font-size: 12px; color: var(--ink2); line-height: 1.7; white-space: pre; }
+.snippet .kw { color: var(--p); }
+.snippet .val { color: var(--g); }
+.snippet .cmt { color: var(--ink3); }
+.snippet .prop { color: var(--b); }
+
+/* PHASE BADGE */
+.phase-row { display: flex; gap: 8px; margin-bottom: 32px; flex-wrap: wrap; }
+.phase-chip { font-family: var(--mono); font-size: 11px; padding: 5px 12px; border-radius: 5px; border: 1px solid; }
+.phase-chip.done { background: var(--glt); color: var(--g); border-color: var(--gdim); }
+.phase-chip.active { background: var(--alt); color: var(--a); border-color: #4A3010; }
+.phase-chip.todo { background: var(--bg2); color: var(--ink3); border-color: var(--line); }
+
+/* UPCOMING */
+.upcoming-item { display: flex; gap: 14px; padding: 12px 0; border-bottom: 1px solid var(--line); align-items: flex-start; }
+.upcoming-item:last-child { border-bottom: none; }
+.uday { font-family: var(--mono); font-size: 11px; color: var(--ink3); width: 52px; flex-shrink: 0; padding-top: 2px; }
+.utitle { font-size: 13.5px; font-weight: 500; color: var(--ink); margin-bottom: 3px; }
+.udesc { font-size: 12px; color: var(--ink3); line-height: 1.5; }
+
+/* PHASE SECTION */
+.phase-block { border: 1px solid var(--line); border-radius: 12px; overflow: hidden; margin-bottom: 32px; }
+.phase-header { padding: 14px 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--line); }
+.phase-name { font-size: 14px; font-weight: 600; color: var(--ink); }
+.phase-tag { font-family: var(--mono); font-size: 10px; padding: 3px 8px; border-radius: 4px; }
+.phase-tag.active { background: var(--alt); color: var(--a); }
+.phase-tag.todo { background: var(--bg3); color: var(--ink3); }
+.phase-body { padding: 16px 20px; }
+.phase-progress { display: flex; gap: 6px; margin-bottom: 14px; }
+.phase-step { flex: 1; height: 3px; border-radius: 2px; background: var(--bg3); }
+.phase-step.done { background: var(--g); }
+.phase-step.active { background: var(--a); }
+.phase-desc { font-size: 12.5px; color: var(--ink2); line-height: 1.65; }
+
+@media (max-width: 768px) {
+  .shell { grid-template-columns: 1fr; }
+  .sidebar { position: static; height: auto; }
+  .main { padding: 28px 20px; }
+  .stats { grid-template-columns: 1fr 1fr; }
+}
+</style>
+</head>
+<body>
+<div class="shell">
+
+<!-- SIDEBAR -->
+<nav class="sidebar">
+  <div class="logo">
+    <div class="logo-mark">🌿 flora</div>
+    <div class="logo-sub">dev journal · backend</div>
+  </div>
+
+  <div class="sidebar-section">Phase 1 — Foundation</div>
+  <a class="nav-item active" href="#day1">
+    <div class="nav-dot" style="background:var(--g)"></div>
+    <div class="nav-text"><strong>Day 1</strong>Project setup + DB connect</div>
+  </a>
+  <a class="nav-item" href="#upcoming">
+    <div class="nav-dot" style="background:var(--ink3)"></div>
+    <div class="nav-text"><strong>Day 2</strong>Package structure</div>
+  </a>
+  <a class="nav-item" href="#upcoming">
+    <div class="nav-dot" style="background:var(--ink3)"></div>
+    <div class="nav-text"><strong>Day 3</strong>Farmer entity + JPA</div>
+  </a>
+  <a class="nav-item" href="#upcoming">
+    <div class="nav-dot" style="background:var(--ink3)"></div>
+    <div class="nav-text"><strong>Day 4</strong>JWT auth — register</div>
+  </a>
+  <a class="nav-item" href="#upcoming">
+    <div class="nav-dot" style="background:var(--ink3)"></div>
+    <div class="nav-text"><strong>Day 5</strong>JWT auth — login</div>
+  </a>
+
+  <div class="sidebar-section" style="margin-top:12px">Phase 2 — Crop AI</div>
+  <a class="nav-item" href="#roadmap">
+    <div class="nav-dot" style="background:var(--ink3)"></div>
+    <div class="nav-text" style="color:var(--ink3)">Week 5 onwards</div>
+  </a>
+
+  <div class="sidebar-section" style="margin-top:12px">Phase 3 — Animals + Chat</div>
+  <a class="nav-item" href="#roadmap">
+    <div class="nav-dot" style="background:var(--ink3)"></div>
+    <div class="nav-text" style="color:var(--ink3)">Week 9 onwards</div>
+  </a>
+
+  <div class="sidebar-section" style="margin-top:12px">Phase 4 — Production</div>
+  <a class="nav-item" href="#roadmap">
+    <div class="nav-dot" style="background:var(--ink3)"></div>
+    <div class="nav-text" style="color:var(--ink3)">Week 13 onwards</div>
+  </a>
+
+  <div class="sidebar-footer">
+    <div class="progress-label">
+      <span>Overall progress</span>
+      <span style="color:var(--g);font-family:var(--mono)">1 / ~60 days</span>
+    </div>
+    <div class="progress-track"><div class="progress-fill"></div></div>
+    <div class="progress-phases" style="margin-top:8px">
+      <div class="ph active" title="Phase 1"></div>
+      <div class="ph" title="Phase 2"></div>
+      <div class="ph" title="Phase 3"></div>
+      <div class="ph" title="Phase 4"></div>
+    </div>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<main class="main">
+
+  <div class="page-header">
+    <div class="page-eyebrow">// flora · backend · spring boot</div>
+    <div class="page-title">Dev Journal</div>
+    <div class="page-sub">A daily log of what was built, what was understood, and what comes next. Updated every session — one small step at a time.</div>
+  </div>
+
+  <div class="stats">
+    <div class="stat">
+      <div class="stat-n" style="color:var(--g)">1</div>
+      <div class="stat-l">days logged</div>
+    </div>
+    <div class="stat">
+      <div class="stat-n" style="color:var(--a)">0</div>
+      <div class="stat-l">endpoints built</div>
+    </div>
+    <div class="stat">
+      <div class="stat-n" style="color:var(--p)">0</div>
+      <div class="stat-l">entities created</div>
+    </div>
+    <div class="stat">
+      <div class="stat-n" style="color:var(--b)">0</div>
+      <div class="stat-l">ML models deployed</div>
+    </div>
+  </div>
+
+  <div class="phase-row">
+    <div class="phase-chip active">Phase 1 — Foundation · active</div>
+    <div class="phase-chip todo">Phase 2 — Crop AI</div>
+    <div class="phase-chip todo">Phase 3 — Animals + Chat</div>
+    <div class="phase-chip todo">Phase 4 — Production</div>
+  </div>
+
+  <!-- DAY 1 -->
+  <div class="sec-head">
+    <div class="sec-label">// phase 1 · foundation</div>
+    <div class="sec-line"></div>
+  </div>
+
+  <div class="day-entry" id="day1">
+    <div class="day-header">
+      <div class="day-badge done">Day 1 ✓</div>
+      <div>
+        <div class="day-title-text">Spring Boot project setup + MySQL connection</div>
+        <div class="day-date">June 2026 · Phase 1 · Foundation</div>
+      </div>
+    </div>
+    <div class="day-body">
+
+      <div class="block built">
+        <div class="block-head">What we built</div>
+        <div class="block-body">
+          <ul class="elist">
+            <li><span>Spring Boot project generated</span> via start.spring.io with Group <code style="font-family:var(--mono);font-size:11px;color:var(--g)">com.flora</code>, Artifact <code style="font-family:var(--mono);font-size:11px;color:var(--g)">api</code>, package <code style="font-family:var(--mono);font-size:11px;color:var(--g)">com.flora.api</code></li>
+            <li><span>6 dependencies added</span> — Spring Web, Spring Security, Spring Data JPA, MySQL Driver, Lombok, Validation</li>
+            <li><span>flora_db database created</span> in MySQL — ready for Spring to create tables inside it</li>
+            <li><span>application.properties configured</span> — database URL, credentials, JPA settings, server port 8084</li>
+            <li><span>Application started successfully</span> — "Started ApiApplication" confirmed in IntelliJ console</li>
+          </ul>
+          <div class="snippet">
+            <pre><span class="cmt"># application.properties — Day 1 config</span>
+<span class="prop">spring.application.name</span>=<span class="val">api</span>
+<span class="prop">spring.datasource.url</span>=<span class="val">jdbc:mysql://localhost:3306/flora_db</span>
+<span class="prop">spring.datasource.username</span>=<span class="val">root</span>
+<span class="prop">spring.datasource.password</span>=<span class="val">root</span>
+<span class="prop">spring.datasource.driver-class-name</span>=<span class="val">com.mysql.cj.jdbc.Driver</span>
+<span class="prop">spring.jpa.hibernate.ddl-auto</span>=<span class="val">update</span>
+<span class="prop">spring.jpa.show-sql</span>=<span class="val">true</span>
+<span class="prop">spring.jpa.properties.hibernate.dialect</span>=<span class="val">org.hibernate.dialect.MySQL8Dialect</span>
+<span class="prop">server.port</span>=<span class="val">8084</span></pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="block learned">
+        <div class="block-head">What we understood</div>
+        <div class="block-body">
+          <ul class="elist">
+            <li><span>spring.jpa.hibernate.ddl-auto=update</span> means Hibernate reads your Java entity classes and automatically creates or updates the matching MySQL tables. You never write CREATE TABLE SQL manually.</li>
+            <li><span>spring.jpa.show-sql=true</span> prints every SQL query Spring runs into the IntelliJ console — essential for understanding what's actually happening in the database as you learn.</li>
+            <li><span>The "Whitelabel Error Page"</span> at localhost:8084 in the browser means Spring Boot is running correctly — it just has no endpoints yet. That's expected.</li>
+            <li><span>Spring Security is included</span> but not configured yet — it will lock down all endpoints by default until we configure it properly on Day 4.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="block next">
+        <div class="block-head">What comes next — Day 2</div>
+        <div class="block-body">
+          <ul class="elist">
+            <li><span>Create the package structure</span> inside com.flora.api — the 6 folders that organise every class in the project: controller, service, repository, entity, dto, config</li>
+            <li><span>Understand what each folder does</span> and why separating them matters — this is the architecture pattern every Spring Boot project uses professionally</li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- UPCOMING -->
+  <div class="sec-head" id="upcoming" style="margin-top:8px">
+    <div class="sec-label">// upcoming days — phase 1</div>
+    <div class="sec-line"></div>
+  </div>
+
+  <div class="block note" style="margin-bottom:32px">
+    <div class="block-head">Planned — Phase 1 build order</div>
+    <div class="block-body">
+      <div class="upcoming-item">
+        <div class="uday">Day 2</div>
+        <div><div class="utitle">Package structure</div><div class="udesc">Create the 6 folders inside com.flora.api — controller, service, repository, entity, dto, config. Understand what belongs in each one.</div></div>
+      </div>
+      <div class="upcoming-item">
+        <div class="uday">Day 3</div>
+        <div><div class="utitle">Farmer entity + JPA</div><div class="udesc">Create the Farmer.java entity class with all fields. See Spring auto-create the farmers table in MySQL. Understand @Entity, @Id, @Column annotations.</div></div>
+      </div>
+      <div class="upcoming-item">
+        <div class="uday">Day 4</div>
+        <div><div class="utitle">JWT auth — register endpoint</div><div class="udesc">POST /api/auth/register. Takes phone + password, saves farmer to DB with BCrypt-hashed password, returns JWT token.</div></div>
+      </div>
+      <div class="upcoming-item">
+        <div class="uday">Day 5</div>
+        <div><div class="utitle">JWT auth — login endpoint</div><div class="udesc">POST /api/auth/login. Validates credentials, returns JWT. Understand how Spring Security filter chain works.</div></div>
+      </div>
+      <div class="upcoming-item">
+        <div class="uday">Day 6</div>
+        <div><div class="utitle">Remaining 12 JPA entities</div><div class="udesc">Create all entity classes — soil_scans, predictions, animals, alerts, chat_sessions, and more. All 13 tables created in MySQL automatically.</div></div>
+      </div>
+      <div class="upcoming-item">
+        <div class="uday">Day 7</div>
+        <div><div class="utitle">MockSensorService + /api/sensor/mock</div><div class="udesc">First real GET endpoint. Returns district-realistic fake NPK soil values. Tests the controller → service → response flow end to end.</div></div>
+      </div>
+      <div class="upcoming-item">
+        <div class="uday">Day 8</div>
+        <div><div class="utitle">OpenWeatherMap integration</div><div class="udesc">WeatherService calling the real OpenWeatherMap API for a farmer's district. Store API key safely in properties. Test with Chennai and Coimbatore.</div></div>
+      </div>
+      <div class="upcoming-item">
+        <div class="uday">Day 9</div>
+        <div><div class="utitle">district_crop_suitability data seeding</div><div class="udesc">Load TNAU crop suitability data for all 38 TN districts into the database. This is the location intelligence layer — the feature no other app has.</div></div>
+      </div>
+      <div class="upcoming-item">
+        <div class="uday">Day 10</div>
+        <div><div class="utitle">Phase 1 Gate Check</div><div class="udesc">Full verification: register → login → get JWT → call mock sensor → see personalised dashboard data. If everything passes, Phase 1 is complete.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ROADMAP -->
+  <div class="sec-head" id="roadmap">
+    <div class="sec-label">// full project roadmap</div>
+    <div class="sec-line"></div>
+  </div>
+
+  <div class="phase-block">
+    <div class="phase-header">
+      <div class="phase-name">Phase 1 — Foundation</div>
+      <div class="phase-tag active">Month 1 · In progress</div>
+    </div>
+    <div class="phase-body">
+      <div class="phase-progress">
+        <div class="phase-step done"></div>
+        <div class="phase-step"></div><div class="phase-step"></div><div class="phase-step"></div>
+        <div class="phase-step"></div><div class="phase-step"></div><div class="phase-step"></div>
+        <div class="phase-step"></div><div class="phase-step"></div><div class="phase-step"></div>
+      </div>
+      <div class="phase-desc">Spring Boot setup · Package structure · All 13 JPA entities · JWT auth (register + login) · MockSensorService · OpenWeatherMap · district_crop_suitability seeding · /api/farmer/dashboard stub<br><br><strong style="color:var(--a)">Gate check:</strong> Farmer registers → logs in → sees personalised dashboard → language toggle works → mock sensor returns district NPK.</div>
+    </div>
+  </div>
+
+  <div class="phase-block">
+    <div class="phase-header">
+      <div class="phase-name">Phase 2 — Crop AI Core</div>
+      <div class="phase-tag todo">Month 2</div>
+    </div>
+    <div class="phase-body">
+      <div class="phase-progress">
+        <div class="phase-step"></div><div class="phase-step"></div><div class="phase-step"></div>
+        <div class="phase-step"></div><div class="phase-step"></div><div class="phase-step"></div>
+        <div class="phase-step"></div><div class="phase-step"></div><div class="phase-step"></div><div class="phase-step"></div>
+      </div>
+      <div class="phase-desc">Python Flask setup · Model 1 (Crop Recommendation, Random Forest) · Model 2 (Fertilizer Calculator) · Location suitability re-ranking · POST /api/scan/submit pipeline · i18n translation layer · Soil Entry screen in React Native · Prediction Result screen<br><br><strong style="color:var(--a)">Gate check:</strong> Soil submit → Flask models run → Tamil prediction on screen in under 3 seconds.</div>
+    </div>
+  </div>
+
+  <div class="phase-block">
+    <div class="phase-header">
+      <div class="phase-name">Phase 3 — Animals + Chat + Price</div>
+      <div class="phase-tag todo">Month 3</div>
+    </div>
+    <div class="phase-body">
+      <div class="phase-progress">
+        <div class="phase-step"></div><div class="phase-step"></div><div class="phase-step"></div>
+        <div class="phase-step"></div><div class="phase-step"></div><div class="phase-step"></div>
+        <div class="phase-step"></div><div class="phase-step"></div><div class="phase-step"></div><div class="phase-step"></div>
+      </div>
+      <div class="phase-desc">Models 3–7 · Agmarknet price data + LSTM · WebSocket STOMP chat · All animal APIs · All 5 animal screens · Chat screens · Price Tracker · Alert endpoints<br><br><strong style="color:var(--a)">Gate check:</strong> All 7 models live · Symptoms checker works · Real-time chat works end to end.</div>
+    </div>
+  </div>
+
+  <div class="phase-block">
+    <div class="phase-header">
+      <div class="phase-name">Phase 4 — Production + Polish</div>
+      <div class="phase-tag todo">Month 4</div>
+    </div>
+    <div class="phase-body">
+      <div class="phase-progress">
+        <div class="phase-step"></div><div class="phase-step"></div><div class="phase-step"></div>
+        <div class="phase-step"></div><div class="phase-step"></div><div class="phase-step"></div>
+        <div class="phase-step"></div><div class="phase-step"></div><div class="phase-step"></div><div class="phase-step"></div>
+      </div>
+      <div class="phase-desc">AWS EC2 + RDS + S3 deployment · Firebase FCM push notifications · @Scheduled alert system · Tamil + Hindi translations · Offline cache testing · README + 3-minute demo video<br><br><strong style="color:var(--a)">Gate check:</strong> App live on AWS · Push received on real Android · Demo video recorded.</div>
+    </div>
+  </div>
+
+</main>
+</div>
+</body>
+</html>
