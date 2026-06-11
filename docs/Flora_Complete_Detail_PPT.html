@@ -1,0 +1,1364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flora — Full Project Presentation</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #0F1923;
+  --ink2: #3D5166;
+  --ink3: #7B93A8;
+  --paper: #F8F6F2;
+  --paper2: #EEE9E0;
+  --paper3: #E2DAD0;
+  --line: #D4CEC6;
+  --emerald: #1B6B4A;
+  --emerald-lt: #EAF4EE;
+  --emerald-md: #2E9E6F;
+  --amber: #A85C00;
+  --amber-lt: #FEF5E7;
+  --amber-md: #D4780A;
+  --indigo: #3847A3;
+  --indigo-lt: #EEF0FB;
+  --rust: #A03428;
+  --rust-lt: #FAECEA;
+  --pine: #1A5C5C;
+  --pine-lt: #E6F3F3;
+  --plum: #622F8A;
+  --plum-lt: #F2EBF9;
+  --white: #FFFFFF;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; overflow: hidden; }
+body { font-family: 'Plus Jakarta Sans', sans-serif; background: #1A1A1A; }
+
+/* ── SHELL ── */
+#shell {
+  width: 100vw; height: 100vh;
+  position: relative; overflow: hidden;
+  background: var(--paper);
+  display: flex; flex-direction: column;
+}
+
+/* ── TOP BAR ── */
+#topbar {
+  height: 50px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 32px;
+  background: var(--white);
+  border-bottom: 1px solid var(--line);
+  z-index: 50; position: relative;
+}
+.tb-logo { font-size: 17px; font-weight: 800; color: var(--emerald); letter-spacing: -.4px; display: flex; align-items: center; gap: 7px; }
+.tb-logo span { font-weight: 400; font-size: 12px; color: var(--ink3); }
+.tb-right { display: flex; align-items: center; gap: 10px; }
+.tb-count { font-size: 12px; color: var(--ink3); font-weight: 600; }
+#slides-btn {
+  background: var(--emerald); color: white;
+  border: none; border-radius: 8px; padding: 6px 16px;
+  font-size: 12px; font-weight: 700; cursor: pointer;
+  font-family: inherit; transition: all .15s;
+  letter-spacing: .02em;
+}
+#slides-btn:hover { background: #145538; }
+
+/* ── PROGRESS ── */
+#prog-bar {
+  height: 2px; flex-shrink: 0;
+  background: var(--line);
+  position: relative;
+}
+#prog-fill {
+  position: absolute; top: 0; left: 0; height: 100%;
+  background: linear-gradient(90deg, var(--emerald), var(--amber-md));
+  transition: width .4s cubic-bezier(.4,0,.2,1);
+}
+
+/* ── SLIDES AREA ── */
+#slides-area {
+  flex: 1; overflow: hidden; position: relative;
+}
+
+/* ── BOTTOM NAV ── */
+#bottombar {
+  height: 52px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  gap: 16px;
+  background: var(--white);
+  border-top: 1px solid var(--line);
+  z-index: 50;
+}
+.nav-btn {
+  width: 34px; height: 34px; border-radius: 50%;
+  border: 1px solid var(--line); background: var(--paper);
+  color: var(--ink2); font-size: 15px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all .15s; font-family: inherit;
+}
+.nav-btn:hover:not(:disabled) { background: var(--emerald); color: white; border-color: var(--emerald); }
+.nav-btn:disabled { opacity: .3; cursor: not-allowed; }
+#nav-label { font-size: 12px; color: var(--ink3); font-weight: 600; min-width: 56px; text-align: center; }
+
+/* ── SLIDE BASE ── */
+.slide {
+  position: absolute; inset: 0;
+  display: none; overflow-y: auto;
+  background: var(--paper);
+}
+.slide.active { display: block; }
+.slide-inner {
+  min-height: 100%;
+  padding: 44px 64px 36px;
+}
+.slide-inner::-webkit-scrollbar { width: 3px; }
+.slide-inner::-webkit-scrollbar-track { background: transparent; }
+.slide-inner::-webkit-scrollbar-thumb { background: var(--line); border-radius: 2px; }
+
+/* COVER SLIDE */
+.cover-slide {
+  display: none;
+  background: var(--ink);
+  flex-direction: column;
+  align-items: center; justify-content: center;
+  text-align: center;
+  padding: 60px 48px;
+  position: absolute; inset: 0;
+}
+.cover-slide.active { display: flex; }
+.cover-em { font-size: 52px; margin-bottom: 10px; }
+.cover-name {
+  font-size: clamp(64px, 9vw, 104px);
+  font-weight: 800; letter-spacing: -5px; line-height: .92;
+  color: var(--white); margin-bottom: 10px;
+}
+.cover-name em { font-style: normal; color: var(--emerald-md); }
+.cover-tagline { font-size: clamp(14px, 1.6vw, 19px); color: rgba(255,255,255,.5); max-width: 560px; line-height: 1.65; margin-bottom: 40px; }
+.cover-chips { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-bottom: 44px; }
+.chip { padding: 5px 14px; border-radius: 20px; font-size: 12px; font-weight: 700; border: 1px solid rgba(255,255,255,.12); color: rgba(255,255,255,.65); background: rgba(255,255,255,.06); }
+.chip.g { border-color: rgba(46,158,111,.5); color: #5DD4A0; background: rgba(46,158,111,.12); }
+.chip.a { border-color: rgba(212,120,10,.5); color: #F0A840; background: rgba(212,120,10,.12); }
+.chip.i { border-color: rgba(56,71,163,.5); color: #8B9FE8; background: rgba(56,71,163,.12); }
+.chip.r { border-color: rgba(160,52,40,.5); color: #E88880; background: rgba(160,52,40,.12); }
+.chip.p { border-color: rgba(98,47,138,.5); color: #C090E0; background: rgba(98,47,138,.12); }
+.cover-stats { display: flex; gap: 44px; }
+.cst-n { font-size: 38px; font-weight: 900; letter-spacing: -2px; line-height: 1; }
+.cst-l { font-size: 11px; color: rgba(255,255,255,.4); margin-top: 3px; }
+
+/* ── SECTION DIVIDER SLIDE ── */
+.divider-slide {
+  display: none; position: absolute; inset: 0;
+  align-items: center;
+  padding: 64px;
+  background: var(--paper);
+  overflow: hidden;
+}
+.divider-slide.active { display: flex; }
+.div-bg-num {
+  position: absolute; right: -24px; top: 50%; transform: translateY(-50%);
+  font-size: 260px; font-weight: 900; color: var(--paper2);
+  line-height: 1; pointer-events: none; letter-spacing: -10px; user-select: none;
+}
+.div-tag { font-size: 11px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; margin-bottom: 16px; }
+.div-title { font-size: clamp(42px, 7vw, 76px); font-weight: 900; letter-spacing: -3px; line-height: 1; color: var(--ink); margin-bottom: 16px; }
+.div-desc { font-size: 17px; color: var(--ink2); line-height: 1.7; max-width: 480px; }
+
+/* ── ANIMATIONS ── */
+@keyframes slideUp { from { opacity:0; transform: translateY(22px); } to { opacity:1; transform: translateY(0); } }
+.a { animation: slideUp .45s cubic-bezier(.2,.8,.4,1) both; }
+.a1{animation-delay:.04s} .a2{animation-delay:.1s} .a3{animation-delay:.17s}
+.a4{animation-delay:.24s} .a5{animation-delay:.32s} .a6{animation-delay:.4s}
+.a7{animation-delay:.48s} .a8{animation-delay:.56s} .a9{animation-delay:.64s}
+.a10{animation-delay:.72s}
+
+/* ── TYPOGRAPHY ── */
+.s-eyebrow { font-size: 11px; font-weight: 800; letter-spacing: .13em; text-transform: uppercase; margin-bottom: 9px; }
+.s-h { font-size: clamp(26px, 3.2vw, 38px); font-weight: 900; letter-spacing: -1.2px; line-height: 1.08; color: var(--ink); margin-bottom: 6px; }
+.s-h em { font-style: normal; }
+.s-sub { font-size: 14px; color: var(--ink2); line-height: 1.65; max-width: 680px; margin-bottom: 28px; font-weight: 400; }
+
+/* ── LAYOUT ── */
+.g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+.g3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.g4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 14px; }
+.g-wide { display: grid; grid-template-columns: 1.2fr 1fr; gap: 22px; }
+
+/* ── CARDS ── */
+.card {
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 20px;
+}
+.card-icon { font-size: 26px; margin-bottom: 10px; display: block; }
+.card-title { font-size: 14px; font-weight: 800; color: var(--ink); margin-bottom: 6px; }
+.card-body { font-size: 12.5px; color: var(--ink2); line-height: 1.65; }
+.card.e { border-color: rgba(27,107,74,.2); background: #FAFDF9; }
+.card.a { border-color: rgba(168,92,0,.2); background: #FEFAF3; }
+.card.i { border-color: rgba(56,71,163,.2); background: #F5F7FF; }
+.card.r { border-color: rgba(160,52,40,.2); background: #FEF9F8; }
+.card.p { border-color: rgba(98,47,138,.2); background: #FAF5FF; }
+.card.n { border-color: rgba(26,92,92,.2); background: #F4FAFA; }
+
+/* STAT BOX */
+.stat { background: var(--white); border: 1px solid var(--line); border-radius: 12px; padding: 20px 16px; text-align: center; }
+.stat-n { font-size: 38px; font-weight: 900; letter-spacing: -2px; line-height: 1; }
+.stat-l { font-size: 11.5px; color: var(--ink2); margin-top: 4px; line-height: 1.4; }
+
+/* ── BADGE / TAG ── */
+.badge { display: inline-block; font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 20px; }
+.b-e { background: var(--emerald-lt); color: var(--emerald); }
+.b-a { background: var(--amber-lt); color: var(--amber); }
+.b-i { background: var(--indigo-lt); color: var(--indigo); }
+.b-r { background: var(--rust-lt); color: var(--rust); }
+.b-p { background: var(--plum-lt); color: var(--plum); }
+.b-n { background: var(--pine-lt); color: var(--pine); }
+.b-gray { background: var(--paper2); color: var(--ink2); }
+.tag { display: inline-block; font-size: 11px; font-weight: 500; padding: 2px 8px; border-radius: 5px; border: 1px solid var(--line); color: var(--ink2); margin: 2px 2px 2px 0; }
+
+/* ── HIGHLIGHT BOX ── */
+.hl { border-radius: 12px; padding: 14px 18px; margin: 14px 0; }
+.hl.e { background: var(--emerald-lt); border-left: 3px solid var(--emerald); }
+.hl.a { background: var(--amber-lt); border-left: 3px solid var(--amber-md); }
+.hl.i { background: var(--indigo-lt); border-left: 3px solid var(--indigo); }
+.hl.r { background: var(--rust-lt); border-left: 3px solid var(--rust); }
+.hl.p { background: var(--plum-lt); border-left: 3px solid var(--plum); }
+.hl.n { background: var(--pine-lt); border-left: 3px solid var(--pine); }
+.hl-title { font-size: 12.5px; font-weight: 800; margin-bottom: 4px; }
+.hl-body { font-size: 12.5px; color: var(--ink2); line-height: 1.65; }
+
+/* ── FLOW STEPS ── */
+.flow { display: flex; flex-direction: column; }
+.fstep { display: flex; gap: 16px; align-items: flex-start; }
+.f-left { display: flex; flex-direction: column; align-items: center; flex-shrink: 0; width: 38px; }
+.f-num { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800; flex-shrink: 0; }
+.f-line { width: 2px; flex: 1; min-height: 10px; background: var(--line); margin: 4px 0; }
+.f-body { padding-bottom: 20px; flex: 1; padding-top: 5px; }
+.f-title { font-size: 14px; font-weight: 800; color: var(--ink); margin-bottom: 4px; }
+.f-desc { font-size: 12.5px; color: var(--ink2); line-height: 1.6; }
+.f-tags { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 7px; }
+
+/* ── TABLE ── */
+.tbl { width: 100%; border-collapse: collapse; font-size: 12.5px; background: var(--white); border-radius: 11px; overflow: hidden; border: 1px solid var(--line); }
+.tbl th { padding: 9px 13px; background: var(--paper2); font-size: 10.5px; font-weight: 800; text-align: left; color: var(--ink2); text-transform: uppercase; letter-spacing: .06em; border-bottom: 1px solid var(--line); }
+.tbl td { padding: 8px 13px; border-bottom: 1px solid var(--paper2); color: var(--ink2); vertical-align: top; line-height: 1.5; }
+.tbl td:first-child { font-weight: 700; color: var(--emerald); font-family: 'SFMono-Regular', monospace; font-size: 11.5px; }
+.tbl tr:last-child td { border-bottom: none; }
+.tbl tr:hover td { background: var(--paper2); }
+
+/* ── STEP PILL (onboarding) ── */
+.spill { display: flex; gap: 12px; background: var(--white); border: 1px solid var(--line); border-radius: 12px; padding: 13px 16px; margin-bottom: 9px; align-items: flex-start; }
+.spill-num { width: 30px; height: 30px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800; flex-shrink: 0; color: white; margin-top: 1px; }
+.spill-q { font-size: 13px; font-weight: 800; color: var(--ink); margin-bottom: 2px; }
+.spill-a { font-size: 12px; color: var(--ink2); line-height: 1.5; }
+
+/* ── FEATURE ROW ── */
+.frow { display: flex; gap: 13px; padding: 13px 0; border-bottom: 1px solid var(--paper2); align-items: flex-start; }
+.frow:last-child { border-bottom: none; }
+.frow-ico { width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 17px; flex-shrink: 0; }
+.frow-title { font-size: 13.5px; font-weight: 800; color: var(--ink); margin-bottom: 3px; }
+.frow-body { font-size: 12.5px; color: var(--ink2); line-height: 1.55; }
+
+/* ── MODEL CARD ── */
+.mcard { background: var(--white); border: 1px solid var(--line); border-radius: 12px; padding: 16px 18px; }
+.m-num { font-size: 10px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; margin-bottom: 3px; }
+.m-name { font-size: 15px; font-weight: 900; color: var(--ink); margin-bottom: 2px; }
+.m-algo { font-size: 12px; font-weight: 600; margin-bottom: 8px; }
+.m-row { display: flex; gap: 6px; font-size: 11.5px; padding: 5px 0; border-top: 1px solid var(--paper2); }
+.m-key { color: var(--ink3); flex-shrink: 0; width: 76px; }
+.m-val { color: var(--ink2); flex: 1; line-height: 1.4; }
+
+/* ── SCREEN CARD ── */
+.scard { background: var(--white); border: 1px solid var(--line); border-radius: 11px; padding: 14px 16px; margin-bottom: 8px; }
+.sc-num { font-size: 10px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--ink3); margin-bottom: 3px; }
+.sc-name { font-size: 14px; font-weight: 800; color: var(--ink); margin-bottom: 4px; }
+.sc-desc { font-size: 12px; color: var(--ink2); line-height: 1.55; }
+
+/* ── PHASE CARD ── */
+.phase { border-radius: 13px; padding: 18px; }
+.ph-eyebrow { font-size: 10px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; margin-bottom: 5px; }
+.ph-title { font-size: 17px; font-weight: 900; color: var(--ink); margin-bottom: 12px; }
+.ph-li { font-size: 12px; color: var(--ink2); padding: 4px 0; display: flex; gap: 7px; align-items: flex-start; border-bottom: 1px solid rgba(0,0,0,.05); line-height: 1.4; }
+.ph-li:last-of-type { border-bottom: none; }
+.ph-dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; margin-top: 5px; }
+.ph-gate { border-radius: 8px; padding: 9px 12px; margin-top: 10px; font-size: 12px; line-height: 1.45; }
+
+/* ── MENU OVERLAY ── */
+#menu {
+  position: absolute; inset: 0; z-index: 100;
+  background: rgba(15,25,35,.8);
+  backdrop-filter: blur(16px);
+  display: none; overflow-y: auto;
+  padding: 56px 40px;
+}
+#menu.open { display: block; }
+#menu h2 { text-align: center; font-size: 19px; font-weight: 800; color: white; margin-bottom: 28px; letter-spacing: -.4px; }
+.menu-close { position: absolute; top: 16px; right: 20px; background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.15); color: rgba(255,255,255,.8); border-radius: 8px; padding: 6px 14px; font-size: 12px; font-weight: 600; cursor: pointer; font-family: inherit; transition: all .15s; }
+.menu-close:hover { background: rgba(255,255,255,.18); }
+.menu-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(185px, 1fr)); gap: 10px; max-width: 1140px; margin: 0 auto; }
+.menu-item { background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.1); border-radius: 9px; padding: 13px 15px; cursor: pointer; transition: all .2s; }
+.menu-item:hover, .menu-item.cur { background: rgba(255,255,255,.12); border-color: rgba(46,158,111,.7); }
+.mi-n { font-size: 10px; font-weight: 800; color: #5DD4A0; letter-spacing: .08em; text-transform: uppercase; margin-bottom: 3px; }
+.mi-t { font-size: 12.5px; font-weight: 700; color: white; line-height: 1.35; }
+.mi-s { font-size: 11px; color: rgba(255,255,255,.35); margin-top: 2px; }
+
+/* ── ALERT CARD ── */
+.alert-card { background: var(--white); border: 1px solid var(--line); border-radius: 11px; padding: 13px 16px; margin-bottom: 9px; display: flex; gap: 12px; align-items: flex-start; }
+.alert-sev { font-size: 10px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; padding: 3px 8px; border-radius: 5px; flex-shrink: 0; }
+.alert-title { font-size: 13px; font-weight: 800; color: var(--ink); margin-bottom: 3px; }
+.alert-body { font-size: 12px; color: var(--ink2); line-height: 1.5; font-style: italic; }
+
+/* ── CLOSING SLIDE ── */
+.close-slide { display: none; position: absolute; inset: 0; background: var(--ink); flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 64px; }
+.close-slide.active { display: flex; }
+.close-h { font-size: clamp(38px, 6vw, 72px); font-weight: 900; letter-spacing: -3px; color: white; margin-bottom: 14px; }
+.close-h em { font-style: normal; color: var(--emerald-md); }
+.close-sub { font-size: 17px; color: rgba(255,255,255,.5); max-width: 540px; line-height: 1.65; margin-bottom: 40px; }
+.close-pitch { max-width: 660px; font-size: 15px; color: rgba(255,255,255,.8); line-height: 1.7; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.12); border-radius: 14px; padding: 22px 28px; }
+</style>
+</head>
+<body>
+<div id="shell">
+
+  <!-- TOP BAR -->
+  <div id="topbar">
+    <div class="tb-logo">🌿 Flora <span>Complete Project Presentation</span></div>
+    <div class="tb-right">
+      <span class="tb-count" id="tb-count">1 / 30</span>
+      <button id="slides-btn">☰ All Slides</button>
+    </div>
+  </div>
+
+  <!-- PROGRESS -->
+  <div id="prog-bar"><div id="prog-fill" style="width:0%"></div></div>
+
+  <!-- SLIDES AREA -->
+  <div id="slides-area">
+
+<!-- ═══════════════════════════════════════════════
+  SLIDE 1 — COVER
+═══════════════════════════════════════════════ -->
+<div class="slide cover-slide active" data-sec="Cover" data-t="Flora — Smart Farm Platform">
+  <div class="cover-em a">🌿</div>
+  <div class="cover-name a a1">Fl<em>o</em>ra</div>
+  <div class="cover-tagline a a2">Smart Rural Livelihood Platform for Tamil Nadu Farmers<br>AI-powered crop intelligence · Animal health · Expert connect</div>
+  <div class="cover-chips a a3">
+    <span class="chip g">React Native</span>
+    <span class="chip i">Spring Boot 3.5</span>
+    <span class="chip a">Python Flask AI</span>
+    <span class="chip">MySQL + AWS</span>
+    <span class="chip r">7 ML Models</span>
+    <span class="chip p">38 TN Districts</span>
+  </div>
+  <div class="cover-stats a a4">
+    <div><div class="cst-n" style="color:#5DD4A0">13</div><div class="cst-l">DB Tables</div></div>
+    <div><div class="cst-n" style="color:#F0A840">17</div><div class="cst-l">App Screens</div></div>
+    <div><div class="cst-n" style="color:#8B9FE8">30+</div><div class="cst-l">API Endpoints</div></div>
+    <div><div class="cst-n" style="color:#C090E0">7</div><div class="cst-l">ML Models</div></div>
+    <div><div class="cst-n" style="color:#80C8C8">11+</div><div class="cst-l">Animal Types</div></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+  SLIDE 2 — THE PROBLEM
+═══════════════════════════════════════════════ -->
+<div class="slide" data-sec="Problem" data-t="The Problem Flora Solves">
+<div class="slide-inner">
+  <div class="s-eyebrow a" style="color:var(--rust)">Chapter 01 · The Problem</div>
+  <div class="s-h a a1">What <em style="color:var(--rust)">problems</em> do small farmers face every day?</div>
+  <div class="s-sub a a2">Tamil Nadu has over 63 lakh registered small farmers. Most own smartphones. None have access to free, personalised, local farm intelligence.</div>
+  <div class="g2 a a3">
+    <div>
+      <div class="frow"><div class="frow-ico" style="background:var(--rust-lt)">🌾</div><div><div class="frow-title">No crop guidance</div><div class="frow-body">Farmers decide what to plant purely on tradition and intuition. No soil analysis, no weather data, no yield history for their specific district. A wrong crop choice means an entire season — and income — lost.</div></div></div>
+      <div class="frow"><div class="frow-ico" style="background:var(--rust-lt)">💰</div><div><div class="frow-title">Market price blindness</div><div class="frow-body">Farmers sell at whatever the mandi offers on the day they arrive. No price trend data, no forecasts. They consistently lose 20–35% of potential income by selling at the worst time.</div></div></div>
+      <div class="frow"><div class="frow-ico" style="background:var(--rust-lt)">🗺️</div><div><div class="frow-title">Generic advice ignores local reality</div><div class="frow-body">Every crop app gives the same advice regardless of where the farmer is. But Erode's red laterite soil and Thanjavur's delta alluvial land are completely different. Advice must be district-specific.</div></div></div>
+    </div>
+    <div>
+      <div class="frow"><div class="frow-ico" style="background:var(--rust-lt)">🐄</div><div><div class="frow-title">No animal health support</div><div class="frow-body">80% of small farmers own livestock — cows, goats, hens, pigs. When an animal falls sick, the nearest government vet may be 40 km away. Every hour of delay risks losing the animal and the family's income.</div></div></div>
+      <div class="frow"><div class="frow-ico" style="background:var(--rust-lt)">🌡️</div><div><div class="frow-title">Late disease detection</div><div class="frow-body">Crop disease symptoms are noticed only after 40–60% of the field is already damaged. Weather-based early warning could prevent entire losses — but no free tool exists for this.</div></div></div>
+      <div class="frow"><div class="frow-ico" style="background:var(--rust-lt)">💬</div><div><div class="frow-title">Expert access is expensive and far</div><div class="frow-body">Private agronomists and vets charge per visit. Government services are understaffed and geographically inaccessible. Small farmers have no reliable, free expert to call.</div></div></div>
+    </div>
+  </div>
+  <div class="hl r a a4"><div class="hl-title" style="color:var(--rust)">🎯 Flora's mission in one line</div><div class="hl-body">Put expert-level crop intelligence and animal health management in every small farmer's pocket — free, in their language, personalised to their land and district.</div></div>
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+  SLIDE 3 — WHAT IS FLORA
+═══════════════════════════════════════════════ -->
+<div class="slide" data-sec="Solution" data-t="What is Flora? — Three Core Modules">
+<div class="slide-inner">
+  <div class="s-eyebrow a" style="color:var(--emerald)">Chapter 02 · The Solution</div>
+  <div class="s-h a a1">Flora — <em style="color:var(--emerald)">three modules</em>, one complete platform</div>
+  <div class="s-sub a a2">Flora is not a single-feature app. It addresses the complete livelihood of a small farmer — both what they grow and what they raise.</div>
+  <div class="g3 a a3" style="margin-bottom:18px">
+    <div class="card e">
+      <span class="card-icon">🌾</span>
+      <div class="card-title">Crop Intelligence</div>
+      <div class="card-body">Farmer enters soil NPK + pH + moisture. Flora fetches live weather for their district, runs 5 AI models, and delivers five actionable outputs — best crop, exact fertilizer doses, disease risk forecast, irrigation schedule, and optimal market sell window.</div>
+      <div style="margin-top:11px;display:flex;gap:5px;flex-wrap:wrap"><span class="tag">5 ML models</span><span class="tag">38 TN districts</span><span class="tag">Live weather</span><span class="tag">Location scoring</span></div>
+    </div>
+    <div class="card" style="border-color:rgba(160,52,160,.2);background:#FDF6FF">
+      <span class="card-icon">🐾</span>
+      <div class="card-title">Animal Health</div>
+      <div class="card-body">Register cow, buffalo, goat, pig, hen, chicken, dove, duck, rabbit, dog, or sheep. AI-powered symptoms checker diagnoses disease. Vaccination reminders sent automatically. Daily milk/egg tracker with drop detection. Feed calculator uses ICAR standard tables.</div>
+      <div style="margin-top:11px;display:flex;gap:5px;flex-wrap:wrap"><span class="tag">11+ species</span><span class="tag">2 AI models</span><span class="tag">ICAR feed data</span></div>
+    </div>
+    <div class="card p">
+      <span class="card-icon">💬</span>
+      <div class="card-title">Expert Connect</div>
+      <div class="card-body">When AI predictions are not enough, real human experts help. A WebSocket-powered real-time chat connects the farmer directly to an agronomy or veterinary expert on your support team. Works like WhatsApp — instant, two-way, within seconds.</div>
+      <div style="margin-top:11px;display:flex;gap:5px;flex-wrap:wrap"><span class="tag">WebSocket STOMP</span><span class="tag">Real-time</span><span class="tag">Crop + Vet</span></div>
+    </div>
+  </div>
+  <div class="g2 a a4">
+    <div class="hl e"><div class="hl-title" style="color:var(--emerald)">📍 The district-intelligence differentiator</div><div class="hl-body">Flora has crop suitability data from TNAU for all 38 Tamil Nadu districts. The same soil readings in Erode vs Thanjavur produce different crop recommendations — because Erode is turmeric country and Thanjavur is rice country. No other app does this. This is Flora's unfair advantage.</div></div>
+    <div class="hl i"><div class="hl-title" style="color:var(--indigo)">🌐 Three languages, zero friction</div><div class="hl-body">Every prediction, alert, and expert message is delivered in the farmer's language — English, தமிழ் (Tamil), or हिंदी (Hindi). Selected on first launch and changeable in one tap from the header. Every word in the app switches language instantly.</div></div>
+  </div>
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+  SLIDE 4 — USERS
+═══════════════════════════════════════════════ -->
+<div class="slide" data-sec="Users" data-t="Who Uses Flora — Farmers & Experts">
+<div class="slide-inner">
+  <div class="s-eyebrow a" style="color:var(--indigo)">Chapter 03 · Users</div>
+  <div class="s-h a a1">Who are <em style="color:var(--indigo)">Flora's users</em>?</div>
+  <div class="s-sub a a2">Two user types — the farmer on mobile, and the support expert on the web admin panel.</div>
+  <div class="g2 a a3" style="align-items:start">
+    <div>
+      <div class="card e" style="margin-bottom:16px">
+        <span class="card-icon">👨‍🌾</span>
+        <div class="card-title">Primary User — Small Farmer (Mobile App)</div>
+        <div class="card-body" style="margin-bottom:14px">Farmers who own 1–10 acres in Tamil Nadu, and may also own livestock. They interact entirely through the React Native Android/iOS app.</div>
+        <div class="frow" style="padding:8px 0"><div class="frow-ico" style="background:var(--emerald-lt);font-size:15px">📍</div><div><div class="frow-title" style="font-size:13px">Location</div><div class="frow-body">All 38 districts of Tamil Nadu — Karur, Erode, Thanjavur, Coimbatore, Madurai, Salem, Tirunelveli, Dindigul and more</div></div></div>
+        <div class="frow" style="padding:8px 0"><div class="frow-ico" style="background:var(--emerald-lt);font-size:15px">📱</div><div><div class="frow-title" style="font-size:13px">Device</div><div class="frow-body">Android smartphone (primary). App works offline — last prediction and animal records cached in AsyncStorage when connectivity is lost.</div></div></div>
+        <div class="frow" style="padding:8px 0;border-bottom:none"><div class="frow-ico" style="background:var(--emerald-lt);font-size:15px">🌐</div><div><div class="frow-title" style="font-size:13px">Language</div><div class="frow-body">Primarily Tamil. Flora supports EN / TA / HI. Chosen on first launch, adjustable anytime from the profile header.</div></div></div>
+      </div>
+    </div>
+    <div>
+      <div class="card p" style="margin-bottom:16px">
+        <span class="card-icon">👩‍💻</span>
+        <div class="card-title">Support Team — Expert / Admin (Web Panel)</div>
+        <div class="card-body" style="margin-bottom:14px">Agronomy and veterinary experts who respond to farmer chat messages. They use a web-based admin panel that shows all open sessions with full farmer context pre-loaded.</div>
+        <div class="frow" style="padding:8px 0"><div class="frow-ico" style="background:var(--plum-lt);font-size:15px">💬</div><div><div class="frow-title" style="font-size:13px">What experts see</div><div class="frow-body">Farmer's district, current crop, animal types, and the exact reason for chat — all visible before the expert types a word. Context-first design.</div></div></div>
+        <div class="frow" style="padding:8px 0;border-bottom:none"><div class="frow-ico" style="background:var(--plum-lt);font-size:15px">⭐</div><div><div class="frow-title" style="font-size:13px">Quality ratings</div><div class="frow-body">Farmer rates the expert 1–5 stars after each session closes. Builds quality accountability without extra work for either side.</div></div></div>
+      </div>
+      <div class="hl n"><div class="hl-title" style="color:var(--pine)">📊 Why this scale matters</div><div class="hl-body">Tamil Nadu has <strong>63 lakh registered farmers</strong>. Reaching even 0.1% = 63,000 users. The architecture is multi-tenant from day one — every API is farmer-scoped by JWT, every alert is personalised per farmer, and the database scales horizontally on RDS.</div></div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+  SLIDE 5 — ONBOARDING: 8 QUESTIONS
+═══════════════════════════════════════════════ -->
+<div class="slide" data-sec="Onboarding" data-t="Smart Onboarding — 8 Questions">
+<div class="slide-inner">
+  <div class="s-eyebrow a" style="color:var(--amber)">Chapter 04 · Onboarding</div>
+  <div class="s-h a a1">First launch — <em style="color:var(--amber)">8 smart questions</em></div>
+  <div class="s-sub a a2">When a farmer installs Flora, 8 intelligent questions take ~2 minutes and personalise every single aspect of the app before they ever see a dashboard.</div>
+  <div class="hl a a a3" style="margin-bottom:20px"><div class="hl-title" style="color:var(--amber)">💡 Zero empty-state design</div><div class="hl-body">Like Swiggy showing personalised restaurants the moment you enter your location — Flora builds a fully loaded, personalised dashboard the instant onboarding ends. A Karur cotton farmer with cows sees Karur weather, cotton disease risk, cattle health, and two primary CTAs the very first second. No blank screen. No "get started". Zero empty state.</div></div>
+  <div class="g2 a a4">
+    <div>
+      <div class="spill"><div class="spill-num" style="background:var(--emerald)">1</div><div><div class="spill-q">Which language? 🌐</div><div class="spill-a">English / தமிழ் / हिंदी — all remaining questions immediately switch. Every alert, advice text, and expert message is permanently delivered in this language.</div></div></div>
+      <div class="spill"><div class="spill-num" style="background:var(--emerald)">2</div><div><div class="spill-q">Which district? 📍</div><div class="spill-a">Searchable list of all 38 Tamil Nadu districts. This one answer drives live weather API calls, crop suitability lookups, and mandi price data for every future prediction.</div></div></div>
+      <div class="spill"><div class="spill-num" style="background:var(--amber-md)">3</div><div><div class="spill-q">What do you do on your farm?</div><div class="spill-a">Crops only / Animals only / Both. Determines the dashboard layout, which bottom nav tabs are active, and which sections are prominent.</div></div></div>
+      <div class="spill"><div class="spill-num" style="background:var(--amber-md)">4</div><div><div class="spill-q">How much total land? 🌾</div><div class="spill-a">Less than 1 / 1–3 / 3–5 / 5–10 / 10+ acres. Rough range is fine. Used immediately for fertilizer dose calculations — exact acres asked inline when a scan is submitted.</div></div></div>
+    </div>
+    <div>
+      <div class="spill"><div class="spill-num" style="background:var(--amber-md)">5</div><div><div class="spill-q">Any crop currently growing? 🌱</div><div class="spill-a">If yes (farmer picks from crop list) — dashboard immediately shows disease risk + irrigation countdown for that crop. If no — primary CTA is "Scan your soil".</div></div></div>
+      <div class="spill"><div class="spill-num" style="background:#C4579A">6</div><div><div class="spill-q">Which animals do you have? 🐾</div><div class="spill-a">Multi-select icon grid: Cow, Buffalo, Goat, Pig, Hen, Chicken, Dove, Duck, Rabbit, Dog, Sheep, Other. Pre-loads the correct vaccination schedules and ICAR feed tables for selected species automatically.</div></div></div>
+      <div class="spill"><div class="spill-num" style="background:#C4579A">7</div><div><div class="spill-q">Roughly how many animals?</div><div class="spill-a">1–5 / 5–15 / 15–30 / 30+. Calibrates scale of health monitoring and feed planning shown on the animal dashboard.</div></div></div>
+      <div class="spill"><div class="spill-num" style="background:var(--plum)">8</div><div><div class="spill-q">When to receive daily alerts? ⏰</div><div class="spill-a">5 AM / 6 AM / 7 AM / 6 PM. The Spring Boot @Scheduled job reads each farmer's saved alert_time and sends push notifications at their exact time — fully personalised scheduling.</div></div></div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+  SLIDE 6 — AFTER ONBOARDING
+═══════════════════════════════════════════════ -->
+<div class="slide" data-sec="Onboarding" data-t="After Onboarding — Instant Personalised Dashboard">
+<div class="slide-inner">
+  <div class="s-eyebrow a" style="color:var(--amber)">Chapter 04 · Onboarding</div>
+  <div class="s-h a a1">After Question 8 — <em style="color:var(--amber)">instant personalised dashboard</em></div>
+  <div class="s-sub a a2">What Flora builds for a real farmer the moment onboarding completes, and the deeper questions that are asked inline later.</div>
+  <div class="g2 a a3" style="align-items:start">
+    <div>
+      <div class="card a" style="margin-bottom:16px">
+        <div class="card-title" style="margin-bottom:10px">👨‍🌾 Example: Karur farmer answers</div>
+        <div style="display:flex;flex-direction:column;gap:5px;font-size:12.5px">
+          <div style="display:flex;gap:8px"><span style="color:var(--ink3);min-width:110px">Language:</span><strong>Tamil</strong></div>
+          <div style="display:flex;gap:8px"><span style="color:var(--ink3);min-width:110px">District:</span><strong>Karur</strong></div>
+          <div style="display:flex;gap:8px"><span style="color:var(--ink3);min-width:110px">Activity:</span><strong>Crops + Animals</strong></div>
+          <div style="display:flex;gap:8px"><span style="color:var(--ink3);min-width:110px">Land:</span><strong>2.5 acres</strong></div>
+          <div style="display:flex;gap:8px"><span style="color:var(--ink3);min-width:110px">Current crop:</span><strong>Cotton</strong></div>
+          <div style="display:flex;gap:8px"><span style="color:var(--ink3);min-width:110px">Animals:</span><strong>Cow + Buffalo (8 total)</strong></div>
+          <div style="display:flex;gap:8px"><span style="color:var(--ink3);min-width:110px">Alert time:</span><strong>5:30 AM</strong></div>
+        </div>
+      </div>
+      <div class="hl e"><div class="hl-title" style="color:var(--emerald)">📱 Dashboard Flora builds for this farmer</div><div class="hl-body">
+        ✅ Weather strip — Karur current conditions + 3-day icon<br>
+        ✅ Cotton disease risk badge (emerald / amber / red)<br>
+        ✅ Cotton irrigation countdown in days<br>
+        ✅ Cattle health summary — 8 animals, health status badges<br>
+        ✅ Upcoming vaccination reminder strip<br>
+        ✅ Two primary CTAs: "Scan soil" + "Register animals"<br>
+        ✅ All text rendered in Tamil
+      </div></div>
+    </div>
+    <div>
+      <div style="font-size:12px;font-weight:800;color:var(--ink2);text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px">Deep questions asked in-context — not upfront</div>
+      <div style="display:flex;flex-direction:column;gap:9px">
+        <div class="card" style="padding:14px 16px"><div class="card-title" style="font-size:12.5px;color:var(--emerald)">When farmer taps "Scan Soil"</div><div class="card-body">→ How many acres are you planting this season?<br>→ Which season? (auto-detected from calendar month, farmer can override Kharif/Rabi/Zaid)<br>→ Data source: Manual entry, Mock sensor, or IoT device?</div></div>
+        <div class="card" style="padding:14px 16px"><div class="card-title" style="font-size:12.5px;color:var(--amber)">When farmer taps "Add Animal"</div><div class="card-body">→ Species (pre-filtered from onboarding selection)<br>→ Name or tag number, breed (dropdown per species), gender<br>→ Date of birth or approximate age, current body weight</div></div>
+        <div class="card" style="padding:14px 16px"><div class="card-title" style="font-size:12.5px;color:var(--plum)">When farmer opens Price Tracker</div><div class="card-body">→ What is your target sell price per quintal?<br>→ How many quintals do you plan to sell?<br>Flora creates a personalised price-crossing alert when the threshold is hit.</div></div>
+        <div class="card" style="padding:14px 16px"><div class="card-title" style="font-size:12.5px;color:var(--pine)">When farmer opens Expert Chat</div><div class="card-body">→ Is this about a crop issue or animal health?<br>→ Describe in 1–2 lines<br>This pre-fills the chat so the expert has full context before typing.</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+  SLIDE 7 — CROP MODULE FLOW (full)
+═══════════════════════════════════════════════ -->
+<div class="slide" data-sec="Crop Flow" data-t="Crop Module — Every Step in the Flow">
+<div class="slide-inner">
+  <div class="s-eyebrow a" style="color:var(--emerald)">Chapter 05 · Crop Intelligence Flow</div>
+  <div class="s-h a a1">Crop module — <em style="color:var(--emerald)">every step from tap to result</em></div>
+  <div class="s-sub a a2">From the farmer opening the Soil tab to seeing 5 AI-powered predictions on screen — in under 3 seconds.</div>
+  <div class="flow a a3">
+    <div class="fstep"><div class="f-left"><div class="f-num" style="background:var(--emerald-lt);color:var(--emerald)">1</div><div class="f-line"></div></div><div class="f-body"><div class="f-title">Farmer opens Soil tab → fills readings</div><div class="f-desc">Inline context questions appear first: how many acres this season? which season (Kharif/Rabi/Zaid — auto-detected from the calendar month but farmer can override)? Then the farmer enters N, P, K, pH, and moisture % from their soil test kit. The "Use Mock Data" button auto-fills district-realistic values for quick demo or testing without a kit.</div><div class="f-tags"><span class="tag">SoilEntryScreen</span><span class="tag">MockSensorService</span><span class="tag">planned_acres stored to soil_scans</span></div></div></div>
+    <div class="fstep"><div class="f-left"><div class="f-num" style="background:var(--emerald-lt);color:var(--emerald)">2</div><div class="f-line"></div></div><div class="f-body"><div class="f-title">POST /api/scan/submit → JWT validated → soil_scan saved</div><div class="f-desc">Axios sends the payload. The JwtFilter in Spring Boot intercepts the request, validates the token signature and expiry, and extracts the farmer_id from the claims. If the token is invalid, a 401 is returned immediately. If valid, the ScanController delegates to ScanService which saves a SoilScan entity to the soil_scans table — N, P, K, pH, moisture, planned_acres, season, and data_source (MANUAL/MOCK/IOT).</div><div class="f-tags"><span class="tag">POST /api/scan/submit</span><span class="tag">JwtFilter</span><span class="tag">soil_scans table</span><span class="tag">ScanService.saveScan()</span></div></div></div>
+    <div class="fstep"><div class="f-left"><div class="f-num" style="background:var(--amber-lt);color:var(--amber)">3</div><div class="f-line"></div></div><div class="f-body"><div class="f-title">Spring Boot fetches live weather for farmer's district</div><div class="f-desc">Using the farmer's district from the farmers table, ScanService calls the OpenWeatherMap API. It retrieves current temperature (°C), humidity (%), rainfall (mm/day), and wind speed, plus the full 7-day forecast as a JSON blob. All data is saved to the weather_snapshots table with a foreign key to scan_id.</div><div class="f-tags"><span class="tag">OpenWeatherMap free tier</span><span class="tag">weather_snapshots table</span><span class="tag">forecast_json BLOB column</span></div></div></div>
+    <div class="fstep"><div class="f-left"><div class="f-num" style="background:var(--amber-lt);color:var(--amber)">4</div><div class="f-line"></div></div><div class="f-body"><div class="f-title">Query district_crop_suitability for local intelligence</div><div class="f-desc">Spring Boot queries the district_crop_suitability table for the farmer's district and gets suitability scores (0.0–10.0) for every crop, average yield per acre, and best season. These scores are passed to Flask alongside the soil and weather data so the AI model output can be re-ranked by local agricultural knowledge.</div><div class="f-tags"><span class="tag">district_crop_suitability table</span><span class="tag">38 TN districts × 22+ crops</span><span class="tag">TNAU data source</span></div></div></div>
+    <div class="fstep"><div class="f-left"><div class="f-num" style="background:var(--plum-lt);color:var(--plum)">5</div><div class="f-line"></div></div><div class="f-body"><div class="f-title">RestTemplate calls Flask POST /predict/all — 5 models run</div><div class="f-desc">Spring Boot sends one HTTP call to the Flask AI microservice with the full merged payload: soil values, weather snapshot, 7-day forecast, season, district, planned acres, and district suitability scores. Flask has all 5 models pre-loaded in memory at startup (not reloaded per request), so this call takes only ~200–400ms.</div><div class="f-tags"><span class="tag">RestTemplate</span><span class="tag">POST /predict/all</span><span class="tag">flora-ai Flask service on EC2</span><span class="tag">models pre-loaded in RAM</span></div></div></div>
+    <div class="fstep"><div class="f-left"><div class="f-num" style="background:var(--plum-lt);color:var(--plum)">6</div><div class="f-line"></div></div><div class="f-body"><div class="f-title">5 ML models produce output — location score re-ranks crops</div><div class="f-desc">Random Forest → top 3 crops with raw confidence %. Location scoring multiplies each crop's confidence by its district suitability score, so Thanjavur farmers see Rice #1 and Erode farmers see Turmeric #1 for identical soil readings. Linear Regression → fertilizer gap (ideal NPK − current NPK) converted to Urea/DAP/MOP kg per acre. Decision Tree → disease risk LOW/MEDIUM/HIGH with disease name and action. Rule+ML hybrid → irrigation: days until next irrigation and volume in mm/acre. LSTM → 21-day price forecast with best sell window.</div><div class="f-tags"><span class="tag">Random Forest (Model 1)</span><span class="tag">Regression (Model 2)</span><span class="tag">Decision Tree (Model 3)</span><span class="tag">Rule+ML (Model 4)</span><span class="tag">LSTM (Model 5)</span></div></div></div>
+    <div class="fstep"><div class="f-left"><div class="f-num" style="background:var(--emerald-lt);color:var(--emerald)">7</div><div class="f-line"></div></div><div class="f-body"><div class="f-title">Prediction saved to MySQL → translated → returned to app</div><div class="f-desc">Spring Boot saves the Prediction entity to the predictions table (all 5 model outputs + location yield score, linked to the scan_id). The advisory text is passed through i18n to translate crop names, action steps, and timing advice into the farmer's preferred language (EN/TA/HI). The complete prediction JSON is returned to the React Native app.</div><div class="f-tags"><span class="tag">predictions table</span><span class="tag">i18n EN/TA/HI</span><span class="tag">scan_id foreign key</span></div></div></div>
+    <div class="fstep"><div class="f-left"><div class="f-num" style="background:var(--emerald-lt);color:var(--emerald)">8</div></div><div class="f-body" style="padding-bottom:0"><div class="f-title">PredictionResultScreen renders all 5 outputs</div><div class="f-desc">React Native renders scrollable cards: ① Top 3 crops with confidence % + location yield score side by side. ② Fertilizer table — Urea/DAP/MOP kg/acre + application timing. ③ Disease risk badge (green/amber/red) + disease name + action steps. ④ Irrigation card — "Irrigate in N days, apply X mm/acre". ⑤ 21-day price chart with best sell window highlighted in green. All in Tamil if the farmer chose Tamil. Shareable as an image. Saved to scan history.</div><div class="f-tags"><span class="tag">Total time: ~1.5–3 seconds</span><span class="tag">Offline cached to AsyncStorage</span><span class="tag">Shareable image export</span></div></div></div>
+  </div>
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+  SLIDE 8 — ANIMAL MODULE FLOW
+═══════════════════════════════════════════════ -->
+<div class="slide" data-sec="Animal Flow" data-t="Animal Module — Every Step in the Flow">
+<div class="slide-inner">
+  <div class="s-eyebrow a" style="color:#A03488">Chapter 06 · Animal Health Flow</div>
+  <div class="s-h a a1">Animal module — <em style="color:#A03488">register to daily care to diagnosis</em></div>
+  <div class="s-sub a a2">From registering the first animal to tracking daily milk yield, running a symptoms check, and getting a vet-quality disease diagnosis.</div>
+  <div class="flow a a3">
+    <div class="fstep"><div class="f-left"><div class="f-num" style="background:#FFF0F6;color:#C4579A">1</div><div class="f-line"></div></div><div class="f-body"><div class="f-title">Farmer taps "Add Animal" → registration form</div><div class="f-desc">Species is pre-filtered from onboarding selections (if farmer said Cow + Goat, only those appear). Then: name or tag number, breed (dropdown per species — e.g. Kangayam/HF/Jersey/Gir for Cow), gender, date of birth or approximate age, current body weight in kg, and purpose — Milk / Meat / Egg / Pet / Draught.</div><div class="f-tags"><span class="tag">POST /api/animals/register</span><span class="tag">animals table</span><span class="tag">species ENUM: 11 values</span></div></div></div>
+    <div class="fstep"><div class="f-left"><div class="f-num" style="background:#FFF0F6;color:#C4579A">2</div><div class="f-line"></div></div><div class="f-body"><div class="f-title">Vaccination schedule auto-generated from species + age</div><div class="f-desc">Spring Boot seeds the vaccination_records table immediately after registration. For cattle: FMD every 6 months, HS annually, BQ annually, Anthrax annually. For poultry: Ranikhet, Marek's disease, Gumboro. Each record has a due_date. The AlertScheduler checks all vaccination_records daily — 3 days before any due_date, it creates a VACCINATION alert and sends a Firebase FCM push notification to the farmer's device.</div><div class="f-tags"><span class="tag">vaccination_records auto-seeded</span><span class="tag">species-specific schedules</span><span class="tag">3-day FCM push alert</span></div></div></div>
+    <div class="fstep"><div class="f-left"><div class="f-num" style="background:#FFF0F6;color:#C4579A">3</div><div class="f-line"></div></div><div class="f-body"><div class="f-title">Farmer logs daily milk or egg yield</div><div class="f-desc">From the Milk/Egg Tracker screen, farmer selects an animal, picks MORNING or EVENING session, and enters quantity (litres for milk, count for eggs). This takes under 10 seconds. A 30-day trend chart updates instantly. Drop detection logic: if yield drops more than 20% over 3 consecutive days compared to the prior 7-day average, Flora auto-creates a MILK_DROP alert and suggests running the symptoms checker for that animal.</div><div class="f-tags"><span class="tag">milk_records table</span><span class="tag">POST /api/animals/{id}/milk-record</span><span class="tag">MORNING / EVENING sessions</span><span class="tag">drop detection on write</span></div></div></div>
+    <div class="fstep"><div class="f-left"><div class="f-num" style="background:#FFF0F6;color:#C4579A">4</div><div class="f-line"></div></div><div class="f-body"><div class="f-title">Farmer opens Symptoms Checker → selects animal</div><div class="f-desc">The SymptomsCheckerScreen loads a grid of symptom icon tiles — filtered by species so a chicken's symptom list is different from a cow's. Symptoms like: Fever, Loss of appetite, Limping, Reduced milk/egg yield, Swelling at jaw, Nasal discharge, Rapid breathing, Coughing, Diarrhoea, Skin lesions, Lethargy. Farmer taps all that apply and hits Submit.</div><div class="f-tags"><span class="tag">SymptomsCheckerScreen</span><span class="tag">POST /api/animals/{id}/symptoms</span><span class="tag">species-filtered symptom grid</span></div></div></div>
+    <div class="fstep"><div class="f-left"><div class="f-num" style="background:#FFF0F6;color:#C4579A">5</div><div class="f-line"></div></div><div class="f-body"><div class="f-title">Flask POST /predict/animal-disease → AI returns diagnosis</div><div class="f-desc">Symptoms array and species sent to Flask. Random Forest model (trained on livestock disease dataset) returns for Cow/Buffalo/Goat/Hen. Rule-based logic handles less common species. Result: predicted disease name, confidence %, severity (MILD/MODERATE/SEVERE), recommended action steps (3–5 specific steps), and vet_visit_required boolean. Saved to animal_health_records table.</div><div class="f-tags"><span class="tag">POST /predict/animal-disease</span><span class="tag">Random Forest for 4 main species</span><span class="tag">animal_health_records saved</span></div></div></div>
+    <div class="fstep"><div class="f-left"><div class="f-num" style="background:#FFF0F6;color:#C4579A">6</div><div class="f-line"></div></div><div class="f-body"><div class="f-title">Result screen + health_status updated + chat trigger if severe</div><div class="f-desc">Result displayed: disease name, confidence %, severity badge (green/amber/red), and a numbered action plan. If vet_visit_required is true, a "Connect to Expert" button appears prominently — tapping it opens a new Expert Chat session with category=ANIMAL and the subject pre-filled with the animal's name, species, symptoms, and the predicted disease. The animals.health_status column is updated: HEALTHY → UNDER_OBSERVATION (MODERATE) or SICK (SEVERE).</div><div class="f-tags"><span class="tag">animals.health_status updated</span><span class="tag">Expert Chat pre-filled if severe</span><span class="tag">animal_health_records linked</span></div></div></div>
+    <div class="fstep"><div class="f-left"><div class="f-num" style="background:#FFF0F6;color:#C4579A">7</div></div><div class="f-body" style="padding-bottom:0"><div class="f-title">Feed Calculator delivers exact daily nutrition plan</div><div class="f-desc">From the Feed Calculator screen, farmer selects an animal and inputs current body weight and daily milk yield (for dairy animals). The ICAR Nutrient Requirements of Animals (2013) formula calculates: dry fodder in kg/day, green fodder in kg/day, concentrate mix in kg/day, and mineral supplement in grams/day. Output is breed-specific — a Jersey cow weighing 450 kg giving 18L/day has different requirements than a Kangayam cow at 380 kg giving 8L/day. Displayed as a clean daily feeding card.</div><div class="f-tags"><span class="tag">POST /api/animals/feed-calculator</span><span class="tag">ICAR deterministic formula (Model 7)</span><span class="tag">breed and yield-specific output</span></div></div></div>
+  </div>
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+  SLIDE 9 — EXPERT CHAT FLOW
+═══════════════════════════════════════════════ -->
+<div class="slide" data-sec="Chat Flow" data-t="Expert Connect — Real-Time Chat Flow">
+<div class="slide-inner">
+  <div class="s-eyebrow a" style="color:var(--plum)">Chapter 07 · Expert Connect Flow</div>
+  <div class="s-h a a1">Expert Connect — <em style="color:var(--plum)">real-time chat from open to resolved</em></div>
+  <div class="s-sub a a2">When AI predictions are not enough, a human expert responds in real time. Powered by WebSocket STOMP protocol — the same technology that powers WhatsApp and Slack.</div>
+  <div class="g2 a a3" style="align-items:start">
+    <div>
+      <div class="flow">
+        <div class="fstep"><div class="f-left"><div class="f-num" style="background:var(--plum-lt);color:var(--plum)">1</div><div class="f-line"></div></div><div class="f-body"><div class="f-title">Farmer opens Chat tab</div><div class="f-desc">Chat Home screen shows all previous conversation threads. Each card shows: category badge (CROP/ANIMAL), current status (OPEN/RESOLVED), assigned expert's name, last message preview, and an unread message count badge. New users see an empty state with a "Start your first chat" prompt.</div></div></div>
+        <div class="fstep"><div class="f-left"><div class="f-num" style="background:var(--plum-lt);color:var(--plum)">2</div><div class="f-line"></div></div><div class="f-body"><div class="f-title">Farmer describes the problem</div><div class="f-desc">Flora asks two context questions: crop issue or animal health? Then a brief 1–2 line description. This subject line is saved to chat_sessions.subject and displayed to the expert immediately. The expert sees farmer's district, current crop, and animal types before they read a single message — full context, zero back-and-forth setup.</div><div class="f-tags"><span class="tag">POST /api/chat/sessions</span><span class="tag">category: CROP or ANIMAL</span><span class="tag">subject pre-fills expert panel</span></div></div></div>
+        <div class="fstep"><div class="f-left"><div class="f-num" style="background:var(--plum-lt);color:var(--plum)">3</div><div class="f-line"></div></div><div class="f-body"><div class="f-title">WebSocket STOMP connection established</div><div class="f-desc">React Native connects to the Spring Boot WebSocket endpoint /ws/chat using the STOMP subprotocol. The app subscribes to /topic/chat/{sessionId}. From this moment, any message sent by the expert on the admin panel is pushed to the farmer's phone the instant it's typed — no polling, no manual refresh, no delay.</div><div class="f-tags"><span class="tag">WebSocket STOMP</span><span class="tag">/ws/chat handshake</span><span class="tag">/topic/chat/{sessionId}</span></div></div></div>
+        <div class="fstep"><div class="f-left"><div class="f-num" style="background:var(--plum-lt);color:var(--plum)">4</div><div class="f-line"></div></div><div class="f-body"><div class="f-title">Real-time conversation</div><div class="f-desc">WhatsApp-style chat UI: farmer messages on the right (green bubbles), expert on the left (white bubbles). Expert's name and designation shown in the conversation header. Online/offline indicator. Delivery ticks: sent (✓), delivered (✓✓), read (✓✓ blue). All messages saved to chat_messages table with is_read flag and sent_at timestamp. Unread badge on Chat tab in bottom navigation updates in real time.</div><div class="f-tags"><span class="tag">chat_messages table</span><span class="tag">sender_type: FARMER/EXPERT</span><span class="tag">is_read flag updated on open</span></div></div></div>
+        <div class="fstep"><div class="f-left"><div class="f-num" style="background:var(--plum-lt);color:var(--plum)">5</div></div><div class="f-body" style="padding-bottom:0"><div class="f-title">Session resolved → farmer rates expert</div><div class="f-desc">Expert marks session RESOLVED on the admin panel. Farmer is prompted with a star rating screen (1–5 stars, optional free-text comment). Rating saved to chat_sessions.farmer_rating. Status changes to RESOLVED. Session remains viewable in chat history forever — farmer can reference the expert's advice at any time.</div><div class="f-tags"><span class="tag">PUT /api/chat/sessions/{id}/resolve</span><span class="tag">1–5 star rating</span><span class="tag">archived in chat history</span></div></div></div>
+      </div>
+    </div>
+    <div>
+      <div class="hl p" style="margin-bottom:14px"><div class="hl-title" style="color:var(--plum)">🔌 Why WebSocket, not REST polling?</div><div class="hl-body">REST polling (calling the API every few seconds to check for new messages) wastes bandwidth, creates visible delay, and drains phone battery. WebSocket keeps a persistent two-way connection open — the server pushes messages to the farmer's phone instantly the moment the expert sends them. This is how WhatsApp and Slack work. Building this in a portfolio project signals backend depth most candidates don't have.</div></div>
+      <div class="hl n" style="margin-bottom:14px"><div class="hl-title" style="color:var(--pine)">🔗 Seamless integration with Animal Module</div><div class="hl-body">When the Symptoms Checker returns vet_visit_required = true, a "Connect to Expert" button appears. Tapping it automatically opens a new chat session with category=ANIMAL and subject pre-filled: "Animal: Lakshmi (HF Cow). Symptoms: Fever, reduced milk, limping. Predicted disease: FMD (78% confidence)." The expert has everything before the farmer types a word.</div></div>
+      <div class="card p"><div class="card-title">Chat tables</div><div style="margin-top:10px">
+        <div class="m-row"><span class="m-key">chat_sessions</span><span class="m-val">farmer_id, category, subject, status (OPEN/IN_PROGRESS/RESOLVED), assigned_expert, farmer_rating, timestamps</span></div>
+        <div class="m-row"><span class="m-key">chat_messages</span><span class="m-val">session_id, sender_type (FARMER/EXPERT), sender_name, content, is_read, sent_at</span></div>
+      </div></div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+  SLIDE 10 — DAILY ALERT SYSTEM
+═══════════════════════════════════════════════ -->
+<div class="slide" data-sec="Alerts Flow" data-t="Daily Alert System — Proactive Intelligence">
+<div class="slide-inner">
+  <div class="s-eyebrow a" style="color:var(--amber)">Chapter 08 · Proactive Intelligence</div>
+  <div class="s-h a a1">Daily alerts — <em style="color:var(--amber)">Flora speaks to you first</em></div>
+  <div class="s-sub a a2">Most apps wait for you to open them. Flora's scheduler proactively checks every farmer's data at their chosen time and alerts only when action is needed.</div>
+  <div class="g2 a a3" style="align-items:start">
+    <div>
+      <div class="flow">
+        <div class="fstep"><div class="f-left"><div class="f-num" style="background:var(--amber-lt);color:var(--amber)">1</div><div class="f-line"></div></div><div class="f-body"><div class="f-title">@Scheduled job wakes at each farmer's alert_time</div><div class="f-desc">Spring Boot's AlertScheduler runs continuously. It reads all active farmers from the database and checks each one's alert_time column. A 5 AM farmer gets their alerts at exactly 5 AM. A 6 PM farmer gets them at 6 PM. This is fully personalised scheduling — not a generic broadcast to everyone at the same time.</div><div class="f-tags"><span class="tag">Spring @Scheduled</span><span class="tag">farmers.alert_time column</span><span class="tag">per-farmer execution</span></div></div></div>
+        <div class="fstep"><div class="f-left"><div class="f-num" style="background:var(--amber-lt);color:var(--amber)">2</div><div class="f-line"></div></div><div class="f-body"><div class="f-title">Fresh weather fetched for farmer's district</div><div class="f-desc">For each farmer with a recent soil scan, the scheduler fetches today's updated weather from OpenWeatherMap for their district. This fresh weather is compared against the weather from when their last prediction was run — detecting any meaningful changes in humidity, rainfall, or temperature.</div></div></div>
+        <div class="fstep"><div class="f-left"><div class="f-num" style="background:var(--amber-lt);color:var(--amber)">3</div><div class="f-line"></div></div><div class="f-body"><div class="f-title">6 alert checks run in parallel for each farmer</div><div class="f-desc">The scheduler evaluates all six alert types simultaneously and only creates an alert record if the condition is genuinely triggered — no noise, no false alarms.</div><div style="display:flex;flex-direction:column;gap:7px;margin-top:10px">
+          <div style="display:flex;gap:8px;align-items:flex-start"><span class="badge b-r" style="flex-shrink:0">DISEASE</span><span style="font-size:12px;color:var(--ink2)">Did the disease risk level worsen since the last prediction? Humidity crossed the threshold for the current crop?</span></div>
+          <div style="display:flex;gap:8px;align-items:flex-start"><span class="badge b-i" style="flex-shrink:0">IRRIGATION</span><span style="font-size:12px;color:var(--ink2)">Is irrigation due today based on the prediction's countdown and today's moisture/rainfall data?</span></div>
+          <div style="display:flex;gap:8px;align-items:flex-start"><span class="badge b-e" style="flex-shrink:0">PRICE</span><span style="font-size:12px;color:var(--ink2)">Has the mandi price crossed the farmer's target threshold? Is the LSTM-predicted best sell window active today?</span></div>
+          <div style="display:flex;gap:8px;align-items:flex-start"><span class="badge b-p" style="flex-shrink:0">VACCINATION</span><span style="font-size:12px;color:var(--ink2)">Is any registered animal's vaccination due_date within the next 3 days?</span></div>
+          <div style="display:flex;gap:8px;align-items:flex-start"><span class="badge" style="background:#FFF0F6;color:#C4579A;flex-shrink:0">MILK DROP</span><span style="font-size:12px;color:var(--ink2)">Has any animal's yield dropped 20%+ over 3 consecutive days compared to their prior 7-day average?</span></div>
+          <div style="display:flex;gap:8px;align-items:flex-start"><span class="badge b-n" style="flex-shrink:0">WEATHER</span><span style="font-size:12px;color:var(--ink2)">Is extreme weather (heavy rain, drought, frost) forecast in the next 48 hours that affects the current crop?</span></div>
+        </div></div></div>
+        <div class="fstep"><div class="f-left"><div class="f-num" style="background:var(--amber-lt);color:var(--amber)">4</div></div><div class="f-body" style="padding-bottom:0"><div class="f-title">Alert record created → FCM push sent → app badge updates</div><div class="f-desc">For each triggered check, one alert row is created in the alerts table with type, severity (LOW/MEDIUM/HIGH), message text (in the farmer's language), is_read=false, and is_pushed=false. Firebase Admin SDK sends a targeted FCM push to the farmer's device_token. The Alerts tab badge in the app increments live.</div><div class="f-tags"><span class="tag">alerts table</span><span class="tag">Firebase Admin SDK</span><span class="tag">device_tokens table</span><span class="tag">FCM push</span></div></div></div>
+      </div>
+    </div>
+    <div>
+      <div style="font-size:12px;font-weight:800;color:var(--ink2);text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px">Real notification examples</div>
+      <div class="alert-card"><span class="alert-sev" style="background:var(--rust-lt);color:var(--rust)">🔴 HIGH</span><div><div class="alert-title">Disease Alert — Cotton · Karur</div><div class="alert-body">"Humidity forecast 91% over next 2 days — high blight risk for your cotton. Apply copper fungicide today before rain. Do not wait."</div></div></div>
+      <div class="alert-card"><span class="alert-sev" style="background:var(--amber-lt);color:var(--amber)">🟡 MEDIUM</span><div><div class="alert-title">Irrigation Due — Rice</div><div class="alert-body">"Your rice field soil moisture is estimated at 22%. Irrigate tomorrow morning. Apply 35 mm of water per acre."</div></div></div>
+      <div class="alert-card"><span class="alert-sev" style="background:var(--emerald-lt);color:var(--emerald)">🟢 LOW</span><div><div class="alert-title">Price Opportunity — Turmeric · Erode</div><div class="alert-body">"Predicted price peak in 8–10 days. Current: ₹6,200/quintal. Forecast peak: ₹7,100/quintal. Plan your sale."</div></div></div>
+      <div class="alert-card"><span class="alert-sev" style="background:#FFF0F6;color:#C4579A">💉 REMINDER</span><div><div class="alert-title">Vaccination Due — Lakshmi (HF Cow)</div><div class="alert-body">"Lakshmi's FMD vaccine is due in 3 days (Thursday). Contact Karur veterinary dispensary or a registered vet."</div></div></div>
+      <div class="alert-card"><span class="alert-sev" style="background:#FFF0F6;color:#C4579A">🥛 HEALTH</span><div><div class="alert-title">Milk Drop Detected — Lakshmi</div><div class="alert-body">"Milk yield dropped 26% over 3 days (8L → 6L → 5L). Open Symptoms Checker for Lakshmi to diagnose the cause."</div></div></div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+  SLIDE 11 — 7 ML MODELS
+═══════════════════════════════════════════════ -->
+<div class="slide" data-sec="ML Models" data-t="7 Machine Learning Models — Full Detail">
+<div class="slide-inner">
+  <div class="s-eyebrow a" style="color:var(--plum)">Chapter 09 · AI Intelligence</div>
+  <div class="s-h a a1">7 Machine Learning Models — <em style="color:var(--plum)">complete specification</em></div>
+  <div class="s-sub a a2">Five for crop intelligence. Two for animal health. Four different algorithm families. Built progressively — simpler models first, LSTM last.</div>
+  <div class="g3 a a3" style="margin-bottom:14px">
+    <div class="mcard" style="border-color:rgba(27,107,74,.25)">
+      <div class="m-num" style="color:var(--emerald)">Model 1 · Crop</div>
+      <div class="m-name">Crop Recommendation</div>
+      <div class="m-algo" style="color:var(--emerald)">Random Forest Classifier</div>
+      <div class="m-row"><span class="m-key">Dataset</span><span class="m-val">Kaggle — 2,200 labelled rows, 22 crop types</span></div>
+      <div class="m-row"><span class="m-key">Inputs</span><span class="m-val">N, P, K, pH, temperature, humidity, rainfall</span></div>
+      <div class="m-row"><span class="m-key">Location</span><span class="m-val">Suitability score re-ranks top 3 by district</span></div>
+      <div class="m-row"><span class="m-key">Output</span><span class="m-val">Top 3 crops + confidence % + local yield score</span></div>
+      <div class="m-row"><span class="m-key">Accuracy</span><span class="m-val">~97% on holdout test set</span></div>
+      <div class="m-row"><span class="m-key">Level</span><span class="m-val" style="color:var(--emerald);font-weight:700">Beginner — build this first</span></div>
+    </div>
+    <div class="mcard" style="border-color:rgba(168,92,0,.25)">
+      <div class="m-num" style="color:var(--amber)">Model 2 · Crop</div>
+      <div class="m-name">Fertilizer Calculator</div>
+      <div class="m-algo" style="color:var(--amber)">Linear / Polynomial Regression</div>
+      <div class="m-row"><span class="m-key">Logic</span><span class="m-val">Gap = ideal NPK for crop − current NPK → kg/acre</span></div>
+      <div class="m-row"><span class="m-key">Inputs</span><span class="m-val">Current N, P, K + recommended crop + planned_acres</span></div>
+      <div class="m-row"><span class="m-key">Output</span><span class="m-val">Urea / DAP / MOP in kg per acre + timing advice</span></div>
+      <div class="m-row"><span class="m-key">Reference</span><span class="m-val">ICAR + FAO crop nutrient requirement tables</span></div>
+      <div class="m-row"><span class="m-key">Level</span><span class="m-val" style="color:var(--emerald);font-weight:700">Beginner</span></div>
+    </div>
+    <div class="mcard" style="border-color:rgba(160,52,40,.25)">
+      <div class="m-num" style="color:var(--rust)">Model 3 · Crop</div>
+      <div class="m-name">Disease Risk Alert</div>
+      <div class="m-algo" style="color:var(--rust)">Decision Tree Classifier</div>
+      <div class="m-row"><span class="m-key">Inputs</span><span class="m-val">Temperature, humidity, rainfall, wind, crop type</span></div>
+      <div class="m-row"><span class="m-key">Output</span><span class="m-val">LOW / MEDIUM / HIGH + disease name + action plan</span></div>
+      <div class="m-row"><span class="m-key">Phase 1</span><span class="m-val">Rule-based: humidity &gt;80% + temp 25–30°C = HIGH</span></div>
+      <div class="m-row"><span class="m-key">Phase 2</span><span class="m-val">Decision Tree trained on weather–disease dataset</span></div>
+      <div class="m-row"><span class="m-key">Level</span><span class="m-val" style="color:var(--amber);font-weight:700">Beginner → Intermediate</span></div>
+    </div>
+  </div>
+  <div class="g3 a a4">
+    <div class="mcard" style="border-color:rgba(56,71,163,.25)">
+      <div class="m-num" style="color:var(--indigo)">Model 4 · Crop</div>
+      <div class="m-name">Irrigation Advisor</div>
+      <div class="m-algo" style="color:var(--indigo)">Rule-based + Regression Hybrid</div>
+      <div class="m-row"><span class="m-key">Inputs</span><span class="m-val">Moisture %, crop type, growth stage, 7-day forecast</span></div>
+      <div class="m-row"><span class="m-key">Output</span><span class="m-val">Irrigate in N days + volume mm/acre</span></div>
+      <div class="m-row"><span class="m-key">Reference</span><span class="m-val">FAO-56 crop water requirement tables</span></div>
+      <div class="m-row"><span class="m-key">Level</span><span class="m-val" style="color:var(--amber);font-weight:700">Intermediate</span></div>
+    </div>
+    <div class="mcard" style="border-color:rgba(98,47,138,.25)">
+      <div class="m-num" style="color:var(--plum)">Model 5 · Crop</div>
+      <div class="m-name">Market Price Predictor</div>
+      <div class="m-algo" style="color:var(--plum)">LSTM Neural Network</div>
+      <div class="m-row"><span class="m-key">Dataset</span><span class="m-val">Agmarknet / data.gov.in — district mandi prices</span></div>
+      <div class="m-row"><span class="m-key">Inputs</span><span class="m-val">Last 60 days prices + crop + month + season index</span></div>
+      <div class="m-row"><span class="m-key">Output</span><span class="m-val">21-day price forecast + best sell window highlighted</span></div>
+      <div class="m-row"><span class="m-key">Fallback</span><span class="m-val">Moving average + seasonal index if data sparse</span></div>
+      <div class="m-row"><span class="m-key">Level</span><span class="m-val" style="color:var(--rust);font-weight:700">Advanced — portfolio showpiece</span></div>
+    </div>
+    <div>
+      <div class="mcard" style="border-color:rgba(160,52,160,.25);margin-bottom:12px">
+        <div class="m-num" style="color:#A03488">Model 6 · Animal</div>
+        <div class="m-name">Disease Predictor</div>
+        <div class="m-algo" style="color:#A03488">Random Forest (ML) + Rule-based</div>
+        <div class="m-row"><span class="m-key">Inputs</span><span class="m-val">Species + selected symptom array</span></div>
+        <div class="m-row"><span class="m-key">Output</span><span class="m-val">Disease + confidence + severity + action + vet flag</span></div>
+        <div class="m-row"><span class="m-key">Coverage</span><span class="m-val">ML: Cow, Buffalo, Goat, Hen. Rule: other species</span></div>
+      </div>
+      <div class="mcard" style="border-color:rgba(160,52,160,.25)">
+        <div class="m-num" style="color:#A03488">Model 7 · Animal</div>
+        <div class="m-name">Feed Calculator</div>
+        <div class="m-algo" style="color:#A03488">ICAR Deterministic Formula</div>
+        <div class="m-row"><span class="m-key">Inputs</span><span class="m-val">Species, breed, body weight, daily yield</span></div>
+        <div class="m-row"><span class="m-key">Output</span><span class="m-val">Dry fodder / green fodder / concentrate / minerals per day in exact kg + grams</span></div>
+        <div class="m-row"><span class="m-key">Level</span><span class="m-val" style="color:var(--emerald);font-weight:700">Beginner — formula implementation</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+  SLIDE 12 — DATABASE — 13 TABLES
+═══════════════════════════════════════════════ -->
+<div class="slide" data-sec="Database" data-t="Database Design — All 13 Tables">
+<div class="slide-inner">
+  <div class="s-eyebrow a" style="color:var(--pine)">Chapter 10 · Data Layer</div>
+  <div class="s-h a a1"><em style="color:var(--pine)">flora_db</em> — 13 tables that store everything</div>
+  <div class="s-sub a a2">Every entity, relationship, and field designed before writing a line of code. This is the schema contract.</div>
+  <div class="g2 a a3" style="align-items:start">
+    <div>
+      <div style="font-size:11px;font-weight:800;color:var(--ink2);text-transform:uppercase;letter-spacing:.09em;margin-bottom:9px">Original 8 Core Tables</div>
+      <table class="tbl">
+        <thead><tr><th>Table</th><th>Stores</th></tr></thead>
+        <tbody>
+          <tr><td>farmers</td><td>Profile + all 8 onboarding answers. Language, district, activity type, land, current crop, animal selections, alert_time.</td></tr>
+          <tr><td>soil_scans</td><td>Every NPK/pH/moisture reading + planned_acres + season + data_source (MANUAL/MOCK/IOT) + notes.</td></tr>
+          <tr><td>weather_snapshots</td><td>Weather at scan time — temp, humidity, rainfall, wind + full 7-day forecast JSON blob. Linked to scan_id.</td></tr>
+          <tr><td>predictions</td><td>All 5 ML model outputs + location yield score per crop, fertilizer JSON, disease fields, irrigation schedule, price forecast. Linked 1:1 to soil_scan.</td></tr>
+          <tr><td>alerts</td><td>All 6 types (DISEASE/IRRIGATION/PRICE/WEATHER/VACCINATION/MILK_DROP) with severity + is_read + is_pushed + animal_id (nullable).</td></tr>
+          <tr><td>market_prices</td><td>Historical mandi prices by crop + district + date. Populated daily. Feeds the LSTM price model.</td></tr>
+          <tr><td>device_tokens</td><td>FCM push token per device per farmer. Platform: ANDROID or IOS.</td></tr>
+          <tr><td>feedback</td><td>Post-harvest star ratings — crop prediction, fertilizer, price, overall (1–5 each) + free-text comments.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div>
+      <div style="font-size:11px;font-weight:800;color:var(--pine);text-transform:uppercase;letter-spacing:.09em;margin-bottom:9px">5 New Tables</div>
+      <table class="tbl" style="margin-bottom:13px">
+        <thead><tr><th>Table</th><th>Stores</th></tr></thead>
+        <tbody>
+          <tr><td>district_crop_suitability</td><td>38 TN districts × crops: suitability_score (0–10), avg_yield_per_acre, best_season, notes, data_source. Source: TNAU.</td></tr>
+          <tr><td>chat_sessions</td><td>farmer_id, category (CROP/ANIMAL), subject, status (OPEN/IN_PROGRESS/RESOLVED), assigned_expert, farmer_rating.</td></tr>
+          <tr><td>chat_messages</td><td>session_id, sender_type (FARMER/EXPERT), sender_name, content, is_read, sent_at.</td></tr>
+          <tr><td>animals</td><td>Species ENUM (11 values), breed, name/tag, gender, DOB, weight_kg, purchase_date, purpose, health_status (HEALTHY/UNDER_OBSERVATION/SICK).</td></tr>
+          <tr><td>animal_health_records</td><td>symptoms_json, predicted_disease, confidence_percent, severity, recommended_action, vet_visit_required, checked_at.</td></tr>
+        </tbody>
+      </table>
+      <div class="g2" style="gap:10px">
+        <div class="card n" style="padding:14px 16px"><div class="card-title" style="font-size:12.5px">milk_records</div><div class="card-body">animal_id, record_type (MILK/EGG), quantity, session (MORNING/EVENING/FULL_DAY), recorded_date, notes</div></div>
+        <div class="card n" style="padding:14px 16px"><div class="card-title" style="font-size:12.5px">vaccination_records</div><div class="card-body">animal_id, vaccine_name, due_date, administered_date, administered_by, next_due_date, status (UPCOMING/COMPLETED/OVERDUE)</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+  SLIDE 13 — FARMERS TABLE DEEP DIVE
+═══════════════════════════════════════════════ -->
+<div class="slide" data-sec="Database" data-t="The farmers Table — Every Field Explained">
+<div class="slide-inner">
+  <div class="s-eyebrow a" style="color:var(--pine)">Chapter 10 · Data Layer</div>
+  <div class="s-h a a1">The <em style="color:var(--pine)">farmers</em> table — every field explained</div>
+  <div class="s-sub a a2">The farmers table is the foundation of personalisation. It stores profile data and all 8 onboarding answers that drive every other feature.</div>
+  <div class="g2 a a3" style="align-items:start">
+    <div>
+      <table class="tbl">
+        <thead><tr><th>Field</th><th>Type</th><th>Purpose</th></tr></thead>
+        <tbody>
+          <tr><td>id</td><td>BIGINT PK</td><td>Auto-increment primary key</td></tr>
+          <tr><td>full_name</td><td>VARCHAR(100)</td><td>Farmer's display name</td></tr>
+          <tr><td>phone</td><td>VARCHAR(15) UNIQUE</td><td>Primary login ID — Indian 10-digit mobile</td></tr>
+          <tr><td>email</td><td>VARCHAR(100) nullable</td><td>Optional — used for email notifications</td></tr>
+          <tr><td>password_hash</td><td>VARCHAR(255)</td><td>BCrypt hashed — never stored as plain text</td></tr>
+          <tr><td>village</td><td>VARCHAR(100)</td><td>Village name within the district</td></tr>
+          <tr><td>district</td><td>VARCHAR(100)</td><td>From Q2 — drives weather + market + suitability</td></tr>
+          <tr><td>state</td><td>VARCHAR(100)</td><td>Default: Tamil Nadu. Expandable to other states.</td></tr>
+          <tr><td>land_acres</td><td>DECIMAL(6,2)</td><td>From Q4 — used in fertilizer dose calculation</td></tr>
+          <tr><td>primary_activity</td><td>ENUM: CROP/ANIMAL/BOTH</td><td>From Q3 — controls dashboard layout</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div>
+      <table class="tbl" style="margin-bottom:13px">
+        <thead><tr><th>Field</th><th>Type</th><th>Purpose</th></tr></thead>
+        <tbody>
+          <tr><td>current_crop</td><td>VARCHAR(50) nullable</td><td>From Q5 — crop growing now. Drives home dashboard cards.</td></tr>
+          <tr><td>animal_types_json</td><td>JSON nullable</td><td>From Q6 — array of selected species. Pre-loads schedules.</td></tr>
+          <tr><td>animal_count_range</td><td>VARCHAR(20)</td><td>From Q7 — "1-5", "5-15", "15-30", "30+"</td></tr>
+          <tr><td>alert_time</td><td>TIME default 06:00</td><td>From Q8 — @Scheduled reads this for personalised push timing</td></tr>
+          <tr><td>preferred_language</td><td>ENUM: EN/TA/HI</td><td>From Q1 — all text, alerts, and advice in this language</td></tr>
+          <tr><td>latitude</td><td>DECIMAL(9,6) nullable</td><td>GPS for hyper-local weather (optional)</td></tr>
+          <tr><td>longitude</td><td>DECIMAL(9,6) nullable</td><td>GPS longitude</td></tr>
+          <tr><td>onboarding_complete</td><td>BOOLEAN default false</td><td>Set to true after all 8 steps. App checks this on login.</td></tr>
+          <tr><td>is_active</td><td>BOOLEAN default true</td><td>Soft delete — data preserved, farmer can reactivate</td></tr>
+          <tr><td>created_at / updated_at</td><td>DATETIME</td><td>Registration timestamp + last profile update</td></tr>
+        </tbody>
+      </table>
+      <div class="hl e"><div class="hl-title" style="color:var(--emerald)">🔒 Security: BCrypt password hashing</div><div class="hl-body">The password is passed through Spring Security's <code style="background:var(--paper2);padding:1px 5px;border-radius:3px;font-size:11px">BCryptPasswordEncoder</code> before any database write. BCrypt applies a random salt and 10 rounds of hashing. The original password cannot be recovered. Even if the database is fully compromised, all passwords remain protected.</div></div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+  SLIDE 14 — SPRING BOOT APIs (Auth + Scan + Animal)
+═══════════════════════════════════════════════ -->
+<div class="slide" data-sec="APIs" data-t="Spring Boot API — Auth, Scans, Animals">
+<div class="slide-inner">
+  <div class="s-eyebrow a" style="color:var(--indigo)">Chapter 11 · Backend API</div>
+  <div class="s-h a a1">Spring Boot API — <em style="color:var(--indigo)">auth, scans, and animals</em></div>
+  <div class="s-sub a a2">All REST endpoints for authentication, profile management, soil scans, and the complete animal health system. Base URL: /api</div>
+  <div class="g2 a a3" style="align-items:start">
+    <div>
+      <div style="font-size:11px;font-weight:800;color:var(--ink2);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px">Auth + Profile + Onboarding</div>
+      <table class="tbl" style="margin-bottom:14px">
+        <thead><tr><th>Method</th><th>Endpoint</th><th>Does what</th></tr></thead>
+        <tbody>
+          <tr><td style="color:var(--emerald)">POST</td><td>/api/auth/register</td><td>Register farmer + save onboarding → return JWT</td></tr>
+          <tr><td style="color:var(--emerald)">POST</td><td>/api/auth/login</td><td>Login with phone + password → return JWT</td></tr>
+          <tr><td style="color:var(--indigo)">GET</td><td>/api/farmer/profile</td><td>Get own profile data</td></tr>
+          <tr><td style="color:var(--amber)">PUT</td><td>/api/farmer/profile</td><td>Update profile, language, or alert preferences</td></tr>
+          <tr><td style="color:var(--indigo)">GET</td><td>/api/farmer/dashboard</td><td>Full personalised dashboard payload</td></tr>
+          <tr><td style="color:var(--emerald)">POST</td><td>/api/onboarding/save</td><td>Save individual onboarding step answers</td></tr>
+          <tr><td style="color:var(--emerald)">POST</td><td>/api/onboarding/complete</td><td>Mark onboarding done → triggers dashboard build</td></tr>
+        </tbody>
+      </table>
+      <div style="font-size:11px;font-weight:800;color:var(--ink2);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px">Scans + Predictions</div>
+      <table class="tbl">
+        <thead><tr><th>Method</th><th>Endpoint</th><th>Does what</th></tr></thead>
+        <tbody>
+          <tr><td style="color:var(--emerald)">POST</td><td>/api/scan/submit</td><td>Soil data → weather → location → 5 ML models → result</td></tr>
+          <tr><td style="color:var(--indigo)">GET</td><td>/api/scan/latest</td><td>Most recent scan + full prediction for dashboard</td></tr>
+          <tr><td style="color:var(--indigo)">GET</td><td>/api/scan/history</td><td>All past scans paginated for scan history screen</td></tr>
+          <tr><td style="color:var(--indigo)">GET</td><td>/api/scan/{id}</td><td>Full detail of one specific scan + prediction</td></tr>
+          <tr><td style="color:var(--indigo)">GET</td><td>/api/sensor/mock</td><td>District-realistic mock NPK values for demo/testing</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div>
+      <div style="font-size:11px;font-weight:800;color:var(--ink2);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px">Animals — 11 Endpoints</div>
+      <table class="tbl">
+        <thead><tr><th>Method</th><th>Endpoint</th><th>Does what</th></tr></thead>
+        <tbody>
+          <tr><td style="color:var(--emerald)">POST</td><td>/api/animals/register</td><td>Register animal + auto-generate vaccination schedule</td></tr>
+          <tr><td style="color:var(--indigo)">GET</td><td>/api/animals</td><td>All animals for this farmer with health status</td></tr>
+          <tr><td style="color:var(--indigo)">GET</td><td>/api/animals/{id}</td><td>Full animal profile — breeds, weight, history</td></tr>
+          <tr><td style="color:var(--amber)">PUT</td><td>/api/animals/{id}</td><td>Update animal weight, breed, or purpose</td></tr>
+          <tr><td style="color:var(--emerald)">POST</td><td>/api/animals/{id}/symptoms</td><td>Submit symptom array → AI disease diagnosis result</td></tr>
+          <tr><td style="color:var(--indigo)">GET</td><td>/api/animals/{id}/health-history</td><td>All past symptom checks and diagnoses</td></tr>
+          <tr><td style="color:var(--emerald)">POST</td><td>/api/animals/{id}/milk-record</td><td>Log one milk/egg yield session (morning or evening)</td></tr>
+          <tr><td style="color:var(--indigo)">GET</td><td>/api/animals/{id}/milk-history</td><td>30-day yield data for the trend chart</td></tr>
+          <tr><td style="color:var(--indigo)">GET</td><td>/api/animals/{id}/vaccinations</td><td>Full vaccination schedule + history with status</td></tr>
+          <tr><td style="color:var(--amber)">PUT</td><td>/api/animals/{id}/vaccinations/{v}</td><td>Mark a vaccination as administered + set next_due_date</td></tr>
+          <tr><td style="color:var(--emerald)">POST</td><td>/api/animals/feed-calculator</td><td>Weight + yield → exact daily feed plan per ICAR</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+  SLIDE 15 — SPRING BOOT APIs (Chat + Alerts + Market)
+═══════════════════════════════════════════════ -->
+<div class="slide" data-sec="APIs" data-t="Spring Boot API — Chat, Alerts, Market, WebSocket">
+<div class="slide-inner">
+  <div class="s-eyebrow a" style="color:var(--indigo)">Chapter 11 · Backend API</div>
+  <div class="s-h a a1">Spring Boot API — <em style="color:var(--indigo)">chat, alerts, market, and WebSocket</em></div>
+  <div class="s-sub a a2">The remaining endpoints covering expert chat, notification management, market price data, and the WebSocket real-time layer.</div>
+  <div class="g2 a a3" style="align-items:start">
+    <div>
+      <div style="font-size:11px;font-weight:800;color:var(--ink2);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px">Expert Chat — REST</div>
+      <table class="tbl" style="margin-bottom:14px">
+        <thead><tr><th>Method</th><th>Endpoint</th><th>Does what</th></tr></thead>
+        <tbody>
+          <tr><td style="color:var(--emerald)">POST</td><td>/api/chat/sessions</td><td>Open a new expert chat session with category + subject</td></tr>
+          <tr><td style="color:var(--indigo)">GET</td><td>/api/chat/sessions</td><td>All chat sessions for this farmer (thread list)</td></tr>
+          <tr><td style="color:var(--indigo)">GET</td><td>/api/chat/sessions/{id}/messages</td><td>Full message history for one session</td></tr>
+          <tr><td style="color:var(--amber)">PUT</td><td>/api/chat/sessions/{id}/resolve</td><td>Mark session RESOLVED + save farmer rating</td></tr>
+        </tbody>
+      </table>
+      <div style="font-size:11px;font-weight:800;color:var(--ink2);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px">Alerts + Notifications</div>
+      <table class="tbl" style="margin-bottom:14px">
+        <thead><tr><th>Method</th><th>Endpoint</th><th>Does what</th></tr></thead>
+        <tbody>
+          <tr><td style="color:var(--indigo)">GET</td><td>/api/alerts</td><td>All alerts for farmer, filterable by type and read status</td></tr>
+          <tr><td style="color:var(--amber)">PUT</td><td>/api/alerts/{id}/read</td><td>Mark one alert as read — updates is_read flag</td></tr>
+          <tr><td style="color:var(--emerald)">POST</td><td>/api/alerts/register-token</td><td>Register device FCM token for push notifications</td></tr>
+        </tbody>
+      </table>
+      <div style="font-size:11px;font-weight:800;color:var(--ink2);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px">Market + Feedback</div>
+      <table class="tbl">
+        <thead><tr><th>Method</th><th>Endpoint</th><th>Does what</th></tr></thead>
+        <tbody>
+          <tr><td style="color:var(--indigo)">GET</td><td>/api/market/prices/{crop}</td><td>Historical prices + 21-day LSTM forecast for crop</td></tr>
+          <tr><td style="color:var(--emerald)">POST</td><td>/api/feedback/submit</td><td>Post-harvest star ratings for predictions</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div>
+      <div style="font-size:11px;font-weight:800;color:var(--plum);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px">WebSocket — Real-time Layer</div>
+      <table class="tbl" style="margin-bottom:16px">
+        <thead><tr><th>Type</th><th>Endpoint</th><th>Does what</th></tr></thead>
+        <tbody>
+          <tr><td style="color:var(--plum)">WS CONNECT</td><td>/ws/chat</td><td>Establish STOMP WebSocket connection with JWT auth</td></tr>
+          <tr><td style="color:var(--plum)">SUBSCRIBE</td><td>/topic/chat/{sessionId}</td><td>Subscribe to receive all messages for one session</td></tr>
+          <tr><td style="color:var(--plum)">SEND</td><td>/app/chat.send</td><td>Farmer sends a message — broadcast to both parties</td></tr>
+        </tbody>
+      </table>
+      <div style="font-size:11px;font-weight:800;color:var(--amber);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px">Python Flask AI Service — /</div>
+      <table class="tbl" style="margin-bottom:16px">
+        <thead><tr><th>Method</th><th>Endpoint</th><th>Does what</th></tr></thead>
+        <tbody>
+          <tr><td style="color:var(--emerald)">POST</td><td>/predict/all</td><td>Runs all 5 crop models at once — unified JSON response</td></tr>
+          <tr><td style="color:var(--emerald)">POST</td><td>/predict/crop</td><td>Crop recommendation only (Random Forest)</td></tr>
+          <tr><td style="color:var(--emerald)">POST</td><td>/predict/fertilizer</td><td>Fertilizer dosage only (Regression)</td></tr>
+          <tr><td style="color:var(--emerald)">POST</td><td>/predict/disease-risk</td><td>Crop disease risk only (Decision Tree)</td></tr>
+          <tr><td style="color:var(--emerald)">POST</td><td>/predict/irrigation</td><td>Irrigation schedule only (Rule+ML)</td></tr>
+          <tr><td style="color:var(--emerald)">POST</td><td>/predict/price</td><td>21-day market price forecast (LSTM)</td></tr>
+          <tr><td style="color:var(--emerald)">POST</td><td>/predict/animal-disease</td><td>Symptoms → disease + severity + action</td></tr>
+          <tr><td style="color:var(--indigo)">GET</td><td>/health</td><td>Service health check — Spring Boot calls this on startup</td></tr>
+        </tbody>
+      </table>
+      <div class="hl i"><div class="hl-title" style="color:var(--indigo)">🏗️ Why Flask is a separate microservice</div><div class="hl-body">Python's ML ecosystem (scikit-learn, TensorFlow, pandas) is far better than Java's. Keeping AI in a separate Flask process means Spring Boot stays lean, ML models are retrained and redeployed independently, and the AI layer scales separately if needed. This is genuine production architecture.</div></div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+  SLIDE 16 — 17 APP SCREENS
+═══════════════════════════════════════════════ -->
+<div class="slide" data-sec="Screens" data-t="17 App Screens — Every Screen Defined">
+<div class="slide-inner">
+  <div class="s-eyebrow a" style="color:var(--emerald)">Chapter 12 · Mobile App</div>
+  <div class="s-h a a1">17 app screens — <em style="color:var(--emerald)">every screen defined</em></div>
+  <div class="s-sub a a2">Bottom navigation: Home · Soil · Animals · Chat · Profile. Every screen has one primary action. Swiggy-style card-based design with colour-coded urgency.</div>
+  <div class="g3 a a3">
+    <div>
+      <div style="font-size:10.5px;font-weight:800;color:var(--ink3);text-transform:uppercase;letter-spacing:.09em;margin-bottom:8px">Auth — 3 screens</div>
+      <div class="scard"><div class="sc-num">Screen 1</div><div class="sc-name">Onboarding Wizard</div><div class="sc-desc">8 full-screen steps. Progress bar top. Large tappable option tiles. Flora logo between steps. Back/Next navigation. ~2 minutes total.</div><div style="margin-top:6px;display:flex;gap:4px;flex-wrap:wrap"><span class="tag">8 steps</span><span class="tag">Progress bar</span><span class="tag">Option tiles</span></div></div>
+      <div class="scard"><div class="sc-num">Screen 2</div><div class="sc-name">Register</div><div class="sc-desc">Name, phone, password, village. District and language pre-filled from onboarding. One-tap completion.</div></div>
+      <div class="scard"><div class="sc-num">Screen 3</div><div class="sc-name">Login</div><div class="sc-desc">Phone + password. JWT stored in AsyncStorage on success. Remember me toggle. Register link for new users.</div></div>
+      <div style="font-size:10.5px;font-weight:800;color:var(--emerald);text-transform:uppercase;letter-spacing:.09em;margin:12px 0 8px">Crop Module — 5 screens</div>
+      <div class="scard"><div class="sc-num">Screen 4</div><div class="sc-name">Home Dashboard</div><div class="sc-desc">Personalised to onboarding answers. Weather strip top. Crop card with disease badge. Irrigation timer. Cattle health row. Alerts preview strip. Two primary CTAs.</div></div>
+      <div class="scard"><div class="sc-num">Screen 5</div><div class="sc-name">Soil Entry</div><div class="sc-desc">Inline questions: acres + season. Then N/P/K/pH/moisture fields. "Use Mock Data" button. "Get Advice" primary CTA. Data source toggle: Manual/Mock/IoT.</div></div>
+      <div class="scard"><div class="sc-num">Screen 6</div><div class="sc-name">Prediction Result</div><div class="sc-desc">5 scrollable cards. Top 3 crops + location yield score. Fertilizer breakdown table. Disease risk badge (green/amber/red). Irrigation card. 21-day price chart with sell window. All in farmer's language.</div><div style="margin-top:6px;display:flex;gap:4px;flex-wrap:wrap"><span class="tag">5 model outputs</span><span class="tag">Shareable</span></div></div>
+      <div class="scard"><div class="sc-num">Screen 7</div><div class="sc-name">Alerts</div><div class="sc-desc">All 6 alert types sorted by severity. RED = HIGH, AMBER = MEDIUM, GREEN = LOW. Filter tabs by type. Tap to expand and mark as read.</div></div>
+      <div class="scard"><div class="sc-num">Screen 8</div><div class="sc-name">Price Tracker</div><div class="sc-desc">60-day history + 21-day LSTM forecast chart for recommended crop in farmer's district. Set target price for personalised alert. Best sell window highlighted.</div></div>
+    </div>
+    <div>
+      <div style="font-size:10.5px;font-weight:800;color:#C4579A;text-transform:uppercase;letter-spacing:.09em;margin-bottom:8px">Animal Module — 5 screens</div>
+      <div class="scard"><div class="sc-num">Screen 9</div><div class="sc-name">My Animals</div><div class="sc-desc">All animals grouped by species. Health status badge per animal (Healthy / Under Observation / Sick). Quick action strip per animal. Add New Animal button.</div></div>
+      <div class="scard"><div class="sc-num">Screen 10</div><div class="sc-name">Animal Profile</div><div class="sc-desc">Full detail: breed, age, weight, purpose. Vaccination timeline with status badges. Last health check result. 30-day milk/egg trend mini-chart. Check Symptoms and Log Milk CTAs.</div></div>
+      <div class="scard"><div class="sc-num">Screen 11</div><div class="sc-name">Symptoms Checker</div><div class="sc-desc">Species-filtered symptom tiles with icons. Multi-select. Submit → disease + confidence + severity badge + step-by-step action plan. "Connect Vet" button if severe — opens pre-filled chat.</div><div style="margin-top:6px;display:flex;gap:4px"><span class="tag">AI-powered</span><span class="tag">Species-filtered</span></div></div>
+      <div class="scard"><div class="sc-num">Screen 12</div><div class="sc-name">Milk / Egg Tracker</div><div class="sc-desc">Select animal, pick MORNING / EVENING session, enter quantity. 30-day trend chart. Monthly total. Auto-alert badge if drop detected over 3 days.</div></div>
+      <div class="scard"><div class="sc-num">Screen 13</div><div class="sc-name">Feed Calculator</div><div class="sc-desc">Input weight + daily milk yield. Output: exact dry fodder / green fodder / concentrate / minerals per day. ICAR-standard. Breed-specific output.</div></div>
+      <div style="font-size:10.5px;font-weight:800;color:var(--plum);text-transform:uppercase;letter-spacing:.09em;margin:12px 0 8px">Expert Chat — 2 screens</div>
+      <div class="scard"><div class="sc-num">Screen 14</div><div class="sc-name">Chat Home</div><div class="sc-desc">All conversation threads. Unread badge per thread. CROP/ANIMAL category chip. OPEN/RESOLVED status. Expert name + last message preview. New Chat button.</div></div>
+      <div class="scard"><div class="sc-num">Screen 15</div><div class="sc-name">Chat Conversation</div><div class="sc-desc">Real-time WhatsApp-style. Expert name + online status in header. Delivery ticks (sent / delivered / read). Pre-filled subject. Message input + send button.</div></div>
+    </div>
+    <div>
+      <div style="font-size:10.5px;font-weight:800;color:var(--ink3);text-transform:uppercase;letter-spacing:.09em;margin-bottom:8px">Profile — 2 screens</div>
+      <div class="scard"><div class="sc-num">Screen 16</div><div class="sc-name">Profile + Settings</div><div class="sc-desc">Edit name, village, phone. Language switcher (always visible). Alert time picker. Land size update. Scan history list with tap-to-expand. Logout button.</div></div>
+      <div class="scard"><div class="sc-num">Screen 17</div><div class="sc-name">Feedback</div><div class="sc-desc">Post-harvest star rating form. 1–5 stars for: crop prediction accuracy, fertilizer advice, price prediction, overall app. Optional free-text comment.</div></div>
+      <div class="hl e" style="margin-top:14px"><div class="hl-title" style="color:var(--emerald)">🎨 Design philosophy</div><div class="hl-body">
+        ✅ One primary CTA per screen — no confusion<br>
+        ✅ Cards over lists — every item tappable<br>
+        ✅ Colour = urgency: red/amber/green consistent<br>
+        ✅ Language toggle one tap from any screen<br>
+        ✅ Offline-first: last prediction cached in AsyncStorage<br>
+        ✅ Large touch targets for rural users with non-smartphone experience<br>
+        ✅ Zero empty states — every screen personalised from first second
+      </div></div>
+      <div class="hl a" style="margin-top:12px"><div class="hl-title" style="color:var(--amber)">📲 Offline behaviour</div><div class="hl-body">When connectivity is lost, the app shows the last cached prediction and animal records with a subtle "Last updated N hours ago" badge. Silently syncs all new data when connection returns. Designed for rural Tamil Nadu where mobile data can be inconsistent.</div></div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+  SLIDE 17 — TECH STACK
+═══════════════════════════════════════════════ -->
+<div class="slide" data-sec="Tech Stack" data-t="Complete Technology Stack">
+<div class="slide-inner">
+  <div class="s-eyebrow a" style="color:var(--indigo)">Chapter 13 · Architecture</div>
+  <div class="s-h a a1">The complete <em style="color:var(--indigo)">technology stack</em></div>
+  <div class="s-sub a a2">Every library and service across all four layers — each chosen for a specific reason.</div>
+  <div class="g2 a a3" style="align-items:start">
+    <div>
+      <div class="card e" style="margin-bottom:14px">
+        <span class="card-icon" style="font-size:22px">📱</span>
+        <div class="card-title">React Native (Mobile App)</div>
+        <table class="tbl" style="margin-top:10px">
+          <tbody>
+            <tr><td>Expo managed workflow</td><td>Fast dev setup, no native build toolchain for development</td></tr>
+            <tr><td>React Navigation</td><td>Bottom tab navigator + stack navigator for all 17 screens</td></tr>
+            <tr><td>Axios</td><td>HTTP API calls with a JWT Bearer token interceptor</td></tr>
+            <tr><td>AsyncStorage</td><td>JWT storage + offline cache of last prediction + animal records</td></tr>
+            <tr><td>Victory Native</td><td>Price forecast charts + 30-day milk yield trend charts</td></tr>
+            <tr><td>i18n-js</td><td>EN / Tamil / Hindi multilingual — all strings from JSON files</td></tr>
+            <tr><td>WebSocket (STOMP)</td><td>Real-time bidirectional chat in the Expert Connect module</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="card a">
+        <span class="card-icon" style="font-size:22px">🐍</span>
+        <div class="card-title">Python Flask (AI Microservice)</div>
+        <table class="tbl" style="margin-top:10px">
+          <tbody>
+            <tr><td>Flask 3.x</td><td>Lightweight REST API framework for serving ML models</td></tr>
+            <tr><td>scikit-learn</td><td>Random Forest, Decision Tree, Linear Regression models</td></tr>
+            <tr><td>TensorFlow / Keras</td><td>LSTM time-series model for 21-day price prediction</td></tr>
+            <tr><td>pandas + numpy</td><td>Data processing and feature engineering at train time</td></tr>
+            <tr><td>joblib</td><td>Model serialisation to .pkl files stored on S3</td></tr>
+            <tr><td>Gunicorn</td><td>Production WSGI server — 4 worker processes on EC2</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div>
+      <div class="card p" style="margin-bottom:14px">
+        <span class="card-icon" style="font-size:22px">⚙️</span>
+        <div class="card-title">Spring Boot 3.5.14 (Backend API)</div>
+        <table class="tbl" style="margin-top:10px">
+          <tbody>
+            <tr><td>Spring Security + JWT</td><td>Auth, token validation, per-route access control</td></tr>
+            <tr><td>Spring Data JPA</td><td>ORM with Hibernate — all 13 entities mapped</td></tr>
+            <tr><td>RestTemplate</td><td>HTTP client for calling Flask AI microservice</td></tr>
+            <tr><td>Spring WebSocket STOMP</td><td>Real-time bidirectional chat infrastructure</td></tr>
+            <tr><td>Spring @Scheduled</td><td>Daily personalised alert jobs per farmer</td></tr>
+            <tr><td>Firebase Admin SDK</td><td>Server-side FCM push notification sending</td></tr>
+            <tr><td>Lombok</td><td>@Data, @Builder — reduces entity + DTO boilerplate</td></tr>
+            <tr><td>Flyway (prod)</td><td>Database migration versioning for safe schema updates</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="card n">
+        <span class="card-icon" style="font-size:22px">☁️</span>
+        <div class="card-title">AWS + External Services</div>
+        <table class="tbl" style="margin-top:10px">
+          <tbody>
+            <tr><td>EC2 (t3.medium)</td><td>Hosts Spring Boot API + Flask AI service (two processes)</td></tr>
+            <tr><td>RDS MySQL 8</td><td>flora_db in production with automated daily backups</td></tr>
+            <tr><td>S3</td><td>Trained model files (.pkl, .h5), app assets, and exports</td></tr>
+            <tr><td>Elastic IP</td><td>Stable public endpoint for all mobile API calls</td></tr>
+            <tr><td>OpenWeatherMap</td><td>Live weather + 7-day forecast — free tier (1,000 calls/day)</td></tr>
+            <tr><td>Firebase FCM</td><td>Push notifications to Android and iOS devices</td></tr>
+            <tr><td>Agmarknet / data.gov.in</td><td>Historical mandi price data — feeds LSTM training pipeline</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+  SLIDE 18 — LOCATION INTELLIGENCE
+═══════════════════════════════════════════════ -->
+<div class="slide" data-sec="Location" data-t="Location Intelligence — 38 TN Districts">
+<div class="slide-inner">
+  <div class="s-eyebrow a" style="color:var(--emerald)">Chapter 14 · Key Differentiator</div>
+  <div class="s-h a a1">Location intelligence — <em style="color:var(--emerald)">the feature no other app has</em></div>
+  <div class="s-sub a a2">The same soil test results in two different Tamil Nadu districts produce different crop recommendations — because district-level agricultural context is baked into every prediction.</div>
+  <div class="g2 a a3" style="align-items:start">
+    <div>
+      <div class="card e" style="margin-bottom:14px">
+        <div class="card-title">How location scoring works</div>
+        <div class="card-body" style="margin-bottom:12px">The Random Forest model produces raw confidence percentages based purely on soil + weather data. The location layer multiplies each crop's confidence by the district suitability score from the TNAU table, creating a weighted final score.</div>
+        <div style="background:var(--paper2);border-radius:10px;padding:14px;font-size:13px;color:var(--ink2);line-height:1.8">
+          RF gives: Rice 78%, Cotton 74%, Maize 68%<br><br>
+          <strong style="color:var(--emerald)">Thanjavur</strong> (Rice suitability = 9.5)<br>
+          Rice weighted = 78 × 9.5 = <strong>741</strong> → ranks #1 ✅<br><br>
+          <strong style="color:var(--amber)">Coimbatore</strong> (Cotton suitability = 9.1)<br>
+          Cotton weighted = 74 × 9.1 = <strong>673</strong> → ranks #1 ✅
+        </div>
+      </div>
+      <div class="hl e"><div class="hl-title" style="color:var(--emerald)">🗄️ district_crop_suitability — how it's loaded</div><div class="hl-body">The table is pre-seeded using a Flyway SQL migration script containing TNAU + TN Agriculture Department data for all 38 districts. It is read-only at runtime and can be updated by running a new Flyway migration when better data becomes available. No retraining of ML models required — location intelligence is a separate, maintainable data layer.</div></div>
+    </div>
+    <div>
+      <div style="font-size:12px;font-weight:800;color:var(--ink2);margin-bottom:12px">Sample district data from the table</div>
+      <table class="tbl a a4">
+        <thead><tr><th>District</th><th>Best crop</th><th>Score /10</th><th>Avg yield/acre</th></tr></thead>
+        <tbody>
+          <tr><td>Thanjavur</td><td>Rice</td><td>9.5</td><td>1,800 kg</td></tr>
+          <tr><td>Erode</td><td>Turmeric</td><td>9.2</td><td>2,200 kg</td></tr>
+          <tr><td>Coimbatore</td><td>Cotton</td><td>8.8</td><td>400 kg</td></tr>
+          <tr><td>Dindigul</td><td>Banana</td><td>9.0</td><td>8,000 kg</td></tr>
+          <tr><td>Salem</td><td>Mango</td><td>8.6</td><td>3,500 kg</td></tr>
+          <tr><td>Madurai</td><td>Groundnut</td><td>8.0</td><td>600 kg</td></tr>
+          <tr><td>Namakkal</td><td>Maize</td><td>8.5</td><td>1,200 kg</td></tr>
+          <tr><td>Karur</td><td>Cotton + Maize</td><td>8.2</td><td>—</td></tr>
+          <tr><td>Dharmapuri</td><td>Mango + Groundnut</td><td>8.3</td><td>—</td></tr>
+          <tr><td>Tirunelveli</td><td>Banana + Paddy</td><td>8.4</td><td>—</td></tr>
+        </tbody>
+      </table>
+      <div class="hl a" style="margin-top:12px"><div class="hl-title" style="color:var(--amber)">⭐ Why this makes Flora production-grade</div><div class="hl-body">Every student project that uses the Kaggle Crop Recommendation dataset gets the same output for the same soil values regardless of location. Flora's location layer is the difference between a demo and a real product. No Tamil Nadu farmer cares about generic crop advice — they care about what grows well on their specific land in their specific district.</div></div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+  SLIDE 19 — DATA PIPELINE (FULL)
+═══════════════════════════════════════════════ -->
+<div class="slide" data-sec="Architecture" data-t="Complete Data Pipeline — How All Layers Connect">
+<div class="slide-inner">
+  <div class="s-eyebrow a" style="color:var(--pine)">Chapter 15 · System Architecture</div>
+  <div class="s-h a a1">Complete data pipeline — <em style="color:var(--pine)">how all four layers connect</em></div>
+  <div class="s-sub a a2">The exact internal journey of a single crop scan — from the farmer's finger tap to the prediction card on screen.</div>
+  <div class="flow a a3">
+    <div class="fstep"><div class="f-left"><div class="f-num" style="background:var(--emerald-lt);color:var(--emerald)">📱</div><div class="f-line"></div></div><div class="f-body"><div class="f-title">React Native sends POST /api/scan/submit via Axios</div><div class="f-desc">JSON payload: {nitrogen, phosphorus, potassium, ph_level, moisture_percent, planned_acres, season}. HTTP header: Authorization: Bearer &lt;JWT&gt;.</div><div class="f-tags"><span class="tag">Axios HTTP</span><span class="tag">JSON body</span><span class="tag">JWT Authorization header</span></div></div></div>
+    <div class="fstep"><div class="f-left"><div class="f-num" style="background:var(--plum-lt);color:var(--plum)">🔒</div><div class="f-line"></div></div><div class="f-body"><div class="f-title">Spring Security JwtFilter intercepts → validates → extracts farmer_id</div><div class="f-desc">The filter validates the token's signature (HMAC SHA-256), checks the expiry claim, and extracts the farmer_id from the subject claim. If the token is invalid or expired, a 401 Unauthorized response is returned immediately. Valid requests proceed to ScanController.</div></div></div>
+    <div class="fstep"><div class="f-left"><div class="f-num" style="background:var(--plum-lt);color:var(--plum)">⚙️</div><div class="f-line"></div></div><div class="f-body"><div class="f-title">ScanController → ScanService → soil_scans saved to MySQL</div><div class="f-desc">ScanController receives the request, delegates to ScanService. A new SoilScan JPA entity is constructed with all soil fields, the farmer_id, and a generated UUID scan_id, then persisted via the ScanRepository (Spring Data JPA).</div><div class="f-tags"><span class="tag">ScanRepository.save()</span><span class="tag">soil_scans table</span><span class="tag">Hibernate auto-DDL</span></div></div></div>
+    <div class="fstep"><div class="f-left"><div class="f-num" style="background:var(--amber-lt);color:var(--amber)">🌤</div><div class="f-line"></div></div><div class="f-body"><div class="f-title">WeatherService calls OpenWeatherMap → saves weather_snapshot</div><div class="f-desc">ScanService calls WeatherService with the farmer's district. WeatherService makes a synchronous GET to OpenWeatherMap /forecast, parses the JSON response, builds a WeatherSnapshot entity (with the raw forecast blob), and saves it to weather_snapshots linked to the scan_id.</div><div class="f-tags"><span class="tag">OpenWeatherMap free tier</span><span class="tag">weather_snapshots table</span><span class="tag">7-day forecast JSON stored</span></div></div></div>
+    <div class="fstep"><div class="f-left"><div class="f-num" style="background:var(--amber-lt);color:var(--amber)">📍</div><div class="f-line"></div></div><div class="f-body"><div class="f-title">SuitabilityService queries district_crop_suitability</div><div class="f-desc">A SELECT query fetches all rows where district_name = farmer's district. The result is a Map&lt;String, Double&gt; of crop → suitability score. This map is appended to the Flask payload so location intelligence is applied inside the ML layer itself.</div><div class="f-tags"><span class="tag">SuitabilityRepository.findByDistrict()</span><span class="tag">district_crop_suitability lookup</span></div></div></div>
+    <div class="fstep"><div class="f-left"><div class="f-num" style="background:var(--plum-lt);color:var(--plum)">🐍</div><div class="f-line"></div></div><div class="f-body"><div class="f-title">RestTemplate sends merged payload to Flask → 5 models run</div><div class="f-desc">One HTTP POST to Flask /predict/all with the full merged payload. Flask has all 5 model files pre-loaded from S3 at startup (joblib.load() and tf.keras.models.load_model()). Models run. Location suitability multiplied into crop rankings. Response returned as JSON in ~200–400ms.</div><div class="f-tags"><span class="tag">RestTemplate.postForObject()</span><span class="tag">Models pre-loaded at Flask startup</span><span class="tag">~200–400ms Flask response</span></div></div></div>
+    <div class="fstep"><div class="f-left"><div class="f-num" style="background:var(--emerald-lt);color:var(--emerald)">💾</div><div class="f-line"></div></div><div class="f-body"><div class="f-title">Prediction saved to MySQL → text translated → JSON returned</div><div class="f-desc">PredictionService builds a Prediction entity with all 5 model outputs, links it to the scan_id, and persists to predictions table. Advisory texts (action steps, timing) are passed through the i18n MessageSource for the farmer's language. The complete response is serialised and returned to the app in the HTTP response body.</div><div class="f-tags"><span class="tag">PredictionRepository.save()</span><span class="tag">i18n MessageSource for EN/TA/HI</span><span class="tag">predictions table</span></div></div></div>
+    <div class="fstep"><div class="f-left"><div class="f-num" style="background:var(--emerald-lt);color:var(--emerald)">📱</div></div><div class="f-body" style="padding-bottom:0"><div class="f-title">React Native renders PredictionResultScreen — total time: ~2 seconds</div><div class="f-desc">Axios receives the response, React state is updated, PredictionResultScreen unmounts SoilEntryScreen and mounts the result view. All five model output cards are rendered. Data is simultaneously written to AsyncStorage for offline access. Total wall-clock time from farmer's tap to prediction on screen: approximately 1.5–3 seconds.</div><div class="f-tags"><span class="tag">Total: ~1.5–3 seconds end-to-end</span><span class="tag">AsyncStorage cache written</span><span class="tag">History list updated</span></div></div></div>
+  </div>
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+  SLIDE 20 — BUILD ROADMAP
+═══════════════════════════════════════════════ -->
+<div class="slide" data-sec="Roadmap" data-t="4-Month Build Roadmap">
+<div class="slide-inner">
+  <div class="s-eyebrow a" style="color:var(--indigo)">Chapter 16 · Development Plan</div>
+  <div class="s-h a a1">4-month <em style="color:var(--indigo)">progressive build</em> roadmap</div>
+  <div class="s-sub a a2">Each phase ends with a fully working, demonstrable product. Gate checks ensure every foundation is solid before moving forward.</div>
+  <div class="g2 a a3" style="align-items:start">
+    <div>
+      <div class="phase" style="background:var(--emerald-lt);border:1px solid rgba(27,107,74,.2);margin-bottom:14px">
+        <div class="ph-eyebrow" style="color:var(--emerald)">Phase 1 · Month 1</div>
+        <div class="ph-title">Foundation</div>
+        <div class="ph-li"><span class="ph-dot" style="background:var(--emerald)"></span>Spring Boot project — com.flora.api package structure</div>
+        <div class="ph-li"><span class="ph-dot" style="background:var(--emerald)"></span>MySQL — all 13 tables schema and JPA entities</div>
+        <div class="ph-li"><span class="ph-dot" style="background:var(--emerald)"></span>Spring Security + JWT — register + login working</div>
+        <div class="ph-li"><span class="ph-dot" style="background:var(--emerald)"></span>MockSensorService — district-realistic NPK values</div>
+        <div class="ph-li"><span class="ph-dot" style="background:var(--emerald)"></span>OpenWeatherMap API integration</div>
+        <div class="ph-li"><span class="ph-dot" style="background:var(--emerald)"></span>district_crop_suitability seeded with TNAU data</div>
+        <div class="ph-li"><span class="ph-dot" style="background:var(--emerald)"></span>React Native Expo project + bottom nav (5 tabs)</div>
+        <div class="ph-li"><span class="ph-dot" style="background:var(--emerald)"></span>Onboarding wizard — all 8 steps with back/next</div>
+        <div class="ph-li"><span class="ph-dot" style="background:var(--emerald)"></span>Login + Register screens with JWT to AsyncStorage</div>
+        <div class="ph-li"><span class="ph-dot" style="background:var(--emerald)"></span>Axios instance with JWT Bearer interceptor</div>
+        <div class="ph-gate" style="background:rgba(27,107,74,.1)"><strong style="color:var(--emerald)">✅ Gate:</strong> Farmer completes onboarding, logs in, sees personalised dashboard, weather strip shows correct district data.</div>
+      </div>
+      <div class="phase" style="background:var(--amber-lt);border:1px solid rgba(168,92,0,.2)">
+        <div class="ph-eyebrow" style="color:var(--amber)">Phase 2 · Month 2</div>
+        <div class="ph-title">Crop AI Core</div>
+        <div class="ph-li"><span class="ph-dot" style="background:var(--amber-md)"></span>Python Flask project setup with Gunicorn</div>
+        <div class="ph-li"><span class="ph-dot" style="background:var(--amber-md)"></span>Model 1: Crop Recommendation (EDA + RF training)</div>
+        <div class="ph-li"><span class="ph-dot" style="background:var(--amber-md)"></span>Model 2: Fertilizer Calculator (Regression)</div>
+        <div class="ph-li"><span class="ph-dot" style="background:var(--amber-md)"></span>Location suitability score integration in Flask</div>
+        <div class="ph-li"><span class="ph-dot" style="background:var(--amber-md)"></span>Flask /predict/all endpoint serving both models</div>
+        <div class="ph-li"><span class="ph-dot" style="background:var(--amber-md)"></span>Spring Boot → Flask integration via RestTemplate</div>
+        <div class="ph-li"><span class="ph-dot" style="background:var(--amber-md)"></span>Predictions saved to MySQL predictions table</div>
+        <div class="ph-li"><span class="ph-dot" style="background:var(--amber-md)"></span>Soil Entry screen + Prediction Result screen</div>
+        <div class="ph-li"><span class="ph-dot" style="background:var(--amber-md)"></span>Home Dashboard with real crop data</div>
+        <div class="ph-gate" style="background:rgba(168,92,0,.08)"><strong style="color:var(--amber)">✅ Gate:</strong> Submit soil → location-weighted crop recommendation + fertilizer plan on phone in under 3 seconds.</div>
+      </div>
+    </div>
+    <div>
+      <div class="phase" style="background:var(--plum-lt);border:1px solid rgba(98,47,138,.2);margin-bottom:14px">
+        <div class="ph-eyebrow" style="color:var(--plum)">Phase 3 · Month 3</div>
+        <div class="ph-title">Animals + Chat + Price</div>
+        <div class="ph-li"><span class="ph-dot" style="background:var(--plum)"></span>Model 3: Disease Risk Alert (Decision Tree)</div>
+        <div class="ph-li"><span class="ph-dot" style="background:var(--plum)"></span>Model 4: Irrigation Advisor (Rule + ML hybrid)</div>
+        <div class="ph-li"><span class="ph-dot" style="background:var(--plum)"></span>Model 5: LSTM Price Predictor (Agmarknet data)</div>
+        <div class="ph-li"><span class="ph-dot" style="background:var(--plum)"></span>Agmarknet price data collection pipeline</div>
+        <div class="ph-li"><span class="ph-dot" style="background:var(--plum)"></span>WebSocket STOMP chat — Spring Boot configuration</div>
+        <div class="ph-li"><span class="ph-dot" style="background:var(--plum)"></span>Chat Home + Conversation screens (React Native)</div>
+        <div class="ph-li"><span class="ph-dot" style="background:var(--plum)"></span>Web admin panel for expert team</div>
+        <div class="ph-li"><span class="ph-dot" style="background:var(--plum)"></span>Animals backend — all 11 APIs</div>
+        <div class="ph-li"><span class="ph-dot" style="background:var(--plum)"></span>Model 6: Animal Disease Predictor (Random Forest)</div>
+        <div class="ph-li"><span class="ph-dot" style="background:var(--plum)"></span>Model 7: Feed Calculator (ICAR formula)</div>
+        <div class="ph-li"><span class="ph-dot" style="background:var(--plum)"></span>All 5 animal screens (React Native)</div>
+        <div class="ph-li"><span class="ph-dot" style="background:var(--plum)"></span>Price Tracker + Alerts screens</div>
+        <div class="ph-gate" style="background:rgba(98,47,138,.08)"><strong style="color:var(--plum)">✅ Gate:</strong> All 7 ML models live · Real-time chat working end-to-end · Animal symptoms checker returning disease prediction · Price chart showing 21-day forecast.</div>
+      </div>
+      <div class="phase" style="background:var(--indigo-lt);border:1px solid rgba(56,71,163,.2)">
+        <div class="ph-eyebrow" style="color:var(--indigo)">Phase 4 · Month 4</div>
+        <div class="ph-title">Production + Polish</div>
+        <div class="ph-li"><span class="ph-dot" style="background:var(--indigo)"></span>AWS EC2 deployment for Spring Boot + Flask</div>
+        <div class="ph-li"><span class="ph-dot" style="background:var(--indigo)"></span>AWS RDS MySQL — flora_db production database</div>
+        <div class="ph-li"><span class="ph-dot" style="background:var(--indigo)"></span>S3 for trained model files + app assets</div>
+        <div class="ph-li"><span class="ph-dot" style="background:var(--indigo)"></span>Elastic IP + dev/prod environment configs</div>
+        <div class="ph-li"><span class="ph-dot" style="background:var(--indigo)"></span>Firebase FCM push notification setup</div>
+        <div class="ph-li"><span class="ph-dot" style="background:var(--indigo)"></span>Daily personalised alert scheduler (@Scheduled)</div>
+        <div class="ph-li"><span class="ph-dot" style="background:var(--indigo)"></span>Vaccination 3-day reminder system</div>
+        <div class="ph-li"><span class="ph-dot" style="background:var(--indigo)"></span>Milk drop detection logic (20% over 3 days)</div>
+        <div class="ph-li"><span class="ph-dot" style="background:var(--indigo)"></span>Tamil + Hindi i18n translations complete</div>
+        <div class="ph-li"><span class="ph-dot" style="background:var(--indigo)"></span>AsyncStorage offline cache</div>
+        <div class="ph-li"><span class="ph-dot" style="background:var(--indigo)"></span>Feedback + Profile + Settings screens</div>
+        <div class="ph-li"><span class="ph-dot" style="background:var(--indigo)"></span>Full README + Postman API documentation</div>
+        <div class="ph-li"><span class="ph-dot" style="background:var(--indigo)"></span>3-minute demo video recording</div>
+        <div class="ph-gate" style="background:rgba(56,71,163,.08)"><strong style="color:var(--indigo)">✅ Gate:</strong> App live on AWS · Push notification received on real Android · 3-minute demo video ready to share.</div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+  SLIDE 21 — SKILLS
+═══════════════════════════════════════════════ -->
+<div class="slide" data-sec="Skills" data-t="What You Learn Building Flora">
+<div class="slide-inner">
+  <div class="s-eyebrow a" style="color:var(--emerald)">Chapter 17 · Your Growth</div>
+  <div class="s-h a a1">What you <em style="color:var(--emerald)">learn</em> building Flora</div>
+  <div class="s-sub a a2">Flora is not just a project. It is a structured skill-building programme across all four layers of professional software engineering.</div>
+  <div class="g2 a a3" style="align-items:start">
+    <div>
+      <div class="card p" style="margin-bottom:14px">
+        <span class="card-icon">⚙️</span>
+        <div class="card-title">Backend Engineering — Spring Boot</div>
+        <div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:8px">
+          <span class="badge b-p">Package structure</span><span class="badge b-p">Spring Security</span><span class="badge b-p">JWT auth flow</span><span class="badge b-p">JPA entities (13)</span><span class="badge b-p">Repository pattern</span><span class="badge b-p">Service layer</span><span class="badge b-p">REST API design</span><span class="badge b-p">DTOs + mappers</span><span class="badge b-p">WebSocket STOMP</span><span class="badge b-p">@Scheduled jobs</span><span class="badge b-p">Exception handling</span><span class="badge b-p">Firebase Admin SDK</span><span class="badge b-p">RestTemplate HTTP</span><span class="badge b-p">MySQL schema</span><span class="badge b-p">Flyway migrations</span>
+        </div>
+      </div>
+      <div class="card a">
+        <span class="card-icon">🤖</span>
+        <div class="card-title">AI / Machine Learning — Python</div>
+        <div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:8px">
+          <span class="badge b-a">Exploratory Data Analysis</span><span class="badge b-a">Train/test split</span><span class="badge b-a">Random Forest</span><span class="badge b-a">Decision Tree</span><span class="badge b-a">Linear Regression</span><span class="badge b-a">LSTM time series</span><span class="badge b-a">Model evaluation metrics</span><span class="badge b-a">joblib serialisation</span><span class="badge b-a">Flask REST API</span><span class="badge b-a">Confusion matrix</span><span class="badge b-a">Feature engineering</span><span class="badge b-a">Google Colab training</span>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="card e" style="margin-bottom:14px">
+        <span class="card-icon">📱</span>
+        <div class="card-title">Mobile Development — React Native</div>
+        <div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:8px">
+          <span class="badge b-e">Expo setup</span><span class="badge b-e">Stack + Tab navigation</span><span class="badge b-e">Form validation</span><span class="badge b-e">Axios + interceptors</span><span class="badge b-e">AsyncStorage</span><span class="badge b-e">Victory Native charts</span><span class="badge b-e">i18n multilingual</span><span class="badge b-e">WebSocket client</span><span class="badge b-e">Offline-first cache</span><span class="badge b-e">FCM push handling</span><span class="badge b-e">Component architecture</span><span class="badge b-e">UX for low-literacy users</span>
+        </div>
+      </div>
+      <div class="card n">
+        <span class="card-icon">☁️</span>
+        <div class="card-title">Cloud + Infrastructure — AWS</div>
+        <div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:8px">
+          <span class="badge b-n">EC2 setup + SSH</span><span class="badge b-n">RDS MySQL config</span><span class="badge b-n">S3 bucket + IAM roles</span><span class="badge b-n">Elastic IP</span><span class="badge b-n">Environment profiles</span><span class="badge b-n">Gunicorn + Nginx</span><span class="badge b-n">Systemd services</span><span class="badge b-n">Production deployment</span>
+        </div>
+      </div>
+      <div class="hl e" style="margin-top:14px"><div class="hl-title" style="color:var(--emerald)">⭐ What makes this combination rare</div><div class="hl-body">Most developers at 7 months of experience are proficient in one layer. You will be able to work across all four — mobile, backend, AI, and cloud — with real production patterns in each. Combined with deep domain knowledge of Tamil Nadu agriculture, this is a profile that genuinely stands out.</div></div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+  SLIDE 22 — CLOSING
+═══════════════════════════════════════════════ -->
+<div class="slide close-slide" data-sec="Closing" data-t="Why Flora Stands Out">
+  <div class="a" style="font-size:13px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--emerald-md);margin-bottom:28px">Why Flora wins every interview</div>
+  <div class="close-h a a1">Built for <em>real people.</em><br>With real intelligence.</div>
+  <div class="close-sub a a2">Flora is not a demo. It is a production-grade platform solving real problems for 63 lakh Tamil Nadu farmers — and teaching you every skill that matters while building it.</div>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;max-width:800px;margin:0 auto 36px;text-align:left" class="a a3">
+    <div style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:16px"><span style="font-size:22px;display:block;margin-bottom:8px">📍</span><div style="font-size:13px;font-weight:800;color:white;margin-bottom:5px">38-district intelligence</div><div style="font-size:12px;color:rgba(255,255,255,.5)">TNAU data for every TN district. Erode gets turmeric. Thanjavur gets rice. No other free app does this.</div></div>
+    <div style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:16px"><span style="font-size:22px;display:block;margin-bottom:8px">🐾</span><div style="font-size:13px;font-weight:800;color:white;margin-bottom:5px">Universal animal health</div><div style="font-size:12px;color:rgba(255,255,255,.5)">11 species, AI diagnosis, vaccination reminders, milk tracking. Most agri apps ignore animals entirely.</div></div>
+    <div style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:16px"><span style="font-size:22px;display:block;margin-bottom:8px">💬</span><div style="font-size:13px;font-weight:800;color:white;margin-bottom:5px">WebSocket real-time chat</div><div style="font-size:12px;color:rgba(255,255,255,.5)">STOMP protocol in a portfolio project. This signals production backend depth most seniors don't expect.</div></div>
+    <div style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:16px"><span style="font-size:22px;display:block;margin-bottom:8px">🤖</span><div style="font-size:13px;font-weight:800;color:white;margin-bottom:5px">7 ML models, 2 domains</div><div style="font-size:12px;color:rgba(255,255,255,.5)">Four algorithm families. Real public datasets. Served via production Flask microservice. Not just one clean notebook.</div></div>
+    <div style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:16px"><span style="font-size:22px;display:block;margin-bottom:8px">⚡</span><div style="font-size:13px;font-weight:800;color:white;margin-bottom:5px">Zero-empty-state UX</div><div style="font-size:12px;color:rgba(255,255,255,.5)">Personalised dashboard from second one. Swiggy-level product thinking applied to a farming app. Nobody expects this.</div></div>
+    <div style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:16px"><span style="font-size:22px;display:block;margin-bottom:8px">❤️</span><div style="font-size:13px;font-weight:800;color:white;margin-bottom:5px">Real impact</div><div style="font-size:12px;color:rgba(255,255,255,.5)">63 lakh small farmers. Every saved harvest, every caught disease, every correctly timed sale — Flora does that.</div></div>
+  </div>
+  <div class="close-pitch a a4">"A bilingual rural livelihood platform — soil intelligence for all 38 Tamil Nadu districts, universal animal health, real-time expert chat, and 7 ML models. Built with React Native, Spring Boot, Python Flask, and AWS."</div>
+</div>
+
+  </div><!-- /slides-area -->
+
+  <!-- BOTTOM NAV -->
+  <div id="bottombar">
+    <button class="nav-btn" id="prev-btn" disabled>←</button>
+    <span id="nav-label">1 / 22</span>
+    <button class="nav-btn" id="next-btn">→</button>
+  </div>
+
+  <!-- MENU OVERLAY -->
+  <div id="menu">
+    <button class="menu-close" id="menu-close">✕ Close</button>
+    <h2>🌿 Flora — All 22 Slides</h2>
+    <div class="menu-grid" id="menu-grid"></div>
+  </div>
+
+</div><!-- /shell -->
+
+<script>
+const slides = Array.from(document.querySelectorAll('.slide'));
+const total = slides.length;
+let cur = 0;
+
+const prevBtn = document.getElementById('prev-btn');
+const nextBtn = document.getElementById('next-btn');
+const navLabel = document.getElementById('nav-label');
+const tbCount = document.getElementById('tb-count');
+const progFill = document.getElementById('prog-fill');
+const menu = document.getElementById('menu');
+const menuGrid = document.getElementById('menu-grid');
+
+// Build menu
+slides.forEach((s, i) => {
+  const item = document.createElement('div');
+  item.className = 'menu-item' + (i === 0 ? ' cur' : '');
+  item.innerHTML = `<div class="mi-n">Slide ${i+1}</div><div class="mi-t">${s.dataset.t || 'Slide'}</div><div class="mi-s">${s.dataset.sec || ''}</div>`;
+  item.addEventListener('click', () => { goTo(i); closeMenu(); });
+  menuGrid.appendChild(item);
+});
+
+function goTo(n) {
+  slides[cur].classList.remove('active');
+  menuGrid.children[cur].classList.remove('cur');
+  cur = Math.max(0, Math.min(total - 1, n));
+  slides[cur].classList.add('active');
+  menuGrid.children[cur].classList.add('cur');
+  // Restart animations
+  slides[cur].querySelectorAll('.a').forEach(el => {
+    el.style.animation = 'none';
+    el.offsetHeight;
+    el.style.animation = '';
+  });
+  // Scroll slide to top
+  const inner = slides[cur].querySelector('.slide-inner');
+  if (inner) inner.scrollTop = 0;
+  chrome();
+}
+
+function chrome() {
+  navLabel.textContent = `${cur + 1} / ${total}`;
+  tbCount.textContent = `${cur + 1} / ${total}`;
+  progFill.style.width = `${(cur / (total - 1)) * 100}%`;
+  prevBtn.disabled = cur === 0;
+  nextBtn.disabled = cur === total - 1;
+}
+
+function openMenu() { menu.classList.add('open'); }
+function closeMenu() { menu.classList.remove('open'); }
+
+prevBtn.addEventListener('click', () => goTo(cur - 1));
+nextBtn.addEventListener('click', () => goTo(cur + 1));
+document.getElementById('slides-btn').addEventListener('click', openMenu);
+document.getElementById('menu-close').addEventListener('click', closeMenu);
+menu.addEventListener('click', e => { if (e.target === menu) closeMenu(); });
+
+document.addEventListener('keydown', e => {
+  if (menu.classList.contains('open')) {
+    if (e.key === 'Escape') closeMenu();
+    return;
+  }
+  if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); goTo(cur + 1); }
+  if (e.key === 'ArrowLeft') { e.preventDefault(); goTo(cur - 1); }
+});
+
+chrome();
+</script>
+</body>
+</html>
