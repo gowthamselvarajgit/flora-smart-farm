@@ -4,51 +4,50 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Flora — Dev Journal</title>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#0F0F0E;--bg2:#181817;--bg3:#222220;--line:#2A2A28;--line2:#333331;--ink:#E8E6E0;--ink2:#8A887E;--ink3:#55534E;--g:#2A9D6A;--glt:#0D2B1E;--gdim:#1A5C3E;--a:#D4880A;--alt:#2B1E06;--p:#7B5FCC;--plt:#1A1330;--b:#3B82C4;--blt:#0D1E33;--r:#D45A4A;--rlt:#2B1210;--t:#2ABCBC;--tlt:#0A2222;--mono:'JetBrains Mono',monospace;--sans:'Inter',sans-serif}
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
 body{font-family:var(--sans);background:var(--bg);color:var(--ink);min-height:100vh}
+a{color:inherit;text-decoration:none}
 .shell{display:grid;grid-template-columns:270px 1fr;min-height:100vh}
-/* ── MOBILE TOPBAR ── */
 .topbar{display:none;align-items:center;justify-content:space-between;padding:0 16px;height:52px;background:var(--bg2);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:200}
 .topbar-logo{font-family:var(--mono);font-size:17px;font-weight:700;color:var(--g);letter-spacing:-1px}
 .hamburger{background:none;border:1px solid var(--line);border-radius:6px;padding:7px 10px;cursor:pointer;display:flex;flex-direction:column;gap:4px}
 .hamburger span{display:block;width:18px;height:2px;background:var(--ink2);border-radius:1px}
-/* ── OVERLAY ── */
 .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:300}
 .overlay.on{display:block}
-/* ── SIDEBAR ── */
-.sidebar{background:var(--bg2);border-right:1px solid var(--line);padding:28px 0;position:sticky;top:0;height:100vh;overflow-y:auto;display:flex;flex-direction:column;transition:transform .25s cubic-bezier(.4,0,.2,1)}
+.sidebar{background:var(--bg2);border-right:1px solid var(--line);padding:28px 0 0;position:sticky;top:0;height:100vh;overflow-y:auto;display:flex;flex-direction:column;transition:transform .25s cubic-bezier(.4,0,.2,1)}
 .sidebar::-webkit-scrollbar{width:0}
-.logo{padding:0 24px 24px;border-bottom:1px solid var(--line);margin-bottom:16px}
+.logo{padding:0 24px 22px;border-bottom:1px solid var(--line);margin-bottom:14px}
 .logo-mark{font-family:var(--mono);font-size:22px;font-weight:700;color:var(--g);letter-spacing:-1px}
-.logo-sub{font-size:11px;color:var(--ink3);margin-top:2px;letter-spacing:.04em}
-.sidebar-section{padding:8px 24px 4px;font-size:10px;font-weight:600;color:var(--ink3);text-transform:uppercase;letter-spacing:.1em;margin-top:8px}
-.nav-item{display:flex;align-items:center;gap:10px;padding:8px 24px;cursor:pointer;border-left:2px solid transparent;transition:all .15s;text-decoration:none}
+.logo-sub{font-size:11px;color:var(--ink3);margin-top:2px;letter-spacing:.04em;line-height:1.4}
+.sidebar-section{padding:8px 24px 4px;font-size:10px;font-weight:600;color:var(--ink3);text-transform:uppercase;letter-spacing:.1em;margin-top:6px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:8px 24px;cursor:pointer;border-left:2px solid transparent;transition:all .15s}
 .nav-item:hover{background:var(--bg3)}
 .nav-item.active{border-left-color:var(--g);background:var(--glt)}
+.nav-ico{width:16px;text-align:center;font-size:13px;flex-shrink:0;opacity:.85}
 .nav-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
 .nav-text{font-size:12.5px;color:var(--ink2);line-height:1.35}
 .nav-text strong{display:block;font-size:12px;font-weight:500;color:var(--ink)}
-.nav-item.active .nav-text,.nav-item.active .nav-text strong{color:var(--g)}
-.sidebar-footer{margin-top:auto;padding:20px 24px 0;border-top:1px solid var(--line)}
+.nav-item.active .nav-text,.nav-item.active .nav-text strong,.nav-item.active .nav-ico{color:var(--g)}
+.nav-days{max-height:240px;overflow-y:auto}
+.nav-days::-webkit-scrollbar{width:4px}.nav-days::-webkit-scrollbar-thumb{background:var(--line2);border-radius:2px}
+.sidebar-footer{margin-top:auto;padding:18px 24px;border-top:1px solid var(--line);position:sticky;bottom:0;background:var(--bg2)}
 .progress-label{font-size:11px;color:var(--ink3);margin-bottom:8px;display:flex;justify-content:space-between}
 .progress-track{height:4px;background:var(--bg3);border-radius:2px;overflow:hidden}
-.progress-fill{height:100%;background:var(--g);border-radius:2px;width:3%;transition:width .4s}
+.progress-fill{height:100%;background:var(--g);border-radius:2px;width:5%;transition:width .4s}
 .ph{flex:1;height:3px;border-radius:2px;background:var(--bg3)}
-.ph.done{background:var(--g)}
-.ph.active{background:var(--a)}
+.ph.done{background:var(--g)}.ph.active{background:var(--a)}
 .progress-phases{display:flex;gap:6px;margin-top:10px}
-.main{padding:48px 56px;max-width:920px}
-/* ── BREAKPOINTS ── */
+.main{padding:44px 56px;max-width:960px}
 @media(max-width:900px){
   .shell{grid-template-columns:1fr}
   .topbar{display:flex}
   .sidebar{position:fixed;top:0;left:0;width:270px;height:100vh;z-index:400;transform:translateX(-100%);padding-top:16px}
   .sidebar.open{transform:translateX(0)}
-  .main{padding:28px 20px}
+  .main{padding:26px 20px}
 }
 @media(max-width:600px){
   .main{padding:20px 14px}
@@ -69,26 +68,54 @@ body{font-family:var(--sans);background:var(--bg);color:var(--ink);min-height:10
   .uday{width:auto;font-size:10px}
   .day-header{flex-wrap:wrap;gap:8px}
   .elist li{font-size:12px}
+  .cal-cell{min-height:54px;font-size:11px}
+  .hero{flex-direction:column}
 }
-.page-header{margin-bottom:48px}
+/* shared */
+.page-header{margin-bottom:34px}
 .page-eyebrow{font-family:var(--mono);font-size:11px;color:var(--g);letter-spacing:.08em;margin-bottom:10px}
-.page-title{font-size:32px;font-weight:600;color:var(--ink);letter-spacing:-1px;line-height:1.1;margin-bottom:10px}
-.page-sub{font-size:14px;color:var(--ink2);line-height:1.7;max-width:560px}
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:48px}
+.page-title{font-size:30px;font-weight:600;color:var(--ink);letter-spacing:-1px;line-height:1.1;margin-bottom:10px}
+.page-sub{font-size:14px;color:var(--ink2);line-height:1.7;max-width:600px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:40px}
 .stat{background:var(--bg2);border:1px solid var(--line);border-radius:10px;padding:16px}
 .stat-n{font-family:var(--mono);font-size:28px;font-weight:700;line-height:1;margin-bottom:4px}
 .stat-l{font-size:11px;color:var(--ink3);letter-spacing:.04em}
-.sec-head{display:flex;align-items:center;gap:12px;margin-bottom:20px}
+.sec-head{display:flex;align-items:center;gap:12px;margin:34px 0 20px}
 .sec-line{flex:1;height:1px;background:var(--line)}
 .sec-label{font-family:var(--mono);font-size:11px;color:var(--ink3);letter-spacing:.08em;white-space:nowrap}
-.day-entry{margin-bottom:48px}
-.day-header{display:flex;align-items:flex-start;gap:16px;margin-bottom:16px}
+.phase-row{display:flex;gap:8px;margin-bottom:32px;flex-wrap:wrap}
+.phase-chip{font-family:var(--mono);font-size:11px;padding:5px 12px;border-radius:5px;border:1px solid}
+.phase-chip.done{background:var(--glt);color:var(--g);border-color:var(--gdim)}
+.phase-chip.active{background:var(--alt);color:var(--a);border-color:#4A3010}
+.phase-chip.todo{background:var(--bg2);color:var(--ink3);border-color:var(--line)}
+/* hero (dashboard) */
+.hero{display:flex;gap:20px;align-items:stretch;margin-bottom:32px}
+.hero-main{flex:1;background:linear-gradient(135deg,var(--glt),var(--bg2));border:1px solid var(--gdim);border-radius:14px;padding:26px 28px;position:relative;overflow:hidden}
+.hero-main::after{content:'🌿';position:absolute;right:-10px;bottom:-20px;font-size:120px;opacity:.06}
+.hero-eyebrow{font-family:var(--mono);font-size:11px;color:var(--g);letter-spacing:.08em;margin-bottom:8px}
+.hero-h{font-size:26px;font-weight:700;letter-spacing:-.5px;margin-bottom:8px;line-height:1.15}
+.hero-p{font-size:13px;color:var(--ink2);line-height:1.6;max-width:440px;position:relative;z-index:1}
+.hero-cta{display:inline-flex;align-items:center;gap:7px;margin-top:16px;font-family:var(--mono);font-size:12px;color:var(--g);background:var(--bg);border:1px solid var(--gdim);padding:8px 14px;border-radius:7px;cursor:pointer;transition:all .15s}
+.hero-cta:hover{background:var(--glt)}
+.hero-side{width:200px;display:flex;flex-direction:column;gap:12px}
+.streak{flex:1;background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:18px;display:flex;flex-direction:column;justify-content:center;text-align:center}
+.streak-n{font-family:var(--mono);font-size:40px;font-weight:700;color:var(--a);line-height:1}
+.streak-l{font-size:11px;color:var(--ink3);margin-top:6px;letter-spacing:.04em}
+.streak-fire{font-size:22px;margin-bottom:4px}
+.mini-phase{background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.mini-phase-t{font-size:11px;color:var(--ink3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;display:flex;justify-content:space-between}
+.mini-phase-t b{color:var(--a);font-family:var(--mono)}
+/* day entry */
+.day-entry{margin-bottom:40px}
+.day-header{display:flex;align-items:flex-start;gap:16px;margin-bottom:18px}
 .day-badge{font-family:var(--mono);font-size:11px;font-weight:700;padding:4px 10px;border-radius:5px;white-space:nowrap;margin-top:2px}
 .day-badge.done{background:var(--glt);color:var(--g);border:1px solid var(--gdim)}
 .day-badge.today{background:var(--alt);color:var(--a);border:1px solid #4A3010}
 .day-badge.upcoming{background:var(--bg3);color:var(--ink3);border:1px solid var(--line)}
-.day-title-text{font-size:17px;font-weight:600;color:var(--ink);letter-spacing:-.3px}
-.day-date{font-size:12px;color:var(--ink3);margin-top:2px;font-family:var(--mono)}
+.day-title-text{font-size:18px;font-weight:600;color:var(--ink);letter-spacing:-.3px}
+.day-date{font-size:12px;color:var(--ink3);margin-top:3px;font-family:var(--mono)}
+.day-tagrow{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.day-tag{font-family:var(--mono);font-size:10px;color:var(--ink2);background:var(--bg3);border:1px solid var(--line);padding:2px 8px;border-radius:4px}
 .block{background:var(--bg2);border:1px solid var(--line);border-radius:10px;margin-bottom:10px;overflow:hidden}
 .block-head{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;padding:8px 14px;border-bottom:1px solid var(--line)}
 .block-body{padding:14px}
@@ -106,14 +133,12 @@ body{font-family:var(--sans);background:var(--bg);color:var(--ink);min-height:10
 .block.note .elist li::before{background:var(--ink3)}
 .block.code .elist li::before{background:var(--t)}
 .elist li span{color:var(--ink);font-weight:500}
-/* CODE SECTION */
 .code-file{margin-bottom:20px}
 .code-file-label{font-family:var(--mono);font-size:11px;color:var(--t);background:var(--tlt);border:1px solid var(--line2);border-bottom:none;padding:7px 14px;border-radius:8px 8px 0 0;display:flex;align-items:center;gap:8px}
 .code-file-label span{color:var(--ink3)}
 .code-block{background:var(--bg);border:1px solid var(--line2);border-radius:0 0 8px 8px;overflow-x:auto}
 .code-block pre{font-family:var(--mono);font-size:12px;line-height:1.9;padding:16px;white-space:pre}
 .kw{color:#C792EA}.val{color:var(--g)}.cmt{color:var(--ink3);font-style:italic}.prop{color:var(--b)}.ann{color:var(--a)}.cls{color:#FFCB6B}.str{color:#C3E88D}
-/* ANNOTATION EXPLAINER */
 .ann-table{width:100%;border-collapse:collapse;margin-top:10px}
 .ann-table th{font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.07em;color:var(--ink3);padding:7px 12px;border-bottom:1px solid var(--line2);text-align:left}
 .ann-table td{font-size:12.5px;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top;line-height:1.6}
@@ -121,17 +146,62 @@ body{font-family:var(--sans);background:var(--bg);color:var(--ink);min-height:10
 .ann-table td:first-child{font-family:var(--mono);font-size:11px;color:var(--a);white-space:nowrap;width:220px}
 .ann-table td:last-child{color:var(--ink2)}
 .ann-table tr:hover td{background:var(--bg3)}
-/* RELATIONSHIP DIAGRAM */
 .rel-diagram{background:var(--bg);border:1px solid var(--line2);border-radius:8px;padding:16px;margin:10px 0;font-family:var(--mono);font-size:12px;color:var(--ink2);line-height:1.9;overflow-x:auto}
-/* SNIPPET inline */
-.snippet{background:var(--bg);border:1px solid var(--line2);border-radius:8px;padding:14px 16px;margin:10px 0;overflow-x:auto}
-.snippet pre{font-family:var(--mono);font-size:12px;color:var(--ink2);line-height:1.7;white-space:pre}
-/* PHASE */
-.phase-row{display:flex;gap:8px;margin-bottom:32px;flex-wrap:wrap}
-.phase-chip{font-family:var(--mono);font-size:11px;padding:5px 12px;border-radius:5px;border:1px solid}
-.phase-chip.done{background:var(--glt);color:var(--g);border-color:var(--gdim)}
-.phase-chip.active{background:var(--alt);color:var(--a);border-color:#4A3010}
-.phase-chip.todo{background:var(--bg2);color:var(--ink3);border-color:var(--line)}
+.extra-title{margin-top:16px;margin-bottom:4px;font-size:11px;font-weight:600;color:var(--t);text-transform:uppercase;letter-spacing:.08em}
+/* day nav (prev/next) */
+.day-nav{display:flex;justify-content:space-between;gap:12px;margin:28px 0 8px}
+.day-nav a{flex:1;background:var(--bg2);border:1px solid var(--line);border-radius:10px;padding:12px 16px;transition:all .15s;cursor:pointer}
+.day-nav a:hover{border-color:var(--gdim);background:var(--glt)}
+.day-nav a.disabled{opacity:.35;pointer-events:none}
+.day-nav .dn-dir{font-family:var(--mono);font-size:10px;color:var(--ink3);letter-spacing:.06em}
+.day-nav .dn-t{font-size:13px;color:var(--ink);font-weight:500;margin-top:3px}
+.day-nav a.next-dir{text-align:right}
+.backlink{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:12px;color:var(--ink3);margin-bottom:20px;cursor:pointer}
+.backlink:hover{color:var(--g)}
+/* calendar */
+.cal-wrap{background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:20px;margin-bottom:24px}
+.cal-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+.cal-month{font-size:18px;font-weight:600;letter-spacing:-.3px}
+.cal-month span{color:var(--ink3);font-family:var(--mono);font-size:13px;font-weight:400;margin-left:6px}
+.cal-btns{display:flex;gap:8px}
+.cal-btn{background:var(--bg3);border:1px solid var(--line);border-radius:7px;width:34px;height:34px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--ink2);font-size:16px;transition:all .15s}
+.cal-btn:hover{background:var(--glt);color:var(--g);border-color:var(--gdim)}
+.cal-btn.txt{width:auto;padding:0 12px;font-family:var(--mono);font-size:11px}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.cal-dow{font-family:var(--mono);font-size:10px;color:var(--ink3);text-align:center;padding:4px 0;letter-spacing:.06em}
+.cal-cell{min-height:74px;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:7px 8px;position:relative;display:flex;flex-direction:column}
+.cal-cell.empty{background:transparent;border:none}
+.cal-cell.has{cursor:pointer;border-color:var(--gdim);background:var(--glt);transition:all .15s}
+.cal-cell.has:hover{background:#10341f;transform:translateY(-1px)}
+.cal-cell.today{outline:1px solid var(--a)}
+.cal-dnum{font-family:var(--mono);font-size:12px;color:var(--ink3)}
+.cal-cell.has .cal-dnum{color:var(--g);font-weight:700}
+.cal-cell.today .cal-dnum{color:var(--a)}
+.cal-daylabel{font-family:var(--mono);font-size:9px;color:var(--g);margin-top:2px}
+.cal-dtitle{font-size:10.5px;color:var(--ink2);line-height:1.3;margin-top:4px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:3;line-clamp:3;-webkit-box-orient:vertical}
+.cal-legend{display:flex;gap:18px;margin-top:16px;flex-wrap:wrap}
+.cal-legend div{display:flex;align-items:center;gap:7px;font-size:11px;color:var(--ink3)}
+.cal-legend .sw{width:12px;height:12px;border-radius:3px}
+/* timeline */
+.tl-search{width:100%;background:var(--bg2);border:1px solid var(--line);border-radius:9px;padding:11px 14px;color:var(--ink);font-family:var(--sans);font-size:13px;margin-bottom:24px}
+.tl-search:focus{outline:none;border-color:var(--gdim)}
+.tl-search::placeholder{color:var(--ink3)}
+.tl{position:relative;padding-left:30px}
+.tl::before{content:'';position:absolute;left:8px;top:6px;bottom:6px;width:2px;background:var(--line)}
+.tl-item{position:relative;margin-bottom:14px;cursor:pointer}
+.tl-item::before{content:'';position:absolute;left:-26px;top:18px;width:11px;height:11px;border-radius:50%;background:var(--g);border:2px solid var(--bg);box-shadow:0 0 0 2px var(--gdim)}
+.tl-item.upcoming::before{background:var(--bg3);box-shadow:0 0 0 2px var(--line)}
+.tl-card{background:var(--bg2);border:1px solid var(--line);border-radius:10px;padding:14px 18px;transition:all .15s}
+.tl-item:hover .tl-card{border-color:var(--gdim);background:var(--glt)}
+.tl-meta{display:flex;align-items:center;gap:10px;margin-bottom:6px;flex-wrap:wrap}
+.tl-day{font-family:var(--mono);font-size:11px;font-weight:700;color:var(--g)}
+.tl-date{font-family:var(--mono);font-size:11px;color:var(--ink3)}
+.tl-title{font-size:14.5px;font-weight:600;color:var(--ink);letter-spacing:-.2px}
+.tl-summary{font-size:12.5px;color:var(--ink2);line-height:1.55;margin-top:5px}
+.tl-counts{display:flex;gap:14px;margin-top:9px;flex-wrap:wrap}
+.tl-counts span{font-family:var(--mono);font-size:10.5px;color:var(--ink3)}
+.tl-counts b{color:var(--ink2)}
+/* roadmap */
 .upcoming-item{display:flex;gap:14px;padding:12px 0;border-bottom:1px solid var(--line);align-items:flex-start}
 .upcoming-item:last-child{border-bottom:none}
 .uday{font-family:var(--mono);font-size:11px;color:var(--ink3);width:52px;flex-shrink:0;padding-top:2px}
@@ -143,21 +213,24 @@ body{font-family:var(--sans);background:var(--bg);color:var(--ink);min-height:10
 .phase-tag{font-family:var(--mono);font-size:10px;padding:3px 8px;border-radius:4px}
 .phase-tag.active{background:var(--alt);color:var(--a)}
 .phase-tag.todo{background:var(--bg3);color:var(--ink3)}
+.phase-tag.done{background:var(--glt);color:var(--g)}
 .phase-body{padding:16px 20px}
 .phase-progress{display:flex;gap:6px;margin-bottom:14px}
 .phase-step{flex:1;height:3px;border-radius:2px;background:var(--bg3)}
-.phase-step.done{background:var(--g)}
-.phase-step.active{background:var(--a)}
+.phase-step.done{background:var(--g)}.phase-step.active{background:var(--a)}
 .phase-desc{font-size:12.5px;color:var(--ink2);line-height:1.65}
 .inline-code{font-family:var(--mono);font-size:11px;color:var(--g);background:var(--glt);padding:1px 6px;border-radius:3px}
+.day-divider{height:1px;background:var(--line);margin:40px 0}
+.fade{animation:fade .3s ease}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.empty-state{text-align:center;padding:60px 20px;color:var(--ink3)}
+.empty-state .es-ico{font-size:40px;margin-bottom:12px;opacity:.5}
 </style>
 </head>
 <body>
 <div class="topbar">
   <div class="topbar-logo">🌿 flora</div>
-  <button class="hamburger" id="hbtn" aria-label="Open navigation">
-    <span></span><span></span><span></span>
-  </button>
+  <button class="hamburger" id="hbtn" aria-label="Open navigation"><span></span><span></span><span></span></button>
 </div>
 <div class="overlay" id="overlay"></div>
 <div class="shell">
@@ -166,591 +239,723 @@ body{font-family:var(--sans);background:var(--bg);color:var(--ink);min-height:10
     <div class="logo-mark">🌿 flora</div>
     <div class="logo-sub">Farmer Livelihood and Operations Resource Assistant</div>
   </div>
-  <div class="sidebar-section">Phase 1 — Foundation</div>
-  <a class="nav-item active" href="#day1">
-    <div class="nav-dot" style="background:var(--g)"></div>
-    <div class="nav-text"><strong>Day 1</strong>Setup · Entities · Enums</div>
-  </a>
-  <a class="nav-item" href="#upcoming">
-    <div class="nav-dot" style="background:var(--ink3)"></div>
-    <div class="nav-text"><strong>Day 2</strong>Animal entities</div>
-  </a>
-  <a class="nav-item" href="#upcoming">
-    <div class="nav-dot" style="background:var(--ink3)"></div>
-    <div class="nav-text"><strong>Day 3</strong>Remaining entities</div>
-  </a>
-  <a class="nav-item" href="#upcoming">
-    <div class="nav-dot" style="background:var(--ink3)"></div>
-    <div class="nav-text"><strong>Day 4</strong>JWT auth — register</div>
-  </a>
-  <a class="nav-item" href="#upcoming">
-    <div class="nav-dot" style="background:var(--ink3)"></div>
-    <div class="nav-text"><strong>Day 5</strong>JWT auth — login</div>
-  </a>
-  <div class="sidebar-section" style="margin-top:12px">Phase 2 — Crop AI</div>
-  <a class="nav-item" href="#roadmap"><div class="nav-dot" style="background:var(--ink3)"></div><div class="nav-text" style="color:var(--ink3)">Week 5 onwards</div></a>
-  <div class="sidebar-section" style="margin-top:12px">Phase 3 — Animals + Chat</div>
-  <a class="nav-item" href="#roadmap"><div class="nav-dot" style="background:var(--ink3)"></div><div class="nav-text" style="color:var(--ink3)">Week 9 onwards</div></a>
-  <div class="sidebar-section" style="margin-top:12px">Phase 4 — Production</div>
-  <a class="nav-item" href="#roadmap"><div class="nav-dot" style="background:var(--ink3)"></div><div class="nav-text" style="color:var(--ink3)">Week 13 onwards</div></a>
+  <div class="sidebar-section">Navigate</div>
+  <a class="nav-item" data-view="dashboard" href="#/dashboard"><div class="nav-ico">◧</div><div class="nav-text"><strong>Dashboard</strong>Overview &amp; progress</div></a>
+  <a class="nav-item" data-view="calendar" href="#/calendar"><div class="nav-ico">▦</div><div class="nav-text"><strong>Calendar</strong>Month view</div></a>
+  <a class="nav-item" data-view="timeline" href="#/timeline"><div class="nav-ico">≡</div><div class="nav-text"><strong>Timeline</strong>Every day, in order</div></a>
+  <a class="nav-item" data-view="roadmap" href="#/roadmap"><div class="nav-ico">◈</div><div class="nav-text"><strong>Roadmap</strong>The 4-phase plan</div></a>
+  <div class="sidebar-section">Daily Logs</div>
+  <div class="nav-days" id="navDays"></div>
   <div class="sidebar-footer">
-    <div class="progress-label"><span>Overall progress</span><span style="color:var(--g);font-family:var(--mono)">Day 1 / ~60</span></div>
-    <div class="progress-track"><div class="progress-fill"></div></div>
-    <div class="progress-phases" style="margin-top:8px">
-      <div class="ph active"></div><div class="ph"></div><div class="ph"></div><div class="ph"></div>
-    </div>
+    <div class="progress-label"><span>Overall progress</span><span id="pgLabel" style="color:var(--g);font-family:var(--mono)">—</span></div>
+    <div class="progress-track"><div class="progress-fill" id="pgFill"></div></div>
+    <div class="progress-phases" id="pgPhases" style="margin-top:8px"></div>
   </div>
 </nav>
 
-<main class="main">
-  <div class="page-header">
-    <div class="page-eyebrow">// flora · backend · spring boot · modular monolith</div>
-    <div class="page-title">Dev Journal</div>
-    <div class="page-sub">A daily log of what was built, what was understood, and what comes next. Every line of code explained. Updated every session.</div>
-  </div>
+<main class="main" id="app"></main>
+</div>
 
-  <div class="stats">
-    <div class="stat"><div class="stat-n" style="color:var(--g)">1</div><div class="stat-l">days logged</div></div>
-    <div class="stat"><div class="stat-n" style="color:var(--a)">0</div><div class="stat-l">endpoints built</div></div>
-    <div class="stat"><div class="stat-n" style="color:var(--p)">7</div><div class="stat-l">entities created</div></div>
-    <div class="stat"><div class="stat-n" style="color:var(--b)">7</div><div class="stat-l">tables in MySQL</div></div>
-  </div>
+<script>
+/* ============================================================================
+   FLORA DEV JOURNAL — DATA
+   ----------------------------------------------------------------------------
+   TO ADD A NEW DAY: copy a {} block in JOURNAL, bump `day`, set `date`
+   ("YYYY-MM-DD"), fill the fields. Everything else (calendar, stats, streak,
+   sidebar, progress bar) updates automatically. Just save & refresh.
 
-  <div class="phase-row">
-    <div class="phase-chip active">Phase 1 — Foundation · active</div>
-    <div class="phase-chip todo">Phase 2 — Crop AI</div>
-    <div class="phase-chip todo">Phase 3 — Animals + Chat</div>
-    <div class="phase-chip todo">Phase 4 — Production</div>
-  </div>
+   FIELD GUIDE per day object:
+     day        number   — sequential day number
+     date       string   — "YYYY-MM-DD"
+     title      string   — short headline
+     phase      number   — 1..4
+     status     string   — "done" | "today" | "upcoming"
+     tags       [string] — small chips under the title
+     summary    string   — one-line recap (shown on timeline/calendar)
+     built      [html]   — "What we built" bullets (HTML allowed: <span>, <span class="inline-code">)
+     understood [html]   — "What we understood" bullets
+     code       [{file, sub, code}]  — code cards. `code` is highlighted HTML.
+     extras     [{type:'diagram'|'table', title, html}]  — diagrams / tables
+     next       [html]   — "What comes next" bullets (optional)
+     snapshot   {entities,enums,tables,endpoints} — cumulative project counters
+   ========================================================================== */
 
-  <div class="sec-head"><div class="sec-label">// phase 1 · foundation</div><div class="sec-line"></div></div>
+const META = {
+  project: "Flora",
+  subtitle: "backend · spring boot · modular monolith",
+  totalDays: 60,
+  repo: "github.com/gowthamselvarajgit/flora-smart-farm"
+};
 
-  <!-- DAY 1 -->
-  <div class="day-entry" id="day1">
-    <div class="day-header">
-      <div class="day-badge done">Day 1 ✓</div>
-      <div>
-        <div class="day-title-text">Project setup · Package structure · Enums · Core entities</div>
-        <div class="day-date">June 2026 · Phase 1 · Foundation</div>
-      </div>
-    </div>
+const PHASES = [
+  { n:1, name:"Phase 1 — Foundation", when:"Month 1", status:"active", steps:10, done:2,
+    desc:`Spring Boot setup · Package structure · All entities · JWT auth · MockSensorService · OpenWeatherMap · Data seeding · /api/farmer/dashboard stub<br><br><strong style="color:var(--a)">Gate check:</strong> Farmer registers → logs in → sees personalised dashboard → language toggle works → mock sensor returns district NPK.` },
+  { n:2, name:"Phase 2 — Crop AI Core", when:"Month 2", status:"todo", steps:10, done:0,
+    desc:`Python Flask setup · Model 1 (Crop Recommendation) · Model 2 (Fertilizer Calculator) · Location suitability re-ranking · POST /api/scan/submit pipeline · i18n translation layer<br><br><strong style="color:var(--a)">Gate check:</strong> Soil submit → Flask models run → Tamil prediction on screen in under 3 seconds.` },
+  { n:3, name:"Phase 3 — Animals + Chat + Price", when:"Month 3", status:"todo", steps:10, done:0,
+    desc:`Models 3–7 · Agmarknet price data + LSTM · WebSocket STOMP chat · All animal APIs · All 5 animal screens · Chat screens · Price Tracker · Alert endpoints<br><br><strong style="color:var(--a)">Gate check:</strong> All 7 models live · Symptoms checker works · Real-time chat works end to end.` },
+  { n:4, name:"Phase 4 — Production + Polish", when:"Month 4", status:"todo", steps:10, done:0,
+    desc:`AWS EC2 + RDS + S3 deployment · Firebase FCM push notifications · @Scheduled alert system · Tamil + Hindi translations · Offline cache testing · README + 3-minute demo video<br><br><strong style="color:var(--a)">Gate check:</strong> App live on AWS · Push received on real Android · Demo video recorded.` }
+];
 
-    <!-- WHAT WE BUILT -->
-    <div class="block built">
-      <div class="block-head">What we built</div>
-      <div class="block-body">
-        <ul class="elist">
-          <li><span>Spring Boot project generated</span> via start.spring.io — Group <span class="inline-code">com.flora</span>, Artifact <span class="inline-code">api</span>, package <span class="inline-code">com.flora.api</span>, port 8084</li>
-          <li><span>6 dependencies added</span> — Spring Web, Spring Security, Spring Data JPA, MySQL Driver, Lombok, Validation</li>
-          <li><span>flora_db database created</span> in MySQL — Spring creates all tables automatically inside it</li>
-          <li><span>application.properties configured</span> — DB connection, JPA settings, server port 8084. application-example.properties committed to GitHub (real properties gitignored — password stays safe)</li>
-          <li><span>Package structure created</span> inside com.flora.api — controller, service, repository, entity, dto, config, enums all as separate packages</li>
-          <li><span>Entity sub-packages created</span> — entity/farmer, entity/crop, entity/animal, entity/chat, entity/alert, entity/feedback</li>
-          <li><span>Enum sub-packages created</span> — enums/farmer, enums/crop, enums/animal, enums/chat, enums/alert</li>
-          <li><span>3 enums created</span> in enums/farmer — Language, PrimaryActivity, AnimalCountRange (removed later — replaced by Animal entity)</li>
-          <li><span>5 entities created</span> — State, District, Farmer, Crop, AnimalType</li>
-          <li><span>7 tables auto-created in MySQL</span> — states, districts, crops, animal_types, farmers, farmer_crops, farmer_animal_types</li>
-          <li><span>GitHub repo created</span> — github.com/gowthamselvarajgit/flora-smart-farm. Daily commits started.</li>
-          <li><span>Architecture decision</span> — modular monolith for Spring Boot (not split microservices). Reason: one developer, faster build, same code quality, microservice-ready package separation.</li>
-        </ul>
-      </div>
-    </div>
+// Upcoming planned build order (shown on Roadmap page)
+const PLAN = [
+  { day:"Day 3", title:"Animal sub-entities + remaining entities", desc:"AnimalHealthRecord, MilkRecord, VaccinationRecord. Then SoilScan, WeatherSnapshot, Prediction, MarketPrice, ChatSession, ChatMessage, Alert, DeviceToken, Feedback." },
+  { day:"Day 4", title:"JWT auth — register endpoint", desc:"POST /api/auth/register. Takes phone + password, saves farmer with BCrypt hash, returns JWT token." },
+  { day:"Day 5", title:"JWT auth — login endpoint", desc:"POST /api/auth/login. Validates credentials, returns JWT. Understand Spring Security filter chain." },
+  { day:"Day 6", title:"MockSensorService + /api/sensor/mock", desc:"First real GET endpoint. Returns district-realistic fake NPK soil values. Tests the full controller → service → response flow." },
+  { day:"Day 7", title:"OpenWeatherMap integration", desc:"WeatherService calling OpenWeatherMap API for a farmer's district. API key in properties. Test with Chennai and Coimbatore." },
+  { day:"Day 8", title:"State + District data seeding", desc:"Seed all 36 Indian states and 788 districts. Powers the state → district dropdown on mobile." },
+  { day:"Day 9", title:"Crop + AnimalType + Breed seeding", desc:"~80 TN crops with Tamil/Hindi names. 11 animal types. Breeds per species. One SQL file, run once." },
+  { day:"Day 10", title:"Phase 1 Gate Check", desc:"Register → login → JWT → mock sensor → personalised dashboard. All passing = Phase 1 complete." }
+];
 
-    <!-- WHAT WE LEARNED -->
-    <div class="block learned">
-      <div class="block-head">What we understood</div>
-      <div class="block-body">
-        <ul class="elist">
-          <li><span>ddl-auto=update</span> — Hibernate reads your Java entity class and auto-creates or updates the matching MySQL table. You never write CREATE TABLE SQL manually.</li>
-          <li><span>show-sql=true</span> — Every SQL query Spring runs is printed to the IntelliJ console. Essential for understanding what's happening in the database while learning.</li>
-          <li><span>Enum with properties pattern</span> — Every enum constant is a full Java object. It can carry extra data (like a displayName) alongside its code name. EN("English") stores "EN" in the DB but getDisplayName() returns "English" for the UI.</li>
-          <li><span>@Enumerated(EnumType.STRING)</span> — Always use STRING, never ORDINAL. ORDINAL stores a number (0,1,2) — if you reorder enum constants, all existing database data breaks silently.</li>
-          <li><span>Never store images in the database</span> — Store the image URL. The actual file lives on AWS S3. DB stores a short string, app loads the URL. Fast, cheap, scalable.</li>
-          <li><span>@ManyToOne vs @ManyToMany</span> — A farmer belongs to one district (@ManyToOne). A farmer grows many crops AND one crop is grown by many farmers (@ManyToMany). Hibernate creates the join table automatically.</li>
-          <li><span>@JoinTable creates the join table automatically</span> — farmer_crops and farmer_animal_types are never written as Java classes. The @ManyToMany + @JoinTable annotation on Farmer.java is enough.</li>
-          <li><span>FetchType.LAZY</span> — Don't load related data unless specifically asked. Loading a farmer does not auto-load all their crops and animals. This is critical for performance.</li>
-          <li><span>Derived data rule</span> — Never store data that can be calculated. getFullName() returns firstName + " " + lastName. No fullName column needed in the database.</li>
-          <li><span>State and District as entities, not enums</span> — Districts are data, not code. 788 rows across all Indian states. Adding a new state = inserting rows, not redeploying code.</li>
-        </ul>
-      </div>
-    </div>
+const JOURNAL = [
+{
+  day:1,
+  date:"2026-06-11",
+  title:"Project setup · Package structure · Enums · Core entities",
+  phase:1, status:"done",
+  tags:["Setup","Package structure","Enums","Entities"],
+  summary:"Spring Boot generated, MySQL connected, flora_db live, modular package layout, 3 farmer enums + 5 core entities → 7 tables auto-created.",
+  built:[
+    `<span>Spring Boot project generated</span> via start.spring.io — Group <span class="inline-code">com.flora</span>, Artifact <span class="inline-code">api</span>, package <span class="inline-code">com.flora.api</span>, port 8084`,
+    `<span>6 dependencies added</span> — Spring Web, Spring Security, Spring Data JPA, MySQL Driver, Lombok, Validation`,
+    `<span>flora_db database created</span> in MySQL — Spring creates all tables automatically inside it`,
+    `<span>application.properties configured</span> — DB connection, JPA settings, server port 8084. application-example.properties committed to GitHub (real properties gitignored)`,
+    `<span>Package structure created</span> — controller, service, repository, entity, dto, config, enums with feature-based sub-packages`,
+    `<span>3 enums created</span> in enums/farmer — Language, PrimaryActivity with displayName pattern`,
+    `<span>5 entities created</span> — State, District, Farmer, Crop, AnimalType`,
+    `<span>7 tables auto-created in MySQL</span> — states, districts, crops, animal_types, farmers, farmer_crops, farmer_animal_types`,
+    `<span>GitHub repo created</span> — github.com/gowthamselvarajgit/flora-smart-farm. Daily commits started.`,
+    `<span>Architecture decision</span> — modular monolith for Spring Boot. Reason: one developer, faster build, microservice-ready package separation.`
+  ],
+  understood:[
+    `<span>ddl-auto=update</span> — Hibernate reads @Entity classes and auto-creates MySQL tables. No manual SQL needed.`,
+    `<span>Enum with properties pattern</span> — Every enum constant is a full Java object carrying a displayName. EN("English") stores "EN" in DB but getDisplayName() returns "English" for UI.`,
+    `<span>@Enumerated(EnumType.STRING)</span> — Always STRING, never ORDINAL. ORDINAL stores 0/1/2 — reordering enum constants breaks all existing data silently.`,
+    `<span>@ManyToOne vs @ManyToMany</span> — Farmer belongs to one district (@ManyToOne). Farmer grows many crops AND one crop is grown by many farmers (@ManyToMany — join table auto-created).`,
+    `<span>FetchType.LAZY</span> — Don't load related data unless asked. Loading a farmer does not load all their crops. Critical for performance.`,
+    `<span>Never store images in DB</span> — Store S3 URL instead. DB holds a short string, app loads the image from S3. Fast and scalable.`,
+    `<span>State and District as entities, not enums</span> — 788 districts across India. Adding new state = inserting rows, not redeploying code.`,
+    `<span>Derived data rule</span> — Never store what can be calculated. getFullName() = firstName + lastName. No fullName column needed.`
+  ],
+  code:[
+    { file:"enums/farmer/Language.java", sub:"enum with displayName property",
+      code:`<span class="kw">public enum</span> <span class="cls">Language</span> {
 
-    <!-- CODE SECTION -->
-    <div class="block code">
-      <div class="block-head">Code — every file explained line by line</div>
-      <div class="block-body">
+    <span class="val">EN</span>(<span class="str">"English"</span>),  <span class="cmt">// stored in DB as "EN"</span>
+    <span class="val">TA</span>(<span class="str">"Tamil"</span>),    <span class="cmt">// stored in DB as "TA"</span>
+    <span class="val">HI</span>(<span class="str">"Hindi"</span>);   <span class="cmt">// stored in DB as "HI"</span>
 
-        <!-- application.properties -->
-        <div class="code-file">
-          <div class="code-file-label">📄 src/main/resources/application.properties <span>— Day 1 configuration</span></div>
-          <div class="code-block"><pre><span class="ann">spring.application.name</span>=<span class="str">api</span>
-<span class="cmt"># Tells Spring what this app is called internally</span>
+    <span class="kw">private final</span> String displayName; <span class="cmt">// each constant carries this field</span>
 
-<span class="ann">spring.datasource.url</span>=<span class="str">jdbc:mysql://localhost:3306/flora_db</span>
-<span class="cmt"># Where MySQL is running (localhost) and which database to use (flora_db)</span>
-
-<span class="ann">spring.datasource.username</span>=<span class="str">root</span>
-<span class="ann">spring.datasource.password</span>=<span class="str">root</span>
-<span class="cmt"># MySQL login credentials — NEVER commit real passwords to GitHub</span>
-
-<span class="ann">spring.datasource.driver-class-name</span>=<span class="str">com.mysql.cj.jdbc.Driver</span>
-<span class="cmt"># The MySQL JDBC driver class — tells Java how to talk to MySQL</span>
-
-<span class="ann">spring.jpa.hibernate.ddl-auto</span>=<span class="str">update</span>
-<span class="cmt"># Hibernate reads your @Entity classes and auto-creates/updates MySQL tables</span>
-<span class="cmt"># 'update' = add new columns if missing, never delete existing data</span>
-
-<span class="ann">spring.jpa.show-sql</span>=<span class="str">true</span>
-<span class="cmt"># Prints every SQL query to the IntelliJ console — great for learning</span>
-
-<span class="ann">spring.jpa.properties.hibernate.dialect</span>=<span class="str">org.hibernate.dialect.MySQL8Dialect</span>
-<span class="cmt"># Tells Hibernate to generate SQL syntax specifically for MySQL 8</span>
-
-<span class="ann">server.port</span>=<span class="str">8084</span>
-<span class="cmt"># Flora backend runs on port 8084. Access at http://localhost:8084</span></pre></div>
-        </div>
-
-        <!-- Language enum -->
-        <div class="code-file">
-          <div class="code-file-label">📄 enums/farmer/Language.java <span>— enum with displayName property</span></div>
-          <div class="code-block"><pre><span class="kw">package</span> com.flora.api.enums.farmer;
-
-<span class="kw">public enum</span> <span class="cls">Language</span> {
-
-    <span class="val">EN</span>(<span class="str">"English"</span>),   <span class="cmt">// stored in DB as "EN"</span>
-    <span class="val">TA</span>(<span class="str">"Tamil"</span>),     <span class="cmt">// stored in DB as "TA"</span>
-    <span class="val">HI</span>(<span class="str">"Hindi"</span>);    <span class="cmt">// stored in DB as "HI"</span>
-
-    <span class="cmt">// Each enum constant carries this extra piece of data</span>
-    <span class="kw">private final</span> String displayName;
-
-    <span class="cmt">// Constructor — Java calls this automatically for each constant above</span>
-    <span class="cls">Language</span>(String displayName) {
+    <span class="cls">Language</span>(String displayName) {    <span class="cmt">// Java calls this for each constant</span>
         <span class="kw">this</span>.displayName = displayName;
     }
 
-    <span class="cmt">// Getter — call Language.EN.getDisplayName() to get "English"</span>
-    <span class="kw">public</span> String <span class="prop">getDisplayName</span>() {
+    <span class="kw">public</span> String <span class="prop">getDisplayName</span>() { <span class="cmt">// Language.EN.getDisplayName() → "English"</span>
         <span class="kw">return</span> displayName;
     }
 }
-
-<span class="cmt">// Usage examples:</span>
-<span class="cmt">// Language.EN.name()           → "EN"       (used in DB, API)</span>
-<span class="cmt">// Language.EN.getDisplayName() → "English"  (used in UI labels)</span>
-<span class="cmt">// Language.TA.getDisplayName() → "Tamil"</span></pre></div>
-        </div>
-
-        <!-- State entity -->
-        <div class="code-file">
-          <div class="code-file-label">📄 entity/farmer/State.java <span>— first entity, no dependencies</span></div>
-          <div class="code-block"><pre><span class="kw">package</span> com.flora.api.entity.farmer;
-
-<span class="ann">@Entity</span>               <span class="cmt">// tells Spring: this class maps to a database table</span>
-<span class="ann">@Table(name = "states")</span> <span class="cmt">// sets the exact MySQL table name (plural, snake_case)</span>
-<span class="ann">@Data</span>                 <span class="cmt">// Lombok: generates getters, setters, toString, equals, hashCode</span>
-<span class="ann">@NoArgsConstructor</span>    <span class="cmt">// Lombok: generates empty constructor — required by JPA</span>
-<span class="ann">@AllArgsConstructor</span>   <span class="cmt">// Lombok: generates constructor with all fields</span>
-<span class="kw">public class</span> <span class="cls">State</span> {
-
-    <span class="ann">@Id</span>                                          <span class="cmt">// this field is the primary key</span>
-    <span class="ann">@GeneratedValue(strategy = GenerationType.IDENTITY)</span> <span class="cmt">// MySQL auto-increments this</span>
-    <span class="ann">@Column(name = "state_id")</span>                   <span class="cmt">// MySQL column name in snake_case</span>
-    <span class="kw">private</span> Long stateId;
-
-    <span class="ann">@Column(name = "state_name", nullable = false, unique = true, length = 100)</span>
-    <span class="cmt">// nullable=false → NOT NULL constraint in MySQL</span>
-    <span class="cmt">// unique=true    → UNIQUE constraint, no two states with same name</span>
-    <span class="cmt">// length=100     → VARCHAR(100) in MySQL</span>
-    <span class="kw">private</span> String stateName;
-
-    <span class="ann">@Column(name = "state_code", nullable = false, unique = true, length = 5)</span>
-    <span class="cmt">// 2-letter official code: TN, KA, KL, MH etc.</span>
-    <span class="kw">private</span> String stateCode;
-
-    <span class="ann">@Column(name = "is_active", nullable = false)</span>
-    <span class="kw">private</span> Boolean isActive = <span class="kw">true</span>;
-
-    <span class="ann">@OneToMany(mappedBy = "state", fetch = FetchType.LAZY)</span>
-    <span class="cmt">// One state has many districts</span>
-    <span class="cmt">// mappedBy="state" → the 'state' field in District.java owns this relationship</span>
-    <span class="cmt">// LAZY → don't load all districts when you load a state unless asked</span>
-    <span class="kw">private</span> List&lt;District&gt; districts;
-}</pre></div>
-        </div>
-
-        <!-- District entity -->
-        <div class="code-file">
-          <div class="code-file-label">📄 entity/farmer/District.java <span>— ManyToOne relationship with State</span></div>
-          <div class="code-block"><pre><span class="ann">@Entity</span>
+<span class="cmt">// DB stores "EN" — short, standard, machine-readable</span>
+<span class="cmt">// UI shows "English" — human-readable via getDisplayName()</span>` },
+    { file:"entity/farmer/District.java", sub:"@ManyToOne with State",
+      code:`<span class="ann">@Entity</span>
 <span class="ann">@Table(name = "districts")</span>
 <span class="ann">@Data</span> <span class="ann">@NoArgsConstructor</span> <span class="ann">@AllArgsConstructor</span>
 <span class="kw">public class</span> <span class="cls">District</span> {
 
-    <span class="ann">@Id</span>
-    <span class="ann">@GeneratedValue(strategy = GenerationType.IDENTITY)</span>
+    <span class="ann">@Id</span> <span class="ann">@GeneratedValue(strategy = GenerationType.IDENTITY)</span>
     <span class="ann">@Column(name = "district_id")</span>
     <span class="kw">private</span> Long districtId;
 
     <span class="ann">@Column(name = "district_name", nullable = false, length = 100)</span>
     <span class="kw">private</span> String districtName;
 
-    <span class="ann">@ManyToOne(fetch = FetchType.LAZY)</span>
-    <span class="cmt">// Many districts belong to ONE state</span>
-    <span class="cmt">// This is the "owning side" — District holds the foreign key column</span>
+    <span class="ann">@ManyToOne(fetch = FetchType.LAZY)</span>   <span class="cmt">// MANY districts → ONE state</span>
     <span class="ann">@JoinColumn(name = "state_id", nullable = false)</span>
-    <span class="cmt">// Creates state_id column in districts table → foreign key to states.state_id</span>
+    <span class="cmt">// Creates state_id FK column in districts table → references states.state_id</span>
     <span class="kw">private</span> State state;
 
     <span class="ann">@Column(name = "is_active", nullable = false)</span>
     <span class="kw">private</span> Boolean isActive = <span class="kw">true</span>;
-}
-
-<span class="cmt">// Result in MySQL:</span>
-<span class="cmt">// districts table has: district_id, district_name, state_id, is_active</span>
-<span class="cmt">// state_id is a FOREIGN KEY referencing states(state_id)</span></pre></div>
-        </div>
-
-        <!-- Crop entity -->
-        <div class="code-file">
-          <div class="code-file-label">📄 entity/crop/Crop.java <span>— multilingual crop data</span></div>
-          <div class="code-block"><pre><span class="ann">@Entity</span>
-<span class="ann">@Table(name = "crops")</span>
-<span class="ann">@Data</span> <span class="ann">@NoArgsConstructor</span> <span class="ann">@AllArgsConstructor</span>
-<span class="kw">public class</span> <span class="cls">Crop</span> {
-
-    <span class="ann">@Id</span>
-    <span class="ann">@GeneratedValue(strategy = GenerationType.IDENTITY)</span>
-    <span class="ann">@Column(name = "crop_id")</span>
-    <span class="kw">private</span> Long cropId;
-
-    <span class="ann">@Column(name = "crop_name", nullable = false, unique = true, length = 100)</span>
-    <span class="kw">private</span> String cropName;        <span class="cmt">// English: "Rice"</span>
-
-    <span class="ann">@Column(name = "crop_name_tamil", length = 100)</span>
-    <span class="kw">private</span> String cropNameTamil;   <span class="cmt">// Tamil: "அரிசி"</span>
-
-    <span class="ann">@Column(name = "crop_name_hindi", length = 100)</span>
-    <span class="kw">private</span> String cropNameHindi;   <span class="cmt">// Hindi: "चावल"</span>
-
-    <span class="ann">@Column(name = "crop_season", length = 50)</span>
-    <span class="kw">private</span> String cropSeason;      <span class="cmt">// Kharif / Rabi / Zaid</span>
-
-    <span class="ann">@Column(name = "is_active", nullable = false)</span>
-    <span class="kw">private</span> Boolean isActive = <span class="kw">true</span>;
-
-    <span class="cmt">// Why three language columns instead of one?</span>
-    <span class="cmt">// When app is in Tamil mode → show cropNameTamil</span>
-    <span class="cmt">// When app is in English mode → show cropName</span>
-    <span class="cmt">// No translation library needed on backend — just return the right column</span>
-}</pre></div>
-        </div>
-
-        <!-- AnimalType entity -->
-        <div class="code-file">
-          <div class="code-file-label">📄 entity/animal/AnimalType.java <span>— with S3 image and Lottie animation URLs</span></div>
-          <div class="code-block"><pre><span class="ann">@Entity</span>
-<span class="ann">@Table(name = "animal_types")</span>
-<span class="ann">@Data</span> <span class="ann">@NoArgsConstructor</span> <span class="ann">@AllArgsConstructor</span>
-<span class="kw">public class</span> <span class="cls">AnimalType</span> {
-
-    <span class="ann">@Id</span>
-    <span class="ann">@GeneratedValue(strategy = GenerationType.IDENTITY)</span>
-    <span class="ann">@Column(name = "animal_type_id")</span>
-    <span class="kw">private</span> Long animalTypeId;
-
-    <span class="ann">@Column(name = "type_name", nullable = false, unique = true, length = 50)</span>
-    <span class="kw">private</span> String typeName;        <span class="cmt">// "Cow"</span>
-
-    <span class="ann">@Column(name = "type_name_tamil", length = 50)</span>
-    <span class="kw">private</span> String typeNameTamil;   <span class="cmt">// "பசு"</span>
-
-    <span class="ann">@Column(name = "type_name_hindi", length = 50)</span>
-    <span class="kw">private</span> String typeNameHindi;   <span class="cmt">// "गाय"</span>
-
-    <span class="ann">@Column(name = "image_url", length = 500)</span>
-    <span class="kw">private</span> String imageUrl;
-    <span class="cmt">// https://flora-assets.s3.amazonaws.com/animals/cow.png</span>
-    <span class="cmt">// Static PNG for list views and small icons</span>
-    <span class="cmt">// File lives on AWS S3 — DB stores only the URL string</span>
-
-    <span class="ann">@Column(name = "lottie_url", length = 500)</span>
-    <span class="kw">private</span> String lottieUrl;
-    <span class="cmt">// https://flora-assets.s3.amazonaws.com/lottie/cow.json</span>
-    <span class="cmt">// Lottie JSON animation for the onboarding selection screen</span>
-    <span class="cmt">// React Native renders this as a smooth animated animal</span>
-
-    <span class="ann">@Column(name = "is_active", nullable = false)</span>
-    <span class="kw">private</span> Boolean isActive = <span class="kw">true</span>;
-}</pre></div>
-        </div>
-
-        <!-- Farmer entity -->
-        <div class="code-file">
-          <div class="code-file-label">📄 entity/farmer/Farmer.java <span>— the central entity, all relationships shown</span></div>
-          <div class="code-block"><pre><span class="ann">@Entity</span>
-<span class="ann">@Table(name = "farmers")</span>
+}` },
+    { file:"entity/farmer/Farmer.java", sub:"central entity, all relationships",
+      code:`<span class="ann">@Entity</span> <span class="ann">@Table(name = "farmers")</span>
 <span class="ann">@Data</span> <span class="ann">@NoArgsConstructor</span> <span class="ann">@AllArgsConstructor</span>
 <span class="kw">public class</span> <span class="cls">Farmer</span> {
 
-    <span class="cmt">// ── IDENTITY ─────────────────────────────────────────</span>
-    <span class="ann">@Id</span>
-    <span class="ann">@GeneratedValue(strategy = GenerationType.IDENTITY)</span>
+    <span class="ann">@Id</span> <span class="ann">@GeneratedValue(strategy = GenerationType.IDENTITY)</span>
     <span class="ann">@Column(name = "farmer_id")</span>
     <span class="kw">private</span> Long farmerId;
-    <span class="cmt">// Auto-incremented by MySQL: 1, 2, 3...</span>
-    <span class="cmt">// You never set this manually</span>
 
-    <span class="cmt">// ── AUTHENTICATION ────────────────────────────────────</span>
     <span class="ann">@Column(name = "phone_number", unique = true, nullable = false, length = 15)</span>
-    <span class="kw">private</span> String phoneNumber;
-    <span class="cmt">// unique=true → no two farmers with same phone number</span>
-    <span class="cmt">// This is the login identifier — like a username</span>
+    <span class="kw">private</span> String phoneNumber; <span class="cmt">// login identifier — like a username</span>
 
     <span class="ann">@Column(name = "hashed_password", nullable = false)</span>
-    <span class="kw">private</span> String hashedPassword;
-    <span class="cmt">// BCrypt hash of the real password</span>
-    <span class="cmt">// Real password is NEVER stored — only the hash</span>
-    <span class="cmt">// BCrypt: "password123" → "$2a$10$xyz..." (irreversible)</span>
+    <span class="kw">private</span> String hashedPassword; <span class="cmt">// BCrypt hash — real password NEVER stored</span>
 
-    <span class="cmt">// ── BASIC PROFILE ─────────────────────────────────────</span>
     <span class="ann">@Column(name = "first_name", nullable = false, length = 50)</span>
     <span class="kw">private</span> String firstName;
-
     <span class="ann">@Column(name = "last_name", nullable = false, length = 50)</span>
-    <span class="kw">private</span> String lastName;
-    <span class="cmt">// Split into first+last so alerts can say "Good morning, Gowtham"</span>
-    <span class="cmt">// getFullName() helper method combines them when needed</span>
+    <span class="kw">private</span> String lastName; <span class="cmt">// split — alerts say "Good morning, Gowtham"</span>
 
-    <span class="cmt">// ── ONBOARDING Q1 ─────────────────────────────────────</span>
     <span class="ann">@Enumerated(EnumType.STRING)</span>
-    <span class="cmt">// Store enum as "EN"/"TA"/"HI" in DB — never as 0/1/2</span>
     <span class="ann">@Column(name = "preferred_language", nullable = false, length = 10)</span>
-    <span class="kw">private</span> Language preferredLanguage = Language.EN;
-    <span class="cmt">// Default is English — changed immediately if farmer picks Tamil</span>
+    <span class="kw">private</span> Language preferredLanguage = Language.EN; <span class="cmt">// Q1</span>
 
-    <span class="cmt">// ── ONBOARDING Q2 ─────────────────────────────────────</span>
     <span class="ann">@ManyToOne(fetch = FetchType.LAZY)</span>
-    <span class="cmt">// MANY farmers belong to ONE district</span>
     <span class="ann">@JoinColumn(name = "district_id", nullable = false)</span>
-    <span class="cmt">// Creates district_id column in farmers table</span>
-    <span class="cmt">// Foreign key → districts.district_id</span>
-    <span class="kw">private</span> District district;
-    <span class="cmt">// Farmer selects from dropdown. Drives weather, ML models, market prices.</span>
+    <span class="kw">private</span> District district; <span class="cmt">// Q2 — drives weather, ML, market prices</span>
 
-    <span class="cmt">// ── ONBOARDING Q3 ─────────────────────────────────────</span>
     <span class="ann">@Enumerated(EnumType.STRING)</span>
     <span class="ann">@Column(name = "primary_activity", nullable = false, length = 10)</span>
-    <span class="kw">private</span> PrimaryActivity primaryActivity = PrimaryActivity.CROP;
-    <span class="cmt">// CROP / ANIMAL / BOTH — sets which tabs appear first on dashboard</span>
+    <span class="kw">private</span> PrimaryActivity primaryActivity = PrimaryActivity.CROP; <span class="cmt">// Q3</span>
 
-    <span class="cmt">// ── ONBOARDING Q4 ─────────────────────────────────────</span>
     <span class="ann">@Column(name = "land_size_acres")</span>
-    <span class="kw">private</span> Double landSizeAcres;
-    <span class="cmt">// Used in fertilizer calculation: kg/acre × landSizeAcres</span>
-    <span class="cmt">// nullable — farmer can skip if primaryActivity is ANIMAL</span>
+    <span class="kw">private</span> Double landSizeAcres; <span class="cmt">// Q4 — fertilizer = kg/acre × this</span>
 
-    <span class="cmt">// ── ONBOARDING Q5 ─────────────────────────────────────</span>
     <span class="ann">@ManyToMany(fetch = FetchType.LAZY)</span>
-    <span class="cmt">// ONE farmer grows MANY crops, ONE crop grown by MANY farmers</span>
-    <span class="ann">@JoinTable(</span>
-        <span class="ann">name = "farmer_crops",</span>               <span class="cmt">// join table name in MySQL</span>
+    <span class="ann">@JoinTable(name = "farmer_crops",</span>
         <span class="ann">joinColumns = @JoinColumn(name = "farmer_id"),</span>
-        <span class="ann">inverseJoinColumns = @JoinColumn(name = "crop_id")</span>
-    <span class="ann">)</span>
-    <span class="cmt">// Hibernate creates farmer_crops table automatically</span>
-    <span class="cmt">// farmer_crops has exactly 2 columns: farmer_id, crop_id</span>
-    <span class="kw">private</span> List&lt;Crop&gt; currentlyGrowingCrops;
-    <span class="cmt">// Multi-select dropdown on mobile. No typing.</span>
+        <span class="ann">inverseJoinColumns = @JoinColumn(name = "crop_id"))</span>
+    <span class="kw">private</span> List&lt;Crop&gt; currentlyGrowingCrops; <span class="cmt">// Q5 — join table auto-created</span>
 
-    <span class="cmt">// ── ONBOARDING Q6 ─────────────────────────────────────</span>
     <span class="ann">@ManyToMany(fetch = FetchType.LAZY)</span>
-    <span class="ann">@JoinTable(</span>
-        <span class="ann">name = "farmer_animal_types",</span>
+    <span class="ann">@JoinTable(name = "farmer_animal_types",</span>
         <span class="ann">joinColumns = @JoinColumn(name = "farmer_id"),</span>
-        <span class="ann">inverseJoinColumns = @JoinColumn(name = "animal_type_id")</span>
-    <span class="ann">)</span>
-    <span class="kw">private</span> List&lt;AnimalType&gt; ownedAnimalTypes;
-    <span class="cmt">// Tappable animal icons with Lottie animations during onboarding</span>
-    <span class="cmt">// farmer_animal_types join table auto-created by Hibernate</span>
+        <span class="ann">inverseJoinColumns = @JoinColumn(name = "animal_type_id"))</span>
+    <span class="kw">private</span> List&lt;AnimalType&gt; ownedAnimalTypes; <span class="cmt">// Q6 — Lottie animated icons</span>
 
-    <span class="cmt">// ── ONBOARDING Q7 ─────────────────────────────────────</span>
     <span class="ann">@Column(name = "alert_time")</span>
-    <span class="kw">private</span> LocalTime alertTime;
-    <span class="cmt">// e.g. 06:00 — @Scheduled AlertScheduler reads this per farmer</span>
-    <span class="cmt">// 5AM farmer gets alerts at 5AM. 6PM farmer at 6PM.</span>
+    <span class="kw">private</span> LocalTime alertTime; <span class="cmt">// Q7 — @Scheduled reads per farmer</span>
 
-    <span class="cmt">// ── APP STATE ─────────────────────────────────────────</span>
     <span class="ann">@Column(name = "is_onboarding_complete", nullable = false)</span>
     <span class="kw">private</span> Boolean isOnboardingComplete = <span class="kw">false</span>;
-    <span class="cmt">// false = app shows onboarding wizard</span>
-    <span class="cmt">// true  = app shows personalised dashboard</span>
 
-    <span class="cmt">// ── TIMESTAMPS ────────────────────────────────────────</span>
     <span class="ann">@Column(name = "created_at", nullable = false, updatable = false)</span>
     <span class="kw">private</span> LocalDateTime createdAt = LocalDateTime.now();
-    <span class="cmt">// updatable=false → Hibernate never changes this after first insert</span>
+    <span class="ann">@Column(name = "updated_at")</span>
+    <span class="kw">private</span> LocalDateTime updatedAt = LocalDateTime.now();
+
+    <span class="kw">public</span> String <span class="prop">getFullName</span>() { <span class="kw">return</span> firstName + <span class="str">" "</span> + lastName; }
+    <span class="cmt">// Derived — never stored. farmer.getFullName() → "Gowtham Selvaraj"</span>
+}` }
+  ],
+  extras:[
+    { type:"diagram", title:"Entity relationship map — after Day 1",
+      html:`<pre style="color:var(--ink2)"><span style="color:var(--g)">states</span> ──@OneToMany──► <span style="color:var(--g)">districts</span> ──@ManyToOne──► <span style="color:var(--g)">farmers</span>
+                                                          │
+                          @ManyToMany ──► <span style="color:var(--g)">farmer_crops</span> ──► <span style="color:var(--g)">crops</span>
+                          @ManyToMany ──► <span style="color:var(--g)">farmer_animal_types</span> ──► <span style="color:var(--g)">animal_types</span></pre>` }
+  ],
+  next:[],
+  snapshot:{ entities:5, enums:3, tables:7, endpoints:0 }
+},
+{
+  day:2,
+  date:"2026-06-12",
+  title:"Animal enums · Breed entity · Animal entity",
+  phase:1, status:"today",
+  tags:["Enums","Animal domain","Entities"],
+  summary:"Added HealthStatus + AnimalGender enums and the Breed → Animal ownership chain. 2 new tables (breeds, animals) → 9 total.",
+  built:[
+    `<span>HealthStatus enum</span> — HEALTHY, SICK, RECOVERING, CRITICAL, DECEASED with displayName. Drives colour-coded badges on every animal card in the mobile app.`,
+    `<span>AnimalGender enum</span> — MALE, FEMALE with displayName. Drives feature visibility — FEMALE enables milk/egg tracker, MALE hides it.`,
+    `<span>Breed entity</span> — breed_id, breedName, breedNameTamil, breedNameHindi, @ManyToOne to AnimalType. Replaces free-text breed field — farmer selects from dropdown filtered by animal type.`,
+    `<span>Animal entity</span> — individual animal registration with animalId, @ManyToOne to Farmer, AnimalType, and Breed. Fields: animalName, gender, dateOfBirth, weightKg, healthStatus, uniqueTagNumber (INAPH govt tag).`,
+    `<span>2 new tables in MySQL</span> — breeds, animals. Total tables now: 9.`,
+    `<span>Design decision</span> — breed is nullable on Animal. Farmer may not know exact breed. We never force a selection that blocks registration.`
+  ],
+  understood:[
+    `<span>Always read @ManyToOne from where you are standing</span> — Inside Animal.java: "Many Animals belong to One Breed" = @ManyToOne. Inside Breed.java: "One Breed has Many Animals" = @OneToMany. Same relationship, two perspectives.`,
+    `<span>Breed is specific to AnimalType</span> — Holstein Friesian is a Cow breed, not a Goat breed. @ManyToOne from Breed to AnimalType ensures the mobile dropdown only shows relevant breeds when a species is selected.`,
+    `<span>LocalDate vs LocalDateTime</span> — dateOfBirth uses LocalDate (date only — no time needed). registeredAt uses LocalDateTime (exact timestamp needed). Always pick the right precision.`,
+    `<span>Government INAPH tag</span> — India's official cattle UID scheme. uniqueTagNumber is optional (many small farmers don't have it) but unique-constrained so no two animals share a government tag.`,
+    `<span>Enum drives UI logic, not just labels</span> — AnimalGender.FEMALE doesn't just display "Female". The mobile app reads this field and decides whether to show or hide the milk/egg tracker section entirely.`,
+    `<span>Crop seed data strategy</span> — Flora needs ~60-80 crops for Tamil Nadu farmers. Not thousands. One SQL seed file with all crop names in EN/TA/HI runs once. System knows "கத்தாழை is Aloe Vera" because both names are in the same row — the developer seeded it.`
+  ],
+  code:[
+    { file:"enums/animal/HealthStatus.java", sub:"drives animal card colour badges",
+      code:`<span class="kw">public enum</span> <span class="cls">HealthStatus</span> {
+
+    <span class="val">HEALTHY</span>(<span class="str">"Healthy"</span>),       <span class="cmt">// green badge  — all good</span>
+    <span class="val">SICK</span>(<span class="str">"Sick"</span>),             <span class="cmt">// red badge    — needs attention now</span>
+    <span class="val">RECOVERING</span>(<span class="str">"Recovering"</span>), <span class="cmt">// amber badge  — was sick, getting better</span>
+    <span class="val">CRITICAL</span>(<span class="str">"Critical"</span>),     <span class="cmt">// red flashing — call vet immediately</span>
+    <span class="val">DECEASED</span>(<span class="str">"Deceased"</span>);     <span class="cmt">// grey         — kept for historical records</span>
+
+    <span class="kw">private final</span> String displayName;
+    <span class="cls">HealthStatus</span>(String displayName) { <span class="kw">this</span>.displayName = displayName; }
+    <span class="kw">public</span> String <span class="prop">getDisplayName</span>() { <span class="kw">return</span> displayName; }
+}
+<span class="cmt">// Mobile app reads healthStatus field → decides badge colour</span>
+<span class="cmt">// Farmer sees colour instantly without reading any text</span>` },
+    { file:"enums/animal/AnimalGender.java", sub:"drives milk/egg tracker visibility",
+      code:`<span class="kw">public enum</span> <span class="cls">AnimalGender</span> {
+
+    <span class="val">MALE</span>(<span class="str">"Male"</span>),     <span class="cmt">// milk/egg tracker HIDDEN — males don't produce</span>
+    <span class="val">FEMALE</span>(<span class="str">"Female"</span>); <span class="cmt">// milk/egg tracker SHOWN  — females produce</span>
+
+    <span class="kw">private final</span> String displayName;
+    <span class="cls">AnimalGender</span>(String displayName) { <span class="kw">this</span>.displayName = displayName; }
+    <span class="kw">public</span> String <span class="prop">getDisplayName</span>() { <span class="kw">return</span> displayName; }
+}
+<span class="cmt">// Real-world logic: if(animal.getGender() == FEMALE) showMilkTracker()</span>` },
+    { file:"entity/animal/Breed.java", sub:"filtered by AnimalType on mobile dropdown",
+      code:`<span class="ann">@Entity</span> <span class="ann">@Table(name = "breeds")</span>
+<span class="ann">@Data</span> <span class="ann">@NoArgsConstructor</span> <span class="ann">@AllArgsConstructor</span>
+<span class="kw">public class</span> <span class="cls">Breed</span> {
+
+    <span class="ann">@Id</span> <span class="ann">@GeneratedValue(strategy = GenerationType.IDENTITY)</span>
+    <span class="ann">@Column(name = "breed_id")</span>
+    <span class="kw">private</span> Long breedId;
+
+    <span class="ann">@Column(name = "breed_name", nullable = false, length = 100)</span>
+    <span class="kw">private</span> String breedName;       <span class="cmt">// "Holstein Friesian"</span>
+
+    <span class="ann">@Column(name = "breed_name_tamil", length = 100)</span>
+    <span class="kw">private</span> String breedNameTamil;  <span class="cmt">// "ஹோல்ஸ்டீன் ஃப்ரீசியன்"</span>
+
+    <span class="ann">@Column(name = "breed_name_hindi", length = 100)</span>
+    <span class="kw">private</span> String breedNameHindi;  <span class="cmt">// "होल्स्टीन फ्रीसियन"</span>
+
+    <span class="ann">@ManyToOne(fetch = FetchType.LAZY)</span>
+    <span class="ann">@JoinColumn(name = "animal_type_id", nullable = false)</span>
+    <span class="kw">private</span> AnimalType animalType;
+    <span class="cmt">// MANY breeds belong to ONE animal type</span>
+    <span class="cmt">// Holstein Friesian → Cow. Boer → Goat. Aseel → Hen.</span>
+    <span class="cmt">// Mobile: farmer selects Cow → dropdown shows only cow breeds</span>
+
+    <span class="ann">@Column(name = "is_active", nullable = false)</span>
+    <span class="kw">private</span> Boolean isActive = <span class="kw">true</span>;
+}
+<span class="cmt">// breeds table: breed_id, breed_name, breed_name_tamil,</span>
+<span class="cmt">//               breed_name_hindi, animal_type_id (FK), is_active</span>` },
+    { file:"entity/animal/Animal.java", sub:"individual animal registration, full chain",
+      code:`<span class="ann">@Entity</span> <span class="ann">@Table(name = "animals")</span>
+<span class="ann">@Data</span> <span class="ann">@NoArgsConstructor</span> <span class="ann">@AllArgsConstructor</span>
+<span class="kw">public class</span> <span class="cls">Animal</span> {
+
+    <span class="ann">@Id</span> <span class="ann">@GeneratedValue(strategy = GenerationType.IDENTITY)</span>
+    <span class="ann">@Column(name = "animal_id")</span>
+    <span class="kw">private</span> Long animalId; <span class="cmt">// unique ID — like a passport for the animal</span>
+
+    <span class="ann">@ManyToOne(fetch = FetchType.LAZY)</span>
+    <span class="ann">@JoinColumn(name = "farmer_id", nullable = false)</span>
+    <span class="kw">private</span> Farmer farmer;
+    <span class="cmt">// MANY animals belong to ONE farmer</span>
+    <span class="cmt">// Gowtham can have 10 animals — all point to his farmer_id</span>
+
+    <span class="ann">@ManyToOne(fetch = FetchType.LAZY)</span>
+    <span class="ann">@JoinColumn(name = "animal_type_id", nullable = false)</span>
+    <span class="kw">private</span> AnimalType animalType;
+    <span class="cmt">// MANY animals belong to ONE type</span>
+    <span class="cmt">// 3 cows + 5 hens → all point to their respective type rows</span>
+
+    <span class="ann">@ManyToOne(fetch = FetchType.LAZY)</span>
+    <span class="ann">@JoinColumn(name = "breed_id")</span>  <span class="cmt">// nullable — farmer may not know breed</span>
+    <span class="kw">private</span> Breed breed;
+    <span class="cmt">// MANY animals belong to ONE breed</span>
+    <span class="cmt">// Multiple Jersey cows → all point to breed_id = 2 (Jersey)</span>
+
+    <span class="ann">@Column(name = "animal_name", length = 100)</span>
+    <span class="kw">private</span> String animalName; <span class="cmt">// nullable — farmers name cows, rarely name hens</span>
+
+    <span class="ann">@Enumerated(EnumType.STRING)</span>
+    <span class="ann">@Column(name = "gender", length = 10)</span>
+    <span class="kw">private</span> AnimalGender gender; <span class="cmt">// FEMALE → milk tracker ON. MALE → OFF.</span>
+
+    <span class="ann">@Column(name = "date_of_birth")</span>
+    <span class="kw">private</span> LocalDate dateOfBirth;
+    <span class="cmt">// LocalDate not LocalDateTime — date only, no time needed</span>
+    <span class="cmt">// 2024-06-12, not 2024-06-12T14:32:00</span>
+
+    <span class="ann">@Column(name = "weight_kg")</span>
+    <span class="kw">private</span> Double weightKg; <span class="cmt">// used in ICAR feed calculator</span>
+
+    <span class="ann">@Enumerated(EnumType.STRING)</span>
+    <span class="ann">@Column(name = "health_status", nullable = false, length = 20)</span>
+    <span class="kw">private</span> HealthStatus healthStatus = HealthStatus.HEALTHY;
+    <span class="cmt">// Default HEALTHY — changes when symptoms checker runs</span>
+    <span class="cmt">// SICK → red badge on animal card → farmer knows to act</span>
+
+    <span class="ann">@Column(name = "unique_tag_number", unique = true, length = 50)</span>
+    <span class="kw">private</span> String uniqueTagNumber;
+    <span class="cmt">// INAPH government UID ear tag for registered cattle</span>
+    <span class="cmt">// nullable — most small farmers don't have this yet</span>
+    <span class="cmt">// unique=true — no two animals share the same govt tag</span>
+
+    <span class="ann">@Column(name = "registered_at", nullable = false, updatable = false)</span>
+    <span class="kw">private</span> LocalDateTime registeredAt = LocalDateTime.now();
 
     <span class="ann">@Column(name = "updated_at")</span>
     <span class="kw">private</span> LocalDateTime updatedAt = LocalDateTime.now();
-    <span class="cmt">// Updated manually in service layer when farmer profile changes</span>
-
-    <span class="cmt">// ── HELPER ────────────────────────────────────────────</span>
-    <span class="kw">public</span> String <span class="prop">getFullName</span>() {
-        <span class="kw">return</span> firstName + <span class="str">" "</span> + lastName;
-    }
-    <span class="cmt">// Derived data — never stored in DB. Always computed from first+last.</span>
-    <span class="cmt">// Usage: farmer.getFullName() → "Gowtham Selvaraj"</span>
-}</pre></div>
-        </div>
-
-        <!-- Relationship diagram -->
-        <div style="margin-top:16px;margin-bottom:4px;font-size:11px;font-weight:600;color:var(--t);text-transform:uppercase;letter-spacing:.08em">Entity relationship map — Day 1</div>
-        <div class="rel-diagram"><pre style="color:var(--ink2)">
-  <span style="color:var(--g)">states</span>
-    │  state_id, state_name, state_code, is_active
+}` }
+  ],
+  extras:[
+    { type:"diagram", title:"Full animal ownership chain — after Day 2",
+      html:`<pre style="color:var(--ink2)"><span style="color:var(--g)">animal_types</span>
+    │  type_id, type_name, type_name_tamil, image_url, lottie_url
     │
-    │  @OneToMany (one state → many districts)
+    │  @OneToMany — one type has many breeds
     │
     ▼
-  <span style="color:var(--g)">districts</span>
-    │  district_id, district_name, <span style="color:var(--a)">state_id (FK)</span>, is_active
+<span style="color:var(--g)">breeds</span>
+    │  breed_id, breed_name, breed_name_tamil, <span style="color:var(--a)">animal_type_id (FK)</span>
     │
-    │  @ManyToOne (many farmers → one district)
+    │  @ManyToOne — many animals have one breed
     │
     ▼
-  <span style="color:var(--g)">farmers</span>
-    │  farmer_id, phone_number, hashed_password
-    │  first_name, last_name, preferred_language
-    │  primary_activity, land_size_acres, alert_time
-    │  is_onboarding_complete, created_at, updated_at
-    │  <span style="color:var(--a)">district_id (FK)</span>
+<span style="color:var(--g)">animals</span>
+    │  animal_id, animal_name, gender, date_of_birth
+    │  weight_kg, health_status, unique_tag_number
+    │  <span style="color:var(--a)">farmer_id (FK)</span>, <span style="color:var(--a)">animal_type_id (FK)</span>, <span style="color:var(--a)">breed_id (FK)</span>
     │
-    ├── @ManyToMany ──► <span style="color:var(--g)">farmer_crops</span> (join table)
-    │                        farmer_id, crop_id
-    │                            │
-    │                            ▼
-    │                       <span style="color:var(--g)">crops</span>
-    │                       crop_id, crop_name, crop_name_tamil
-    │                       crop_name_hindi, crop_season, is_active
-    │
-    └── @ManyToMany ──► <span style="color:var(--g)">farmer_animal_types</span> (join table)
-                             farmer_id, animal_type_id
-                                 │
-                                 ▼
-                            <span style="color:var(--g)">animal_types</span>
-                            animal_type_id, type_name, type_name_tamil
-                            type_name_hindi, image_url, lottie_url, is_active
-</pre></div>
-
-        <!-- Annotation quick ref -->
-        <div style="margin-top:16px;margin-bottom:8px;font-size:11px;font-weight:600;color:var(--t);text-transform:uppercase;letter-spacing:.08em">Annotation quick reference</div>
-        <table class="ann-table">
-          <thead><tr><th>Annotation</th><th>What it does</th></tr></thead>
+    ├── AnimalHealthRecord  (symptoms checker results — Day 3)
+    ├── MilkRecord          (daily yield tracking — Day 3)
+    └── VaccinationRecord   (vaccination schedule — Day 3)</pre>` },
+    { type:"table", title:"@ManyToOne — the rule to remember",
+      html:`<table class="ann-table">
+          <thead><tr><th>Situation</th><th>Annotation</th><th>Real example in Flora</th></tr></thead>
           <tbody>
-            <tr><td>@Entity</td><td>Marks this class as a database table. Hibernate reads it and creates the table in MySQL.</td></tr>
-            <tr><td>@Table(name = "...")</td><td>Sets the exact MySQL table name. Without this, Hibernate uses the class name (lowercase).</td></tr>
-            <tr><td>@Id</td><td>Marks this field as the primary key of the table.</td></tr>
-            <tr><td>@GeneratedValue(IDENTITY)</td><td>MySQL auto-increments this field. You never set the ID yourself.</td></tr>
-            <tr><td>@Column(name = "...")</td><td>Sets the MySQL column name. Java uses camelCase, MySQL uses snake_case — this bridges them.</td></tr>
-            <tr><td>@Column(nullable = false)</td><td>Adds NOT NULL constraint in MySQL. Spring rejects requests missing this field.</td></tr>
-            <tr><td>@Column(unique = true)</td><td>Adds UNIQUE constraint. No two rows can have the same value in this column.</td></tr>
-            <tr><td>@Column(updatable = false)</td><td>Hibernate never updates this column after the first insert. Used for created_at.</td></tr>
-            <tr><td>@Enumerated(STRING)</td><td>Store enum as its name ("EN") not its position number (0). Always use STRING.</td></tr>
-            <tr><td>@ManyToOne</td><td>Many rows of this table belong to one row of another table. Creates a foreign key column.</td></tr>
-            <tr><td>@OneToMany(mappedBy)</td><td>One row of this table has many rows in another. No foreign key here — other table holds it.</td></tr>
-            <tr><td>@ManyToMany + @JoinTable</td><td>Many-to-many relationship. Hibernate auto-creates a join table with two foreign key columns.</td></tr>
-            <tr><td>@JoinColumn(name = "...")</td><td>Sets the foreign key column name in MySQL.</td></tr>
-            <tr><td>FetchType.LAZY</td><td>Don't load related data unless explicitly requested. Prevents performance issues.</td></tr>
-            <tr><td>@Data (Lombok)</td><td>Auto-generates getters, setters, toString, equals, hashCode. Saves ~200 lines of boilerplate.</td></tr>
-            <tr><td>@NoArgsConstructor</td><td>Generates empty constructor. JPA requires this to create objects and fill fields one by one.</td></tr>
-            <tr><td>@AllArgsConstructor</td><td>Generates constructor with every field as a parameter.</td></tr>
+            <tr><td>Many X belong to One Y</td><td>@ManyToOne in X.java</td><td>Many Animals → One Farmer. Write @ManyToOne in Animal.java</td></tr>
+            <tr><td>One X has Many Y</td><td>@OneToMany in X.java</td><td>One State → Many Districts. Write @OneToMany in State.java</td></tr>
+            <tr><td>Many X relate to Many Y</td><td>@ManyToMany + @JoinTable</td><td>Farmer ↔ Crops. Write @ManyToMany in Farmer.java with @JoinTable</td></tr>
+            <tr><td>Key rule</td><td>Read from where you are</td><td>Standing in Animal.java — ask "how many of ME point to one of THEM?" Many animals → one breed = @ManyToOne</td></tr>
           </tbody>
-        </table>
+        </table>` }
+  ],
+  next:[
+    `<span>AnimalHealthRecord.java</span> — symptoms checker result per animal. Fields: symptoms, predictedDisease, confidenceScore, severity, actionRequired, isVetVisitRequired.`,
+    `<span>MilkRecord.java</span> — daily milk and egg yield. MORNING/EVENING sessions. Used for trend charts and 20% drop detection alert.`,
+    `<span>VaccinationRecord.java</span> — vaccination schedule per animal. dueDate drives the 3-day FCM push reminder. vaccinationStatus (PENDING/COMPLETED/OVERDUE).`,
+    `<span>Remaining entities</span> — SoilScan, WeatherSnapshot, Prediction, MarketPrice, ChatSession, ChatMessage, Alert, DeviceToken, Feedback.`
+  ],
+  snapshot:{ entities:7, enums:5, tables:9, endpoints:0 }
+}
+];
 
-      </div>
-    </div>
+/* ============================================================================
+   ENGINE — renders pages from data. No need to edit below to add a day.
+   ========================================================================== */
+const $app = document.getElementById('app');
+const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+const DOW = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
 
-    <!-- NEXT -->
-    <div class="block next">
-      <div class="block-head">What comes next — Day 2</div>
-      <div class="block-body">
-        <ul class="elist">
-          <li><span>Animal entities</span> — Animal.java with individual animal registration. Each animal gets a unique animalId, species, breed, age, weight, health status, and optional government INAPH tag number.</li>
-          <li><span>Two new enums</span> — HealthStatus (HEALTHY/SICK/RECOVERING/CRITICAL/DECEASED) and AnimalGender (MALE/FEMALE) in enums/animal/</li>
-          <li><span>VaccinationRecord.java</span> — vaccination schedule per animal. due_date drives the 3-day FCM reminder alert.</li>
-          <li><span>MilkRecord.java</span> — daily milk and egg yield. MORNING/EVENING sessions. Used for trend charts and drop detection.</li>
-          <li><span>AnimalHealthRecord.java</span> — symptoms checker result. Stores disease, confidence, severity, and vet_visit_required flag.</li>
-        </ul>
-      </div>
-    </div>
+function byDate(){ return [...JOURNAL].sort((a,b)=>a.date.localeCompare(b.date)); }
+function byDay(n){ return JOURNAL.find(d=>d.day===Number(n)); }
+function latest(){ return byDate()[byDate().length-1]; }
+function fmtDate(s){ const [y,m,d]=s.split('-').map(Number); return `${MONTHS[m-1]} ${d}, ${y}`; }
+function fmtShort(s){ const [y,m,d]=s.split('-').map(Number); return `${String(d).padStart(2,'0')} ${MONTHS[m-1].slice(0,3)}`; }
 
-  </div><!-- end day 1 -->
+function streak(){
+  const dates = byDate().map(d=>d.date);
+  if(!dates.length) return 0;
+  let s=1;
+  for(let i=dates.length-1;i>0;i--){
+    const a=new Date(dates[i]), b=new Date(dates[i-1]);
+    if(Math.round((a-b)/86400000)===1) s++; else break;
+  }
+  return s;
+}
+function totalSnapshot(){
+  const l=latest(); return l&&l.snapshot ? l.snapshot : {entities:0,enums:0,tables:0,endpoints:0};
+}
 
-  <!-- UPCOMING -->
-  <div class="sec-head" id="upcoming" style="margin-top:8px">
-    <div class="sec-label">// upcoming — phase 1</div>
-    <div class="sec-line"></div>
+/* Effective status — derived, so you never hand-flip "today" → "done".
+   The latest-dated logged entry is always "today"; earlier ones are "done";
+   anything explicitly marked "upcoming" stays upcoming. */
+function effStatus(d){
+  if(d.status==='upcoming') return 'upcoming';
+  const l=latest();
+  return (l && d.day===l.day) ? 'today' : 'done';
+}
+
+/* ---------- shared bits ---------- */
+function elist(cls, items){
+  if(!items||!items.length) return '';
+  return `<ul class="elist">`+items.map(i=>`<li>${i}</li>`).join('')+`</ul>`;
+}
+function badgeClass(s){ return s==='today'?'today':(s==='upcoming'?'upcoming':'done'); }
+function badgeText(d){ const s=effStatus(d); return s==='today'?`Day ${d.day} • today`:(s==='upcoming'?`Day ${d.day}`:`Day ${d.day} ✓`); }
+
+function renderDayBody(d){
+  let h='';
+  if(d.built&&d.built.length) h+=`<div class="block built"><div class="block-head">What we built</div><div class="block-body">${elist('built',d.built)}</div></div>`;
+  if(d.understood&&d.understood.length) h+=`<div class="block learned"><div class="block-head">What we understood</div><div class="block-body">${elist('learned',d.understood)}</div></div>`;
+  if((d.code&&d.code.length)||(d.extras&&d.extras.length)){
+    h+=`<div class="block code"><div class="block-head">Code &amp; design — files explained</div><div class="block-body">`;
+    (d.code||[]).forEach(c=>{
+      h+=`<div class="code-file"><div class="code-file-label">📄 ${c.file} <span>— ${c.sub}</span></div><div class="code-block"><pre>${c.code}</pre></div></div>`;
+    });
+    (d.extras||[]).forEach(e=>{
+      h+=`<div class="extra-title">${e.title}</div>`;
+      h+= e.type==='diagram' ? `<div class="rel-diagram">${e.html}</div>` : e.html;
+    });
+    h+=`</div></div>`;
+  }
+  if(d.next&&d.next.length) h+=`<div class="block next"><div class="block-head">What comes next — Day ${d.day+1}</div><div class="block-body">${elist('next',d.next)}</div></div>`;
+  return h;
+}
+
+/* ---------- DASHBOARD ---------- */
+function viewDashboard(){
+  const l=latest(), snap=totalSnapshot(), st=streak();
+  const activePhase=PHASES.find(p=>p.status==='active')||PHASES[0];
+  const tags=(l.tags||[]).map(t=>`<span class="day-tag">${t}</span>`).join('');
+  $app.innerHTML=`
+  <div class="page-header fade">
+    <div class="page-eyebrow">// ${META.project.toLowerCase()} · ${META.subtitle}</div>
+    <div class="page-title">Dev Journal</div>
+    <div class="page-sub">A daily log of what was built, what was understood, and what comes next. Every line of code explained. Updated every session.</div>
   </div>
-  <div class="block note" style="margin-bottom:32px">
-    <div class="block-head">Planned build order</div>
+
+  <div class="hero fade">
+    <div class="hero-main">
+      <div class="hero-eyebrow">// latest entry · ${fmtDate(l.date)}</div>
+      <div class="hero-h">Day ${l.day} — ${l.title}</div>
+      <div class="hero-p">${l.summary||''}</div>
+      <div class="day-tagrow" style="position:relative;z-index:1">${tags}</div>
+      <a class="hero-cta" href="#/day/${l.day}">Open Day ${l.day} →</a>
+    </div>
+    <div class="hero-side">
+      <div class="streak">
+        <div class="streak-fire">🔥</div>
+        <div class="streak-n">${st}</div>
+        <div class="streak-l">day streak</div>
+      </div>
+      <div class="mini-phase">
+        <div class="mini-phase-t"><span>Current phase</span><b>${activePhase.done}/${activePhase.steps}</b></div>
+        <div class="phase-progress">${phaseSteps(activePhase)}</div>
+        <div style="font-size:12px;color:var(--ink2);font-weight:500">${activePhase.name}</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="stats fade">
+    ${statCard(JOURNAL.filter(d=>d.status!=='upcoming').length,'days logged','var(--g)')}
+    ${statCard(snap.entities,'entities created','var(--p)')}
+    ${statCard(snap.tables,'tables in MySQL','var(--b)')}
+    ${statCard(snap.endpoints,'endpoints built','var(--a)')}
+  </div>
+
+  <div class="phase-row fade">
+    ${PHASES.map(p=>`<div class="phase-chip ${p.status}">${p.name}${p.status==='active'?' · active':''}</div>`).join('')}
+  </div>
+
+  <div class="sec-head"><div class="sec-label">// recent activity</div><div class="sec-line"></div></div>
+  <div class="tl fade">${byDate().slice().reverse().slice(0,4).map(tlItem).join('')}</div>
+  <a class="hero-cta" href="#/timeline" style="margin-top:4px">View full timeline →</a>
+  `;
+}
+function statCard(n,l,c){ return `<div class="stat"><div class="stat-n" style="color:${c}">${n}</div><div class="stat-l">${l}</div></div>`; }
+function phaseSteps(p){ let h=''; for(let i=0;i<p.steps;i++){ h+=`<div class="phase-step ${i<p.done?'done':(i===p.done&&p.status==='active'?'active':'')}"></div>`; } return h; }
+
+/* ---------- CALENDAR ---------- */
+let calY, calM; // current calendar month
+function viewCalendar(){
+  if(calY===undefined){ const l=latest(); const [y,m]=l.date.split('-').map(Number); calY=y; calM=m-1; }
+  $app.innerHTML=`
+  <div class="page-header fade">
+    <div class="page-eyebrow">// calendar view</div>
+    <div class="page-title">The Journey, by date</div>
+    <div class="page-sub">Each green tile is a logged day. Click any tile to open that day's full entry.</div>
+  </div>
+  <div class="cal-wrap fade" id="calWrap"></div>`;
+  renderCal();
+}
+function renderCal(){
+  const map={}; JOURNAL.forEach(d=>{ if(d.status!=='upcoming') map[d.date]=d; });
+  const first=new Date(calY,calM,1).getDay();
+  const days=new Date(calY,calM+1,0).getDate();
+  const today=new Date(); const tStr=`${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
+  let cells='';
+  DOW.forEach(d=>cells+=`<div class="cal-dow">${d}</div>`);
+  for(let i=0;i<first;i++) cells+=`<div class="cal-cell empty"></div>`;
+  for(let dd=1;dd<=days;dd++){
+    const ds=`${calY}-${String(calM+1).padStart(2,'0')}-${String(dd).padStart(2,'0')}`;
+    const entry=map[ds];
+    const cls=['cal-cell']; if(entry) cls.push('has'); if(ds===tStr) cls.push('today');
+    const inner = entry
+      ? `<div class="cal-dnum">${dd}</div><div class="cal-daylabel">Day ${entry.day}</div><div class="cal-dtitle">${entry.title}</div>`
+      : `<div class="cal-dnum">${dd}</div>`;
+    cells+= entry
+      ? `<a class="${cls.join(' ')}" href="#/day/${entry.day}">${inner}</a>`
+      : `<div class="${cls.join(' ')}">${inner}</div>`;
+  }
+  document.getElementById('calWrap').innerHTML=`
+    <div class="cal-top">
+      <div class="cal-month">${MONTHS[calM]} <span>${calY}</span></div>
+      <div class="cal-btns">
+        <div class="cal-btn" id="calPrev">‹</div>
+        <div class="cal-btn txt" id="calToday">today</div>
+        <div class="cal-btn" id="calNext">›</div>
+      </div>
+    </div>
+    <div class="cal-grid">${cells}</div>
+    <div class="cal-legend">
+      <div><span class="sw" style="background:var(--glt);border:1px solid var(--gdim)"></span> Logged day</div>
+      <div><span class="sw" style="background:var(--bg);border:1px solid var(--line);outline:1px solid var(--a)"></span> Today</div>
+      <div><span class="sw" style="background:var(--bg);border:1px solid var(--line)"></span> No entry</div>
+    </div>`;
+  document.getElementById('calPrev').onclick=()=>{ calM--; if(calM<0){calM=11;calY--;} renderCal(); };
+  document.getElementById('calNext').onclick=()=>{ calM++; if(calM>11){calM=0;calY++;} renderCal(); };
+  document.getElementById('calToday').onclick=()=>{ const t=new Date(); calY=t.getFullYear(); calM=t.getMonth(); renderCal(); };
+}
+
+/* ---------- TIMELINE ---------- */
+function tlItem(d){
+  const c=d.snapshot||{};
+  const counts=[];
+  if(d.built) counts.push(`<span><b>${d.built.length}</b> built</span>`);
+  if(d.understood) counts.push(`<span><b>${d.understood.length}</b> learned</span>`);
+  if(d.code) counts.push(`<span><b>${d.code.length}</b> files</span>`);
+  const es=effStatus(d);
+  return `<a class="tl-item ${es==='upcoming'?'upcoming':''}" href="#/day/${d.day}">
+    <div class="tl-card">
+      <div class="tl-meta"><span class="tl-day">Day ${d.day}</span><span class="tl-date">${fmtDate(d.date)}</span>${es==='today'?'<span class="day-badge today" style="font-size:9px;padding:2px 7px">today</span>':''}</div>
+      <div class="tl-title">${d.title}</div>
+      <div class="tl-summary">${d.summary||''}</div>
+      <div class="tl-counts">${counts.join('')}</div>
+    </div></a>`;
+}
+function viewTimeline(){
+  $app.innerHTML=`
+  <div class="page-header fade">
+    <div class="page-eyebrow">// timeline</div>
+    <div class="page-title">Every day, in order</div>
+    <div class="page-sub">The full build, one entry per session. Search to jump to a topic, a file, or a concept.</div>
+  </div>
+  <input class="tl-search" id="tlSearch" placeholder="Search days — e.g. enum, @ManyToOne, JWT, breed…">
+  <div class="tl fade" id="tlList"></div>`;
+  const list=document.getElementById('tlList');
+  const draw=(q)=>{
+    q=(q||'').toLowerCase().trim();
+    const items=byDate().filter(d=>{
+      if(!q) return true;
+      const hay=(d.title+' '+(d.summary||'')+' '+(d.tags||[]).join(' ')+' '+JSON.stringify(d.built||[])+JSON.stringify(d.understood||[])+JSON.stringify(d.code||[])).toLowerCase();
+      return hay.includes(q);
+    });
+    list.innerHTML = items.length ? items.map(tlItem).join('') : `<div class="empty-state"><div class="es-ico">🔍</div>No entries match "${q}".</div>`;
+  };
+  draw('');
+  document.getElementById('tlSearch').addEventListener('input',e=>draw(e.target.value));
+}
+
+/* ---------- DAY DETAIL ---------- */
+function viewDay(n){
+  const d=byDay(n);
+  if(!d){ $app.innerHTML=`<div class="empty-state fade"><div class="es-ico">🌱</div>No entry for Day ${n} yet.<br><br><a class="hero-cta" href="#/timeline">Back to timeline</a></div>`; return; }
+  const ordered=byDate();
+  const idx=ordered.findIndex(x=>x.day===d.day);
+  const prev=ordered[idx-1], next=ordered[idx+1];
+  const tags=(d.tags||[]).map(t=>`<span class="day-tag">${t}</span>`).join('');
+  $app.innerHTML=`
+  <a class="backlink fade" href="#/timeline">‹ back to timeline</a>
+  <div class="day-entry fade" id="day${d.day}">
+    <div class="day-header">
+      <div class="day-badge ${badgeClass(effStatus(d))}">${badgeText(d)}</div>
+      <div>
+        <div class="day-title-text">${d.title}</div>
+        <div class="day-date">${fmtDate(d.date)} · Phase ${d.phase} · ${PHASES[d.phase-1].name.split('—')[1].trim()}</div>
+        <div class="day-tagrow">${tags}</div>
+      </div>
+    </div>
+    ${renderDayBody(d)}
+    <div class="day-nav">
+      ${prev?`<a href="#/day/${prev.day}"><div class="dn-dir">‹ previous</div><div class="dn-t">Day ${prev.day} — ${prev.title}</div></a>`:`<a class="disabled"><div class="dn-dir">‹ previous</div><div class="dn-t">Start of journal</div></a>`}
+      ${next?`<a class="next-dir" href="#/day/${next.day}"><div class="dn-dir">next ›</div><div class="dn-t">Day ${next.day} — ${next.title}</div></a>`:`<a class="next-dir disabled"><div class="dn-dir">next ›</div><div class="dn-t">Latest entry</div></a>`}
+    </div>
+  </div>`;
+  window.scrollTo(0,0);
+}
+
+/* ---------- ROADMAP ---------- */
+function viewRoadmap(){
+  // Hide any planned day already logged in JOURNAL — no manual "move" needed.
+  const upcoming=PLAN.filter(p=>{
+    const m=(p.day||'').match(/\d+/);
+    return !(m && byDay(m[0]));
+  });
+  $app.innerHTML=`
+  <div class="page-header fade">
+    <div class="page-eyebrow">// full project roadmap</div>
+    <div class="page-title">The 4-Phase Plan</div>
+    <div class="page-sub">From foundation to a production app live on AWS. Each phase ends with a gate check that must pass before moving on.</div>
+  </div>
+  <div class="sec-head"><div class="sec-label">// planned build order — phase 1</div><div class="sec-line"></div></div>
+  <div class="block note fade" style="margin-bottom:32px">
+    <div class="block-head">Upcoming days</div>
     <div class="block-body">
-      <div class="upcoming-item"><div class="uday">Day 2</div><div><div class="utitle">Animal sub-entities</div><div class="udesc">Animal, VaccinationRecord, MilkRecord, AnimalHealthRecord. Two new enums: HealthStatus, AnimalGender.</div></div></div>
-      <div class="upcoming-item"><div class="uday">Day 3</div><div><div class="utitle">Remaining entities</div><div class="udesc">SoilScan, WeatherSnapshot, Prediction, MarketPrice, ChatSession, ChatMessage, Alert, DeviceToken, Feedback.</div></div></div>
-      <div class="upcoming-item"><div class="uday">Day 4</div><div><div class="utitle">JWT auth — register endpoint</div><div class="udesc">POST /api/auth/register. Takes phone + password, saves farmer to DB with BCrypt hash, returns JWT token.</div></div></div>
-      <div class="upcoming-item"><div class="uday">Day 5</div><div><div class="utitle">JWT auth — login endpoint</div><div class="udesc">POST /api/auth/login. Validates credentials, returns JWT. Understand Spring Security filter chain.</div></div></div>
-      <div class="upcoming-item"><div class="uday">Day 6</div><div><div class="utitle">MockSensorService + /api/sensor/mock</div><div class="udesc">First real GET endpoint. Returns district-realistic fake NPK soil values. Tests the full controller → service → response flow.</div></div></div>
-      <div class="upcoming-item"><div class="uday">Day 7</div><div><div class="utitle">OpenWeatherMap integration</div><div class="udesc">WeatherService calling OpenWeatherMap API for a farmer's district. API key in properties. Test with Chennai and Coimbatore.</div></div></div>
-      <div class="upcoming-item"><div class="uday">Day 8</div><div><div class="utitle">State + District data seeding</div><div class="udesc">Seed all 36 Indian states and 788 districts into the database. This is what powers the state → district dropdown on mobile.</div></div></div>
-      <div class="upcoming-item"><div class="uday">Day 9</div><div><div class="utitle">district_crop_suitability seeding</div><div class="udesc">Load TNAU crop suitability scores for all 38 TN districts. This is the location intelligence layer — the feature no other app has.</div></div></div>
-      <div class="upcoming-item"><div class="uday">Day 10</div><div><div class="utitle">Phase 1 Gate Check</div><div class="udesc">Register → login → JWT → mock sensor → personalised dashboard data. All passing = Phase 1 complete.</div></div></div>
+      ${upcoming.length ? upcoming.map(p=>`<div class="upcoming-item"><div class="uday">${p.day}</div><div><div class="utitle">${p.title}</div><div class="udesc">${p.desc}</div></div></div>`).join('') : `<div class="udesc" style="padding:6px 0">All planned days for this phase are logged. 🎉</div>`}
     </div>
   </div>
+  <div class="sec-head"><div class="sec-label">// the phases</div><div class="sec-line"></div></div>
+  ${PHASES.map(p=>`
+    <div class="phase-block fade">
+      <div class="phase-header"><div class="phase-name">${p.name}</div><div class="phase-tag ${p.status}">${p.when}${p.status==='active'?' · In progress':''}</div></div>
+      <div class="phase-body">
+        <div class="phase-progress">${phaseSteps(p)}</div>
+        <div class="phase-desc">${p.desc}</div>
+      </div>
+    </div>`).join('')}
+  `;
+}
 
-  <!-- ROADMAP -->
-  <div class="sec-head" id="roadmap"><div class="sec-label">// full project roadmap</div><div class="sec-line"></div></div>
-  <div class="phase-block">
-    <div class="phase-header"><div class="phase-name">Phase 1 — Foundation</div><div class="phase-tag active">Month 1 · In progress</div></div>
-    <div class="phase-body">
-      <div class="phase-progress"><div class="phase-step done"></div><div class="phase-step active"></div><div class="phase-step"></div><div class="phase-step"></div><div class="phase-step"></div><div class="phase-step"></div><div class="phase-step"></div><div class="phase-step"></div><div class="phase-step"></div><div class="phase-step"></div></div>
-      <div class="phase-desc">Spring Boot setup · Package structure · All entities · JWT auth · MockSensorService · OpenWeatherMap · Data seeding · /api/farmer/dashboard stub<br><br><strong style="color:var(--a)">Gate check:</strong> Farmer registers → logs in → sees personalised dashboard → language toggle works → mock sensor returns district NPK.</div>
-    </div>
-  </div>
-  <div class="phase-block">
-    <div class="phase-header"><div class="phase-name">Phase 2 — Crop AI Core</div><div class="phase-tag todo">Month 2</div></div>
-    <div class="phase-body">
-      <div class="phase-progress"><div class="phase-step"></div><div class="phase-step"></div><div class="phase-step"></div><div class="phase-step"></div><div class="phase-step"></div><div class="phase-step"></div><div class="phase-step"></div><div class="phase-step"></div><div class="phase-step"></div><div class="phase-step"></div></div>
-      <div class="phase-desc">Python Flask setup · Model 1 (Crop Recommendation) · Model 2 (Fertilizer Calculator) · Location suitability re-ranking · POST /api/scan/submit pipeline · i18n translation layer<br><br><strong style="color:var(--a)">Gate check:</strong> Soil submit → Flask models run → Tamil prediction on screen in under 3 seconds.</div>
-    </div>
-  </div>
-  <div class="phase-block">
-    <div class="phase-header"><div class="phase-name">Phase 3 — Animals + Chat + Price</div><div class="phase-tag todo">Month 3</div></div>
-    <div class="phase-body">
-      <div class="phase-progress"><div class="phase-step"></div><div class="phase-step"></div><div class="phase-step"></div><div class="phase-step"></div><div class="phase-step"></div><div class="phase-step"></div><div class="phase-step"></div><div class="phase-step"></div><div class="phase-step"></div><div class="phase-step"></div></div>
-      <div class="phase-desc">Models 3–7 · Agmarknet price data + LSTM · WebSocket STOMP chat · All animal APIs · All 5 animal screens · Chat screens · Price Tracker · Alert endpoints<br><br><strong style="color:var(--a)">Gate check:</strong> All 7 models live · Symptoms checker works · Real-time chat works end to end.</div>
-    </div>
-  </div>
-  <div class="phase-block">
-    <div class="phase-header"><div class="phase-name">Phase 4 — Production + Polish</div><div class="phase-tag todo">Month 4</div></div>
-    <div class="phase-body">
-      <div class="phase-progress"><div class="phase-step"></div><div class="phase-step"></div><div class="phase-step"></div><div class="phase-step"></div><div class="phase-step"></div><div class="phase-step"></div><div class="phase-step"></div><div class="phase-step"></div><div class="phase-step"></div><div class="phase-step"></div></div>
-      <div class="phase-desc">AWS EC2 + RDS + S3 deployment · Firebase FCM push notifications · @Scheduled alert system · Tamil + Hindi translations · Offline cache testing · README + 3-minute demo video<br><br><strong style="color:var(--a)">Gate check:</strong> App live on AWS · Push received on real Android · Demo video recorded.</div>
-    </div>
-  </div>
+/* ---------- sidebar + router ---------- */
+function buildSidebarDays(){
+  const wrap=document.getElementById('navDays');
+  wrap.innerHTML=byDate().slice().reverse().map(d=>{
+    const es=effStatus(d);
+    return `<a class="nav-item" data-view="day" data-day="${d.day}" href="#/day/${d.day}">
+      <div class="nav-dot" style="background:${es==='upcoming'?'var(--ink3)':'var(--g)'}"></div>
+      <div class="nav-text"><strong>Day ${d.day}${es==='done'?' ✓':(es==='today'?' • today':'')}</strong>${d.title.split('·')[0].trim().slice(0,30)}</div>
+    </a>`;}).join('');
+}
+function buildProgress(){
+  const logged=JOURNAL.filter(d=>d.status!=='upcoming').length;
+  document.getElementById('pgLabel').textContent=`Day ${logged} / ~${META.totalDays}`;
+  document.getElementById('pgFill').style.width=Math.max(4,Math.round(logged/META.totalDays*100))+'%';
+  document.getElementById('pgPhases').innerHTML=PHASES.map(p=>`<div class="ph ${p.status==='active'?'active':(p.status==='done'?'done':'')}"></div>`).join('');
+}
+function setActiveNav(view,day){
+  document.querySelectorAll('.nav-item').forEach(n=>{
+    const isDay=n.dataset.view==='day';
+    let on = n.dataset.view===view && !isDay;
+    if(view==='day'&&isDay&&Number(n.dataset.day)===Number(day)) on=true;
+    n.classList.toggle('active',on);
+  });
+}
+function router(){
+  const raw=location.hash.replace(/^#\/?/,'')||'dashboard';
+  const [view,param]=raw.split('/');
+  switch(view){
+    case 'calendar': viewCalendar(); break;
+    case 'timeline': viewTimeline(); break;
+    case 'roadmap': viewRoadmap(); break;
+    case 'day': viewDay(param); break;
+    default: viewDashboard();
+  }
+  setActiveNav(view,param);
+  if(window.innerWidth<=900) closeSidebar();
+}
 
-</main>
-</div>
-<script>
-const sidebar = document.getElementById('sidebar');
-const overlay = document.getElementById('overlay');
-const hbtn = document.getElementById('hbtn');
-function openSidebar(){sidebar.classList.add('open');overlay.classList.add('on');document.body.style.overflow='hidden'}
-function closeSidebar(){sidebar.classList.remove('open');overlay.classList.remove('on');document.body.style.overflow=''}
-hbtn.addEventListener('click', openSidebar);
-overlay.addEventListener('click', closeSidebar);
-document.querySelectorAll('.nav-item').forEach(item=>{
-  item.addEventListener('click',()=>{ if(window.innerWidth<=900) closeSidebar(); });
-});
+/* ---------- mobile sidebar ---------- */
+const sidebar=document.getElementById('sidebar');
+const overlay=document.getElementById('overlay');
+const hbtn=document.getElementById('hbtn');
+function openSidebar(){sidebar.classList.add('open');overlay.classList.add('on');document.body.style.overflow='hidden';}
+function closeSidebar(){sidebar.classList.remove('open');overlay.classList.remove('on');document.body.style.overflow='';}
+hbtn.addEventListener('click',openSidebar);
+overlay.addEventListener('click',closeSidebar);
+
+/* ---------- boot ---------- */
+buildSidebarDays();
+buildProgress();
+window.addEventListener('hashchange',router);
+router();
 </script>
 </body>
 </html>
