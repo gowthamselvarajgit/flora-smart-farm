@@ -1,5 +1,6 @@
 package com.flora.api.entity.animal;
 
+import com.flora.api.enums.animal.RecordType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -30,6 +31,10 @@ public class AnimalType {
 
     @Column(name = "lottie_url", length = 500)
     private String lottieUrl;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "record_type", length = 20)
+    private RecordType recordType;
 
     @Column(name = "is_active", nullable = false)
     private Boolean isActive = true;

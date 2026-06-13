@@ -283,12 +283,13 @@ a{color:inherit;text-decoration:none}
 const META = {
   project: "Flora",
   subtitle: "backend · spring boot · modular monolith",
+  fullForm: "Farmer Livelihood and Operations Resource Assistant",
   totalDays: 60,
   repo: "github.com/gowthamselvarajgit/flora-smart-farm"
 };
 
 const PHASES = [
-  { n:1, name:"Phase 1 — Foundation", when:"Month 1", status:"active", steps:10, done:2,
+  { n:1, name:"Phase 1 — Foundation", when:"Month 1", status:"active", steps:10, done:3,
     desc:`Spring Boot setup · Package structure · All entities · JWT auth · MockSensorService · OpenWeatherMap · Data seeding · /api/farmer/dashboard stub<br><br><strong style="color:var(--a)">Gate check:</strong> Farmer registers → logs in → sees personalised dashboard → language toggle works → mock sensor returns district NPK.` },
   { n:2, name:"Phase 2 — Crop AI Core", when:"Month 2", status:"todo", steps:10, done:0,
     desc:`Python Flask setup · Model 1 (Crop Recommendation) · Model 2 (Fertilizer Calculator) · Location suitability re-ranking · POST /api/scan/submit pipeline · i18n translation layer<br><br><strong style="color:var(--a)">Gate check:</strong> Soil submit → Flask models run → Tamil prediction on screen in under 3 seconds.` },
@@ -298,15 +299,13 @@ const PHASES = [
     desc:`AWS EC2 + RDS + S3 deployment · Firebase FCM push notifications · @Scheduled alert system · Tamil + Hindi translations · Offline cache testing · README + 3-minute demo video<br><br><strong style="color:var(--a)">Gate check:</strong> App live on AWS · Push received on real Android · Demo video recorded.` }
 ];
 
-// Upcoming planned build order (shown on Roadmap page)
 const PLAN = [
-  { day:"Day 3", title:"Animal sub-entities + remaining entities", desc:"AnimalHealthRecord, MilkRecord, VaccinationRecord. Then SoilScan, WeatherSnapshot, Prediction, MarketPrice, ChatSession, ChatMessage, Alert, DeviceToken, Feedback." },
   { day:"Day 4", title:"JWT auth — register endpoint", desc:"POST /api/auth/register. Takes phone + password, saves farmer with BCrypt hash, returns JWT token." },
   { day:"Day 5", title:"JWT auth — login endpoint", desc:"POST /api/auth/login. Validates credentials, returns JWT. Understand Spring Security filter chain." },
   { day:"Day 6", title:"MockSensorService + /api/sensor/mock", desc:"First real GET endpoint. Returns district-realistic fake NPK soil values. Tests the full controller → service → response flow." },
   { day:"Day 7", title:"OpenWeatherMap integration", desc:"WeatherService calling OpenWeatherMap API for a farmer's district. API key in properties. Test with Chennai and Coimbatore." },
-  { day:"Day 8", title:"State + District data seeding", desc:"Seed all 36 Indian states and 788 districts. Powers the state → district dropdown on mobile." },
-  { day:"Day 9", title:"Crop + AnimalType + Breed seeding", desc:"~80 TN crops with Tamil/Hindi names. 11 animal types. Breeds per species. One SQL file, run once." },
+  { day:"Day 8", title:"State + District + Crop + Breed data seeding", desc:"Seed all 36 Indian states, 788 districts, ~80 TN crops with Tamil/Hindi names, 17 animal types, breeds per species. One SQL file, run once." },
+  { day:"Day 9", title:"district_crop_suitability seeding", desc:"Load TNAU crop suitability scores for all 38 TN districts. This is the location intelligence layer — the feature no other app has." },
   { day:"Day 10", title:"Phase 1 Gate Check", desc:"Register → login → JWT → mock sensor → personalised dashboard. All passing = Phase 1 complete." }
 ];
 
@@ -316,51 +315,54 @@ const JOURNAL = [
   date:"2026-06-11",
   title:"Project setup · Package structure · Enums · Core entities",
   phase:1, status:"done",
-  tags:["Setup","Package structure","Enums","Entities"],
-  summary:"Spring Boot generated, MySQL connected, flora_db live, modular package layout, 3 farmer enums + 5 core entities → 7 tables auto-created.",
+  tags:["Setup","Spring Boot","Enums","Entities","GitHub"],
+  summary:"Spring Boot generated, MySQL connected, flora_db live, modular package layout, 3 farmer enums + 5 core entities → 7 tables auto-created. GitHub repo initialized.",
   built:[
     `<span>Spring Boot project generated</span> via start.spring.io — Group <span class="inline-code">com.flora</span>, Artifact <span class="inline-code">api</span>, package <span class="inline-code">com.flora.api</span>, port 8084`,
     `<span>6 dependencies added</span> — Spring Web, Spring Security, Spring Data JPA, MySQL Driver, Lombok, Validation`,
-    `<span>flora_db database created</span> in MySQL — Spring creates all tables automatically inside it`,
-    `<span>application.properties configured</span> — DB connection, JPA settings, server port 8084. application-example.properties committed to GitHub (real properties gitignored)`,
-    `<span>Package structure created</span> — controller, service, repository, entity, dto, config, enums with feature-based sub-packages`,
-    `<span>3 enums created</span> in enums/farmer — Language, PrimaryActivity with displayName pattern`,
+    `<span>flora_db database created</span> in MySQL — Spring creates all tables automatically inside it via Hibernate`,
+    `<span>application.properties configured</span> — DB connection, JPA settings, server port 8084. application-example.properties committed to GitHub (real properties gitignored — password stays safe)`,
+    `<span>Package structure created</span> — controller, service, repository, entity, dto, config, enums with feature-based sub-packages (entity/farmer, entity/crop, entity/animal etc.)`,
+    `<span>3 enums created</span> in enums/farmer — Language (EN/TA/HI), PrimaryActivity (CROP/ANIMAL/BOTH) with displayName pattern`,
     `<span>5 entities created</span> — State, District, Farmer, Crop, AnimalType`,
     `<span>7 tables auto-created in MySQL</span> — states, districts, crops, animal_types, farmers, farmer_crops, farmer_animal_types`,
     `<span>GitHub repo created</span> — github.com/gowthamselvarajgit/flora-smart-farm. Daily commits started.`,
-    `<span>Architecture decision</span> — modular monolith for Spring Boot. Reason: one developer, faster build, microservice-ready package separation.`
+    `<span>Architecture decision made</span> — modular monolith for Spring Boot, not split microservices. Reason: one developer, faster build, microservice-ready package separation.`
   ],
   understood:[
-    `<span>ddl-auto=update</span> — Hibernate reads @Entity classes and auto-creates MySQL tables. No manual SQL needed.`,
-    `<span>Enum with properties pattern</span> — Every enum constant is a full Java object carrying a displayName. EN("English") stores "EN" in DB but getDisplayName() returns "English" for UI.`,
-    `<span>@Enumerated(EnumType.STRING)</span> — Always STRING, never ORDINAL. ORDINAL stores 0/1/2 — reordering enum constants breaks all existing data silently.`,
-    `<span>@ManyToOne vs @ManyToMany</span> — Farmer belongs to one district (@ManyToOne). Farmer grows many crops AND one crop is grown by many farmers (@ManyToMany — join table auto-created).`,
-    `<span>FetchType.LAZY</span> — Don't load related data unless asked. Loading a farmer does not load all their crops. Critical for performance.`,
-    `<span>Never store images in DB</span> — Store S3 URL instead. DB holds a short string, app loads the image from S3. Fast and scalable.`,
-    `<span>State and District as entities, not enums</span> — 788 districts across India. Adding new state = inserting rows, not redeploying code.`,
-    `<span>Derived data rule</span> — Never store what can be calculated. getFullName() = firstName + lastName. No fullName column needed.`
+    `<span>ddl-auto=update means zero manual SQL</span> — Hibernate reads your Java @Entity class and auto-creates or updates the matching MySQL table. You write Java, Hibernate writes SQL. You never type CREATE TABLE.`,
+    `<span>Enum with properties pattern</span> — Every enum constant is a full Java object carrying extra data. EN("English") stores "EN" in the database (short, machine-readable) but getDisplayName() returns "English" for the UI (human-readable). One enum does both jobs.`,
+    `<span>@Enumerated(EnumType.STRING) — always STRING, never ORDINAL</span> — ORDINAL stores 0, 1, 2 as numbers. If you reorder your enum constants later, all existing database rows silently get wrong values. STRING stores "EN", "TA", "HI" — safe forever.`,
+    `<span>@ManyToOne vs @ManyToMany</span> — A farmer lives in one district (@ManyToOne — one foreign key column). A farmer grows many crops AND one crop is grown by many farmers (@ManyToMany — Hibernate creates a join table automatically with two foreign key columns).`,
+    `<span>FetchType.LAZY — load only what you need</span> — When you load Gowtham from the DB, Hibernate does NOT automatically load all his 8 animals and all his crops. It loads them only when you explicitly ask. Without LAZY, every farmer query would load thousands of rows.`,
+    `<span>Never store images in the database</span> — The database stores a short URL string. The actual image file lives on AWS S3. The app downloads it when needed. Fast, cheap, scalable.`,
+    `<span>State and District as entities, not enums</span> — India has 36 states and 788 districts. When a new state is created (like Telangana in 2014), you just insert a row — no code change, no redeployment. Enums would require code change every time.`,
+    `<span>Derived data rule</span> — Never store data that can be calculated. getFullName() returns firstName + " " + lastName. Storing a separate fullName column would mean two places to update whenever a name changes — a classic bug source.`
   ],
   code:[
-    { file:"enums/farmer/Language.java", sub:"enum with displayName property",
+    { file:"enums/farmer/Language.java", sub:"enum with displayName — machine code + human label in one",
       code:`<span class="kw">public enum</span> <span class="cls">Language</span> {
 
-    <span class="val">EN</span>(<span class="str">"English"</span>),  <span class="cmt">// stored in DB as "EN"</span>
+    <span class="val">EN</span>(<span class="str">"English"</span>),  <span class="cmt">// stored in DB as "EN"   — short, standard, fast to index</span>
     <span class="val">TA</span>(<span class="str">"Tamil"</span>),    <span class="cmt">// stored in DB as "TA"</span>
     <span class="val">HI</span>(<span class="str">"Hindi"</span>);   <span class="cmt">// stored in DB as "HI"</span>
 
-    <span class="kw">private final</span> String displayName; <span class="cmt">// each constant carries this field</span>
+    <span class="kw">private final</span> String displayName;
+    <span class="cmt">// Each constant carries this extra field alongside its name</span>
 
-    <span class="cls">Language</span>(String displayName) {    <span class="cmt">// Java calls this for each constant</span>
+    <span class="cls">Language</span>(String displayName) {
+    <span class="cmt">// Java calls this constructor automatically for each constant above</span>
         <span class="kw">this</span>.displayName = displayName;
     }
 
-    <span class="kw">public</span> String <span class="prop">getDisplayName</span>() { <span class="cmt">// Language.EN.getDisplayName() → "English"</span>
+    <span class="kw">public</span> String <span class="prop">getDisplayName</span>() {
         <span class="kw">return</span> displayName;
     }
 }
-<span class="cmt">// DB stores "EN" — short, standard, machine-readable</span>
-<span class="cmt">// UI shows "English" — human-readable via getDisplayName()</span>` },
-    { file:"entity/farmer/District.java", sub:"@ManyToOne with State",
+<span class="cmt">// farmer.getPreferredLanguage().name()           → "EN"      (stored in DB)</span>
+<span class="cmt">// farmer.getPreferredLanguage().getDisplayName() → "English" (shown in UI)</span>
+<span class="cmt">// The farmer sees "English". The database stores "EN". Same enum, two uses.</span>` },
+    { file:"entity/farmer/District.java", sub:"@ManyToOne — the owning side of a relationship",
       code:`<span class="ann">@Entity</span>
 <span class="ann">@Table(name = "districts")</span>
 <span class="ann">@Data</span> <span class="ann">@NoArgsConstructor</span> <span class="ann">@AllArgsConstructor</span>
@@ -373,15 +375,21 @@ const JOURNAL = [
     <span class="ann">@Column(name = "district_name", nullable = false, length = 100)</span>
     <span class="kw">private</span> String districtName;
 
-    <span class="ann">@ManyToOne(fetch = FetchType.LAZY)</span>   <span class="cmt">// MANY districts → ONE state</span>
+    <span class="ann">@ManyToOne(fetch = FetchType.LAZY)</span>
+    <span class="cmt">// Read from District's perspective: MANY districts → ONE state</span>
+    <span class="cmt">// Karur belongs to Tamil Nadu. Bengaluru belongs to Karnataka.</span>
     <span class="ann">@JoinColumn(name = "state_id", nullable = false)</span>
-    <span class="cmt">// Creates state_id FK column in districts table → references states.state_id</span>
+    <span class="cmt">// Creates state_id column in districts table</span>
+    <span class="cmt">// This is a FOREIGN KEY pointing to states.state_id</span>
     <span class="kw">private</span> State state;
 
     <span class="ann">@Column(name = "is_active", nullable = false)</span>
     <span class="kw">private</span> Boolean isActive = <span class="kw">true</span>;
-}` },
-    { file:"entity/farmer/Farmer.java", sub:"central entity, all relationships",
+}
+<span class="cmt">// districts table in MySQL:</span>
+<span class="cmt">// district_id | district_name | state_id | is_active</span>
+<span class="cmt">// 3           | Karur         | 1        | 1   ← state_id=1 means Tamil Nadu</span>` },
+    { file:"entity/farmer/Farmer.java", sub:"the central entity — everything connects to farmer_id",
       code:`<span class="ann">@Entity</span> <span class="ann">@Table(name = "farmers")</span>
 <span class="ann">@Data</span> <span class="ann">@NoArgsConstructor</span> <span class="ann">@AllArgsConstructor</span>
 <span class="kw">public class</span> <span class="cls">Farmer</span> {
@@ -389,66 +397,101 @@ const JOURNAL = [
     <span class="ann">@Id</span> <span class="ann">@GeneratedValue(strategy = GenerationType.IDENTITY)</span>
     <span class="ann">@Column(name = "farmer_id")</span>
     <span class="kw">private</span> Long farmerId;
+    <span class="cmt">// Gowtham gets farmer_id=1. Every row he ever creates links back to this number.</span>
 
     <span class="ann">@Column(name = "phone_number", unique = true, nullable = false, length = 15)</span>
-    <span class="kw">private</span> String phoneNumber; <span class="cmt">// login identifier — like a username</span>
+    <span class="kw">private</span> String phoneNumber;
+    <span class="cmt">// Login identifier — like a username. unique=true means no two farmers share a phone.</span>
 
     <span class="ann">@Column(name = "hashed_password", nullable = false)</span>
-    <span class="kw">private</span> String hashedPassword; <span class="cmt">// BCrypt hash — real password NEVER stored</span>
+    <span class="kw">private</span> String hashedPassword;
+    <span class="cmt">// BCrypt hash. "gowtham123" → "$2a$10$xyz..." (irreversible, one-way)</span>
+    <span class="cmt">// Real password is NEVER stored. Even if DB is hacked, passwords are safe.</span>
 
     <span class="ann">@Column(name = "first_name", nullable = false, length = 50)</span>
     <span class="kw">private</span> String firstName;
     <span class="ann">@Column(name = "last_name", nullable = false, length = 50)</span>
-    <span class="kw">private</span> String lastName; <span class="cmt">// split — alerts say "Good morning, Gowtham"</span>
+    <span class="kw">private</span> String lastName;
+    <span class="cmt">// Split into two — alerts say "Good morning, Gowtham" using only firstName</span>
+    <span class="cmt">// getFullName() combines them when needed — never stored as a separate column</span>
 
     <span class="ann">@Enumerated(EnumType.STRING)</span>
     <span class="ann">@Column(name = "preferred_language", nullable = false, length = 10)</span>
-    <span class="kw">private</span> Language preferredLanguage = Language.EN; <span class="cmt">// Q1</span>
+    <span class="kw">private</span> Language preferredLanguage = Language.EN;
+    <span class="cmt">// Q1 of onboarding. Gowtham picks Tamil → stored as "TA"</span>
+    <span class="cmt">// Every prediction, alert, and message switches to Tamil from this moment</span>
 
     <span class="ann">@ManyToOne(fetch = FetchType.LAZY)</span>
     <span class="ann">@JoinColumn(name = "district_id", nullable = false)</span>
-    <span class="kw">private</span> District district; <span class="cmt">// Q2 — drives weather, ML, market prices</span>
+    <span class="kw">private</span> District district;
+    <span class="cmt">// Q2. Gowtham picks Karur → district_id=3 stored here</span>
+    <span class="cmt">// This one number drives: weather fetch, ML model re-ranking, market prices</span>
 
     <span class="ann">@Enumerated(EnumType.STRING)</span>
     <span class="ann">@Column(name = "primary_activity", nullable = false, length = 10)</span>
-    <span class="kw">private</span> PrimaryActivity primaryActivity = PrimaryActivity.CROP; <span class="cmt">// Q3</span>
+    <span class="kw">private</span> PrimaryActivity primaryActivity = PrimaryActivity.CROP;
+    <span class="cmt">// Q3. CROP/ANIMAL/BOTH → decides which dashboard tabs appear first</span>
 
     <span class="ann">@Column(name = "land_size_acres")</span>
-    <span class="kw">private</span> Double landSizeAcres; <span class="cmt">// Q4 — fertilizer = kg/acre × this</span>
+    <span class="kw">private</span> Double landSizeAcres;
+    <span class="cmt">// Q4. 2.0 acres. Fertilizer calculation: recommended_kg_per_acre × 2.0</span>
 
     <span class="ann">@ManyToMany(fetch = FetchType.LAZY)</span>
     <span class="ann">@JoinTable(name = "farmer_crops",</span>
         <span class="ann">joinColumns = @JoinColumn(name = "farmer_id"),</span>
         <span class="ann">inverseJoinColumns = @JoinColumn(name = "crop_id"))</span>
-    <span class="kw">private</span> List&lt;Crop&gt; currentlyGrowingCrops; <span class="cmt">// Q5 — join table auto-created</span>
+    <span class="kw">private</span> List&lt;Crop&gt; currentlyGrowingCrops;
+    <span class="cmt">// Q5. Gowtham selects Cotton from the dropdown</span>
+    <span class="cmt">// Hibernate auto-creates farmer_crops join table: farmer_id=1, crop_id=2</span>
 
     <span class="ann">@ManyToMany(fetch = FetchType.LAZY)</span>
     <span class="ann">@JoinTable(name = "farmer_animal_types",</span>
         <span class="ann">joinColumns = @JoinColumn(name = "farmer_id"),</span>
         <span class="ann">inverseJoinColumns = @JoinColumn(name = "animal_type_id"))</span>
-    <span class="kw">private</span> List&lt;AnimalType&gt; ownedAnimalTypes; <span class="cmt">// Q6 — Lottie animated icons</span>
+    <span class="kw">private</span> List&lt;AnimalType&gt; ownedAnimalTypes;
+    <span class="cmt">// Q6. Gowtham taps Cow + Hen icons (with Lottie animations)</span>
+    <span class="cmt">// farmer_animal_types: (1,1)=Cow and (1,4)=Hen seeded for farmer_id=1</span>
 
     <span class="ann">@Column(name = "alert_time")</span>
-    <span class="kw">private</span> LocalTime alertTime; <span class="cmt">// Q7 — @Scheduled reads per farmer</span>
+    <span class="kw">private</span> LocalTime alertTime;
+    <span class="cmt">// Q7. Gowtham picks 6AM → stored as 06:00</span>
+    <span class="cmt">// @Scheduled AlertScheduler reads this and sends push at exactly 6AM</span>
 
     <span class="ann">@Column(name = "is_onboarding_complete", nullable = false)</span>
     <span class="kw">private</span> Boolean isOnboardingComplete = <span class="kw">false</span>;
+    <span class="cmt">// false = app shows onboarding wizard on launch</span>
+    <span class="cmt">// true  = app shows personalised dashboard</span>
 
     <span class="ann">@Column(name = "created_at", nullable = false, updatable = false)</span>
     <span class="kw">private</span> LocalDateTime createdAt = LocalDateTime.now();
+    <span class="cmt">// updatable=false = Hibernate never changes this after first insert. Permanent record.</span>
+
     <span class="ann">@Column(name = "updated_at")</span>
     <span class="kw">private</span> LocalDateTime updatedAt = LocalDateTime.now();
 
     <span class="kw">public</span> String <span class="prop">getFullName</span>() { <span class="kw">return</span> firstName + <span class="str">" "</span> + lastName; }
-    <span class="cmt">// Derived — never stored. farmer.getFullName() → "Gowtham Selvaraj"</span>
+    <span class="cmt">// Derived — computed from first+last. Never stored as a column.</span>
+    <span class="cmt">// farmer.getFullName() → "Gowtham Selvaraj"</span>
 }` }
   ],
   extras:[
-    { type:"diagram", title:"Entity relationship map — after Day 1",
-      html:`<pre style="color:var(--ink2)"><span style="color:var(--g)">states</span> ──@OneToMany──► <span style="color:var(--g)">districts</span> ──@ManyToOne──► <span style="color:var(--g)">farmers</span>
-                                                          │
-                          @ManyToMany ──► <span style="color:var(--g)">farmer_crops</span> ──► <span style="color:var(--g)">crops</span>
-                          @ManyToMany ──► <span style="color:var(--g)">farmer_animal_types</span> ──► <span style="color:var(--g)">animal_types</span></pre>` }
+    { type:"diagram", title:"All relationships — after Day 1 (Gowtham's complete picture)",
+      html:`<pre style="color:var(--ink2)"><span style="color:#E8E6E0;font-weight:600">Tamil Nadu</span> (state_id=1)
+    │
+    └── <span style="color:#E8E6E0;font-weight:600">Karur</span> (district_id=3)  ← state_id=1 links it to Tamil Nadu
+            │
+            └── <span style="color:#E8E6E0;font-weight:600">Gowtham</span> (farmer_id=1)  ← district_id=3 links him to Karur
+                    │
+                    ├── <span style="color:var(--g)">farmer_crops</span> join table
+                    │       farmer_id=1, crop_id=2 → <span style="color:var(--g)">Cotton</span>
+                    │       farmer_id=1, crop_id=3 → <span style="color:var(--g)">Groundnut</span>
+                    │
+                    └── <span style="color:var(--g)">farmer_animal_types</span> join table
+                            farmer_id=1, animal_type_id=1 → <span style="color:var(--g)">Cow</span>
+                            farmer_id=1, animal_type_id=4 → <span style="color:var(--g)">Hen</span>
+
+<span style="color:var(--ink3)">// Everything connects back to farmer_id=1</span>
+<span style="color:var(--ink3)">// That one number is Gowtham's entire identity in Flora</span></pre>` }
   ],
   next:[],
   snapshot:{ entities:5, enums:3, tables:7, endpoints:0 }
@@ -456,54 +499,44 @@ const JOURNAL = [
 {
   day:2,
   date:"2026-06-12",
-  title:"Animal enums · Breed entity · Animal entity",
-  phase:1, status:"today",
-  tags:["Enums","Animal domain","Entities"],
-  summary:"Added HealthStatus + AnimalGender enums and the Breed → Animal ownership chain. 2 new tables (breeds, animals) → 9 total.",
+  title:"Animal enums · Breed entity · Animal entity · All relationships explained",
+  phase:1, status:"done",
+  tags:["Animal domain","Enums","Entities","Relationships","Real world flow"],
+  summary:"HealthStatus + AnimalGender enums, Breed entity filtered by AnimalType, Animal entity with full ownership chain. All 8 database relationships explained with Gowtham's farm as the example.",
   built:[
-    `<span>HealthStatus enum</span> — HEALTHY, SICK, RECOVERING, CRITICAL, DECEASED with displayName. Drives colour-coded badges on every animal card in the mobile app.`,
-    `<span>AnimalGender enum</span> — MALE, FEMALE with displayName. Drives feature visibility — FEMALE enables milk/egg tracker, MALE hides it.`,
-    `<span>Breed entity</span> — breed_id, breedName, breedNameTamil, breedNameHindi, @ManyToOne to AnimalType. Replaces free-text breed field — farmer selects from dropdown filtered by animal type.`,
-    `<span>Animal entity</span> — individual animal registration with animalId, @ManyToOne to Farmer, AnimalType, and Breed. Fields: animalName, gender, dateOfBirth, weightKg, healthStatus, uniqueTagNumber (INAPH govt tag).`,
-    `<span>2 new tables in MySQL</span> — breeds, animals. Total tables now: 9.`,
-    `<span>Design decision</span> — breed is nullable on Animal. Farmer may not know exact breed. We never force a selection that blocks registration.`
+    `<span>HealthStatus enum</span> — HEALTHY, SICK, RECOVERING, CRITICAL, DECEASED with displayName. Drives colour-coded badges on every animal card.`,
+    `<span>AnimalGender enum</span> — MALE, FEMALE with displayName. Drives feature visibility — FEMALE enables production tracking, MALE hides it.`,
+    `<span>Breed entity</span> — breedName, breedNameTamil, breedNameHindi, @ManyToOne to AnimalType. Farmer selects breed from dropdown filtered by selected animal type.`,
+    `<span>Animal entity</span> — individual registration with animalId, @ManyToOne to Farmer/AnimalType/Breed, gender, dateOfBirth, weightKg, healthStatus, isPregnant, expectedDeliveryDate, INAPH govt tag.`,
+    `<span>isPregnant + expectedDeliveryDate added</span> — system shows pregnancy countdown, adjusts milk tracking, sends delivery reminder 2 weeks before due date.`,
+    `<span>2 new tables in MySQL</span> — breeds, animals. Total: 9 tables.`,
+    `<span>All 8 relationships fully understood</span> — State→District, District→Farmer, Farmer↔Crop, Farmer↔AnimalType, AnimalType→Breed, Farmer→Animal, Animal→AnimalType, Animal→Breed.`
   ],
   understood:[
-    `<span>Always read @ManyToOne from where you are standing</span> — Inside Animal.java: "Many Animals belong to One Breed" = @ManyToOne. Inside Breed.java: "One Breed has Many Animals" = @OneToMany. Same relationship, two perspectives.`,
-    `<span>Breed is specific to AnimalType</span> — Holstein Friesian is a Cow breed, not a Goat breed. @ManyToOne from Breed to AnimalType ensures the mobile dropdown only shows relevant breeds when a species is selected.`,
-    `<span>LocalDate vs LocalDateTime</span> — dateOfBirth uses LocalDate (date only — no time needed). registeredAt uses LocalDateTime (exact timestamp needed). Always pick the right precision.`,
-    `<span>Government INAPH tag</span> — India's official cattle UID scheme. uniqueTagNumber is optional (many small farmers don't have it) but unique-constrained so no two animals share a government tag.`,
-    `<span>Enum drives UI logic, not just labels</span> — AnimalGender.FEMALE doesn't just display "Female". The mobile app reads this field and decides whether to show or hide the milk/egg tracker section entirely.`,
-    `<span>Crop seed data strategy</span> — Flora needs ~60-80 crops for Tamil Nadu farmers. Not thousands. One SQL seed file with all crop names in EN/TA/HI runs once. System knows "கத்தாழை is Aloe Vera" because both names are in the same row — the developer seeded it.`
+    `<span>The difference between onboarding Q6 and animal registration</span> — Q6 ("I own cows and hens") is a quick snapshot for dashboard personalisation only — stored in farmer_animal_types join table. Animal registration is the full details — Lakshmi, Jersey cow, female, 3 years, 320kg — stored in the animals table with a unique animal_id. Like telling someone "I have a car" vs giving your car's RC book.`,
+    `<span>The rule for @ManyToOne — always read from where you are standing</span> — Inside Animal.java: "Many animals belong to ONE farmer" = @ManyToOne. Inside Farmer.java: "One farmer has MANY animals" = @OneToMany. Same relationship described from two angles. The @ManyToOne side always holds the foreign key column.`,
+    `<span>Breed is specific to AnimalType — not global</span> — Holstein Friesian is a Cow breed. It cannot appear in the Goat breed dropdown. The @ManyToOne from Breed to AnimalType enforces this. When farmer selects Cow, the mobile app calls GET /api/breeds?animalTypeId=1 and only cow breeds appear.`,
+    `<span>LocalDate vs LocalDateTime</span> — dateOfBirth uses LocalDate (2024-06-12 — date only, no time needed). registeredAt uses LocalDateTime (2024-06-12T14:32:00 — exact timestamp needed). Always use the right precision. Storing time when you only need date wastes space and causes confusion.`,
+    `<span>Nullable fields are intentional decisions, not mistakes</span> — breed is nullable because the farmer may not know the exact breed. animalName is nullable because farmers name cows but rarely name hens. uniqueTagNumber is nullable because most small farmers don't have INAPH registration yet. Never force a field that blocks registration.`,
+    `<span>Government INAPH tag</span> — India's official cattle UID ear tag scheme. Optional but unique-constrained. If Gowtham's cow has a government tag, Flora stores it. No two animals can share the same tag number.`
   ],
   code:[
-    { file:"enums/animal/HealthStatus.java", sub:"drives animal card colour badges",
+    { file:"enums/animal/HealthStatus.java", sub:"drives colour badge on every animal card",
       code:`<span class="kw">public enum</span> <span class="cls">HealthStatus</span> {
 
-    <span class="val">HEALTHY</span>(<span class="str">"Healthy"</span>),       <span class="cmt">// green badge  — all good</span>
-    <span class="val">SICK</span>(<span class="str">"Sick"</span>),             <span class="cmt">// red badge    — needs attention now</span>
-    <span class="val">RECOVERING</span>(<span class="str">"Recovering"</span>), <span class="cmt">// amber badge  — was sick, getting better</span>
-    <span class="val">CRITICAL</span>(<span class="str">"Critical"</span>),     <span class="cmt">// red flashing — call vet immediately</span>
-    <span class="val">DECEASED</span>(<span class="str">"Deceased"</span>);     <span class="cmt">// grey         — kept for historical records</span>
+    <span class="val">HEALTHY</span>(<span class="str">"Healthy"</span>),       <span class="cmt">// 🟢 green badge  — Lakshmi is fine, nothing to do</span>
+    <span class="val">SICK</span>(<span class="str">"Sick"</span>),             <span class="cmt">// 🔴 red badge    — Lakshmi needs attention now</span>
+    <span class="val">RECOVERING</span>(<span class="str">"Recovering"</span>), <span class="cmt">// 🟡 amber badge  — Lakshmi was sick, getting better</span>
+    <span class="val">CRITICAL</span>(<span class="str">"Critical"</span>),     <span class="cmt">// 🔴 flashing red — call vet immediately</span>
+    <span class="val">DECEASED</span>(<span class="str">"Deceased"</span>);     <span class="cmt">// ⬛ grey         — kept for historical health records</span>
 
     <span class="kw">private final</span> String displayName;
-    <span class="cls">HealthStatus</span>(String displayName) { <span class="kw">this</span>.displayName = displayName; }
+    <span class="cls">HealthStatus</span>(String d) { <span class="kw">this</span>.displayName = d; }
     <span class="kw">public</span> String <span class="prop">getDisplayName</span>() { <span class="kw">return</span> displayName; }
 }
-<span class="cmt">// Mobile app reads healthStatus field → decides badge colour</span>
-<span class="cmt">// Farmer sees colour instantly without reading any text</span>` },
-    { file:"enums/animal/AnimalGender.java", sub:"drives milk/egg tracker visibility",
-      code:`<span class="kw">public enum</span> <span class="cls">AnimalGender</span> {
-
-    <span class="val">MALE</span>(<span class="str">"Male"</span>),     <span class="cmt">// milk/egg tracker HIDDEN — males don't produce</span>
-    <span class="val">FEMALE</span>(<span class="str">"Female"</span>); <span class="cmt">// milk/egg tracker SHOWN  — females produce</span>
-
-    <span class="kw">private final</span> String displayName;
-    <span class="cls">AnimalGender</span>(String displayName) { <span class="kw">this</span>.displayName = displayName; }
-    <span class="kw">public</span> String <span class="prop">getDisplayName</span>() { <span class="kw">return</span> displayName; }
-}
-<span class="cmt">// Real-world logic: if(animal.getGender() == FEMALE) showMilkTracker()</span>` },
-    { file:"entity/animal/Breed.java", sub:"filtered by AnimalType on mobile dropdown",
+<span class="cmt">// Mobile app reads animal.healthStatus → shows correct badge colour</span>
+<span class="cmt">// Gowtham sees colour instantly — no reading required. UX rule #3.</span>` },
+    { file:"entity/animal/Breed.java", sub:"filtered by AnimalType — only relevant breeds shown",
       code:`<span class="ann">@Entity</span> <span class="ann">@Table(name = "breeds")</span>
 <span class="ann">@Data</span> <span class="ann">@NoArgsConstructor</span> <span class="ann">@AllArgsConstructor</span>
 <span class="kw">public class</span> <span class="cls">Breed</span> {
@@ -514,10 +547,8 @@ const JOURNAL = [
 
     <span class="ann">@Column(name = "breed_name", nullable = false, length = 100)</span>
     <span class="kw">private</span> String breedName;       <span class="cmt">// "Holstein Friesian"</span>
-
     <span class="ann">@Column(name = "breed_name_tamil", length = 100)</span>
     <span class="kw">private</span> String breedNameTamil;  <span class="cmt">// "ஹோல்ஸ்டீன் ஃப்ரீசியன்"</span>
-
     <span class="ann">@Column(name = "breed_name_hindi", length = 100)</span>
     <span class="kw">private</span> String breedNameHindi;  <span class="cmt">// "होल्स्टीन फ्रीसियन"</span>
 
@@ -525,118 +556,407 @@ const JOURNAL = [
     <span class="ann">@JoinColumn(name = "animal_type_id", nullable = false)</span>
     <span class="kw">private</span> AnimalType animalType;
     <span class="cmt">// MANY breeds belong to ONE animal type</span>
-    <span class="cmt">// Holstein Friesian → Cow. Boer → Goat. Aseel → Hen.</span>
-    <span class="cmt">// Mobile: farmer selects Cow → dropdown shows only cow breeds</span>
+    <span class="cmt">// Jersey → Cow. Boer → Goat. Aseel → Hen.</span>
+    <span class="cmt">// Mobile: farmer picks Cow → GET /api/breeds?animalTypeId=1</span>
+    <span class="cmt">// Only Jersey, Holstein, Gir, Sahiwal appear. Not Boer, not Aseel.</span>
 
     <span class="ann">@Column(name = "is_active", nullable = false)</span>
     <span class="kw">private</span> Boolean isActive = <span class="kw">true</span>;
-}
-<span class="cmt">// breeds table: breed_id, breed_name, breed_name_tamil,</span>
-<span class="cmt">//               breed_name_hindi, animal_type_id (FK), is_active</span>` },
-    { file:"entity/animal/Animal.java", sub:"individual animal registration, full chain",
+}` },
+    { file:"entity/animal/Animal.java", sub:"individual animal — Lakshmi's complete profile",
       code:`<span class="ann">@Entity</span> <span class="ann">@Table(name = "animals")</span>
 <span class="ann">@Data</span> <span class="ann">@NoArgsConstructor</span> <span class="ann">@AllArgsConstructor</span>
 <span class="kw">public class</span> <span class="cls">Animal</span> {
 
     <span class="ann">@Id</span> <span class="ann">@GeneratedValue(strategy = GenerationType.IDENTITY)</span>
     <span class="ann">@Column(name = "animal_id")</span>
-    <span class="kw">private</span> Long animalId; <span class="cmt">// unique ID — like a passport for the animal</span>
+    <span class="kw">private</span> Long animalId;
+    <span class="cmt">// Lakshmi gets animal_id=1. Like an Aadhaar card for the animal.</span>
 
     <span class="ann">@ManyToOne(fetch = FetchType.LAZY)</span>
     <span class="ann">@JoinColumn(name = "farmer_id", nullable = false)</span>
     <span class="kw">private</span> Farmer farmer;
-    <span class="cmt">// MANY animals belong to ONE farmer</span>
-    <span class="cmt">// Gowtham can have 10 animals — all point to his farmer_id</span>
+    <span class="cmt">// MANY animals → ONE farmer. Gowtham has 8 animals, all pointing to farmer_id=1.</span>
 
     <span class="ann">@ManyToOne(fetch = FetchType.LAZY)</span>
     <span class="ann">@JoinColumn(name = "animal_type_id", nullable = false)</span>
     <span class="kw">private</span> AnimalType animalType;
-    <span class="cmt">// MANY animals belong to ONE type</span>
-    <span class="cmt">// 3 cows + 5 hens → all point to their respective type rows</span>
+    <span class="cmt">// MANY animals → ONE type. Lakshmi, Ponni, unnamed cow → all point to Cow (type_id=1).</span>
 
     <span class="ann">@ManyToOne(fetch = FetchType.LAZY)</span>
-    <span class="ann">@JoinColumn(name = "breed_id")</span>  <span class="cmt">// nullable — farmer may not know breed</span>
+    <span class="ann">@JoinColumn(name = "breed_id")</span>   <span class="cmt">// nullable — farmer may not know the breed</span>
     <span class="kw">private</span> Breed breed;
-    <span class="cmt">// MANY animals belong to ONE breed</span>
-    <span class="cmt">// Multiple Jersey cows → all point to breed_id = 2 (Jersey)</span>
+    <span class="cmt">// Lakshmi → Jersey (breed_id=1). Unnamed cow → null. Both are valid.</span>
 
     <span class="ann">@Column(name = "animal_name", length = 100)</span>
-    <span class="kw">private</span> String animalName; <span class="cmt">// nullable — farmers name cows, rarely name hens</span>
+    <span class="kw">private</span> String animalName;        <span class="cmt">// "Lakshmi" — nullable, farmers name cows not hens</span>
 
     <span class="ann">@Enumerated(EnumType.STRING)</span>
     <span class="ann">@Column(name = "gender", length = 10)</span>
-    <span class="kw">private</span> AnimalGender gender; <span class="cmt">// FEMALE → milk tracker ON. MALE → OFF.</span>
+    <span class="kw">private</span> AnimalGender gender;
+    <span class="cmt">// FEMALE → production tracking ON (milk/eggs/wool/honey)</span>
+    <span class="cmt">// MALE   → production tracking OFF</span>
 
     <span class="ann">@Column(name = "date_of_birth")</span>
-    <span class="kw">private</span> LocalDate dateOfBirth;
-    <span class="cmt">// LocalDate not LocalDateTime — date only, no time needed</span>
-    <span class="cmt">// 2024-06-12, not 2024-06-12T14:32:00</span>
+    <span class="kw">private</span> LocalDate dateOfBirth;    <span class="cmt">// LocalDate — date only, no time needed</span>
 
     <span class="ann">@Column(name = "weight_kg")</span>
-    <span class="kw">private</span> Double weightKg; <span class="cmt">// used in ICAR feed calculator</span>
+    <span class="kw">private</span> Double weightKg;          <span class="cmt">// used in ICAR feed calculator</span>
 
     <span class="ann">@Enumerated(EnumType.STRING)</span>
     <span class="ann">@Column(name = "health_status", nullable = false, length = 20)</span>
     <span class="kw">private</span> HealthStatus healthStatus = HealthStatus.HEALTHY;
-    <span class="cmt">// Default HEALTHY — changes when symptoms checker runs</span>
-    <span class="cmt">// SICK → red badge on animal card → farmer knows to act</span>
+    <span class="cmt">// Updated automatically when symptoms checker runs</span>
+    <span class="cmt">// SICK → red badge on Lakshmi's card → Gowtham knows to act immediately</span>
+
+    <span class="ann">@Column(name = "is_pregnant")</span>
+    <span class="kw">private</span> Boolean isPregnant = <span class="kw">false</span>;
+    <span class="cmt">// Gowtham marks this when Lakshmi is pregnant</span>
+    <span class="cmt">// App shows pregnancy countdown and adjusts milk tracking expectations</span>
+
+    <span class="ann">@Column(name = "expected_delivery_date")</span>
+    <span class="kw">private</span> LocalDate expectedDeliveryDate;
+    <span class="cmt">// Nullable — only filled when isPregnant=true</span>
+    <span class="cmt">// Cow ~9 months. Goat ~5 months. Buffalo ~10 months.</span>
+    <span class="cmt">// 2 weeks before this date → push notification to Gowtham</span>
 
     <span class="ann">@Column(name = "unique_tag_number", unique = true, length = 50)</span>
     <span class="kw">private</span> String uniqueTagNumber;
-    <span class="cmt">// INAPH government UID ear tag for registered cattle</span>
-    <span class="cmt">// nullable — most small farmers don't have this yet</span>
-    <span class="cmt">// unique=true — no two animals share the same govt tag</span>
+    <span class="cmt">// INAPH government UID ear tag. Optional, unique. Most small farmers don't have it yet.</span>
 
     <span class="ann">@Column(name = "registered_at", nullable = false, updatable = false)</span>
     <span class="kw">private</span> LocalDateTime registeredAt = LocalDateTime.now();
-
     <span class="ann">@Column(name = "updated_at")</span>
     <span class="kw">private</span> LocalDateTime updatedAt = LocalDateTime.now();
 }` }
   ],
   extras:[
-    { type:"diagram", title:"Full animal ownership chain — after Day 2",
-      html:`<pre style="color:var(--ink2)"><span style="color:var(--g)">animal_types</span>
-    │  type_id, type_name, type_name_tamil, image_url, lottie_url
+    { type:"diagram", title:"Complete animal ownership chain — after Day 2",
+      html:`<pre style="color:var(--ink2)"><span style="color:#E8E6E0;font-weight:600">Gowtham</span> (farmer_id=1)
     │
-    │  @OneToMany — one type has many breeds
-    │
-    ▼
-<span style="color:var(--g)">breeds</span>
-    │  breed_id, breed_name, breed_name_tamil, <span style="color:var(--a)">animal_type_id (FK)</span>
-    │
-    │  @ManyToOne — many animals have one breed
-    │
-    ▼
-<span style="color:var(--g)">animals</span>
-    │  animal_id, animal_name, gender, date_of_birth
-    │  weight_kg, health_status, unique_tag_number
-    │  <span style="color:var(--a)">farmer_id (FK)</span>, <span style="color:var(--a)">animal_type_id (FK)</span>, <span style="color:var(--a)">breed_id (FK)</span>
-    │
-    ├── AnimalHealthRecord  (symptoms checker results — Day 3)
-    ├── MilkRecord          (daily yield tracking — Day 3)
-    └── VaccinationRecord   (vaccination schedule — Day 3)</pre>` },
-    { type:"table", title:"@ManyToOne — the rule to remember",
+    └── 8 animals registered in animals table
+            │
+            ├── <span style="color:var(--g)">Lakshmi</span> (animal_id=1)
+            │       ├── farmer_id=1    → Gowtham owns her
+            │       ├── animal_type_id=1 → Cow
+            │       ├── breed_id=1     → Jersey
+            │       ├── gender=FEMALE  → production tracking ON
+            │       └── health_status=HEALTHY → green badge
+            │
+            ├── <span style="color:var(--g)">Ponni</span> (animal_id=2)
+            │       ├── farmer_id=1, animal_type_id=1, breed_id=1
+            │       └── gender=FEMALE, health_status=HEALTHY
+            │
+            ├── <span style="color:var(--g)">Unnamed cow</span> (animal_id=3)
+            │       ├── farmer_id=1, animal_type_id=1, breed_id=NULL
+            │       └── gender=MALE → production tracking OFF
+            │
+            └── <span style="color:var(--g)">5 Hens</span> (animal_id=4,5,6,7,8)
+                    ├── farmer_id=1, animal_type_id=4 (Hen), breed_id=7 (Aseel)
+                    └── gender=FEMALE → egg tracking ON
+
+<span style="color:var(--ink3)">// Every row connects back to farmer_id=1</span>
+<span style="color:var(--ink3)">// animal_type drives: which breed dropdown shows, which production tracking shows</span>
+<span style="color:var(--ink3)">// gender drives: whether production tracking appears at all</span></pre>` },
+    { type:"table", title:"All 8 relationships in Flora — the complete map",
       html:`<table class="ann-table">
-          <thead><tr><th>Situation</th><th>Annotation</th><th>Real example in Flora</th></tr></thead>
-          <tbody>
-            <tr><td>Many X belong to One Y</td><td>@ManyToOne in X.java</td><td>Many Animals → One Farmer. Write @ManyToOne in Animal.java</td></tr>
-            <tr><td>One X has Many Y</td><td>@OneToMany in X.java</td><td>One State → Many Districts. Write @OneToMany in State.java</td></tr>
-            <tr><td>Many X relate to Many Y</td><td>@ManyToMany + @JoinTable</td><td>Farmer ↔ Crops. Write @ManyToMany in Farmer.java with @JoinTable</td></tr>
-            <tr><td>Key rule</td><td>Read from where you are</td><td>Standing in Animal.java — ask "how many of ME point to one of THEM?" Many animals → one breed = @ManyToOne</td></tr>
-          </tbody>
-        </table>` }
+        <thead><tr><th>Relationship</th><th>Type</th><th>Real life example</th><th>Where FK lives</th></tr></thead>
+        <tbody>
+          <tr><td>State → Districts</td><td>@OneToMany</td><td>Tamil Nadu has 38 districts. One state, many districts.</td><td>districts.state_id</td></tr>
+          <tr><td>District → Farmers</td><td>@OneToMany</td><td>Karur has thousands of farmers. One district, many farmers.</td><td>farmers.district_id</td></tr>
+          <tr><td>Farmer ↔ Crops</td><td>@ManyToMany</td><td>Gowtham grows Cotton+Groundnut. Kumar also grows Groundnut. Many farmers, many crops.</td><td>farmer_crops join table</td></tr>
+          <tr><td>Farmer ↔ AnimalTypes</td><td>@ManyToMany</td><td>Gowtham owns Cow+Hen. Kumar also owns Cow. Many farmers, many types.</td><td>farmer_animal_types join table</td></tr>
+          <tr><td>AnimalType → Breeds</td><td>@OneToMany</td><td>Cow has Jersey, Holstein, Gir, Sahiwal. One type, many breeds.</td><td>breeds.animal_type_id</td></tr>
+          <tr><td>Farmer → Animals</td><td>@OneToMany</td><td>Gowtham has 8 animals. One farmer, many animals.</td><td>animals.farmer_id</td></tr>
+          <tr><td>Animal → AnimalType</td><td>@ManyToOne</td><td>Lakshmi is a Cow. Many animals can be Cows.</td><td>animals.animal_type_id</td></tr>
+          <tr><td>Animal → Breed</td><td>@ManyToOne</td><td>Lakshmi is Jersey. Ponni is also Jersey. Many animals, one breed.</td><td>animals.breed_id (nullable)</td></tr>
+        </tbody>
+      </table>` }
+  ],
+  next:[],
+  snapshot:{ entities:7, enums:5, tables:9, endpoints:0 }
+},
+{
+  day:3,
+  date:"2026-06-13",
+  title:"AnimalHealthRecord · AnimalProductionRecord · VaccinationRecord · Production system design",
+  phase:1, status:"today",
+  tags:["Animal domain","Health records","Production tracking","Vaccination","System design","Enums"],
+  summary:"Completed the full animal sub-entity chain. Deep dive on production tracking design — why RecordType belongs in DB, how MILK/EGG/WEIGHT_YIELD covers all animals, symptom strategy (enum + free text), and auto-seeded vaccination schedule.",
+  built:[
+    `<span>AnimalHealthRecord entity</span> — symptoms checker result linked to one animal. Stores symptomsJson, additionalNotes (free text for edge cases like blood in stool), predictedDisease, confidenceScore, severity, actionRequired, isVetVisitRequired, isResolved.`,
+    `<span>Symptom enum created</span> — 21 predefined symptoms across 5 categories (General, Respiratory, Digestive, Physical, Reproductive, Behavioural). Drives the symptom tile grid on mobile. additionalNotes handles anything not in the list.`,
+    `<span>AnimalProductionRecord entity</span> — tracks milk, eggs, wool, honey, fish yield. RecordType (MILK/EGG/WEIGHT_YIELD) system-filled from animal type. ProductionSession (MORNING/EVENING/HARVEST). Drop detection flag for 20% decline alerts.`,
+    `<span>RecordType enum with unit property</span> — MILK("Milk","litres"), EGG("Egg","count"), WEIGHT_YIELD("Weight Yield","kg"). Mobile reads recordType.getUnit() to show correct label on input field.`,
+    `<span>ProductionSession enum</span> — MORNING, EVENING, HARVEST. HARVEST covers periodic yield: wool shearing, honey extraction, silk cocoon harvest, fish yield.`,
+    `<span>AnimalType updated</span> — added recordType field. Cow→MILK, Hen→EGG, Rabbit→WEIGHT_YIELD, Dog→null. System reads this to decide which production tracking to show.`,
+    `<span>VaccinationRecord entity</span> — per-animal vaccination schedule. vaccineName, dueDate, administeredDate, nextDueDate (auto-calculated on completion), VaccinationStatus (PENDING/DUE_SOON/OVERDUE/COMPLETED). Auto-seeded when animal is registered.`,
+    `<span>VaccinationStatus enum</span> — PENDING (grey), DUE_SOON (amber, 3 days before), OVERDUE (red), COMPLETED (green). Drives badge colours and FCM push timing.`,
+    `<span>3 new tables in MySQL</span> — animal_health_records, animal_production_records, vaccination_records. Total: 12 tables.`
+  ],
+  understood:[
+    `<span>Why RecordType should be stored in DB even though system fills it</span> — The system can always calculate RecordType from animal → animalType, but querying "show me all egg records" would require a JOIN across 3 tables every time. Storing record_type='EGG' directly in animal_production_records makes it a simple WHERE clause. Store what you query — even if derived.`,
+    `<span>Fixed enum symptoms + free text = best of both worlds</span> — Predefined symptom tiles (from Symptom enum) are fast to select, AI-friendly, consistent. The additionalNotes free text field handles anything outside the list — like Gowtham's dog passing blood in stool. The AI uses structured symptoms for ML prediction. The vet in Expert Chat reads the additional notes for full context.`,
+    `<span>MILK/EGG/WEIGHT_YIELD covers every producing animal in India</span> — Cow/Buffalo/Goat/Sheep/Camel → MILK. Hen/Duck/Dove/Quail/Turkey → EGG. Rabbit/Silkworm/Honey Bee/Fish → WEIGHT_YIELD. Pig/Dog/Horse → null (no production tracking). This three-category system handles every animal a Tamil Nadu farmer could own.`,
+    `<span>Vaccination auto-seeding means zero effort for the farmer</span> — Gowtham registers Lakshmi. Flora immediately creates 4 vaccination records with due dates. Gowtham never has to manually add vaccine reminders. 3 days before each date, he gets a push notification. After the vet visit, he taps "Done" — Flora calculates the next dose and seeds a new record automatically. The cycle continues forever.`,
+    `<span>isVetVisitRequired connects health check to Expert Chat</span> — When the symptoms checker returns isVetVisitRequired=true, the mobile app automatically shows a "Connect with Expert" button. Tapping it opens the Expert Chat pre-filled with animal name, predicted disease, symptoms, and Gowtham's additional notes. The vet sees everything without Gowtham having to type it again.`,
+    `<span>harvestCycle vs notes — two different purposes</span> — harvestCycle is structured context for WEIGHT_YIELD records: "Shearing cycle 1 — June 2026" or "Honey harvest — Summer batch". notes is free text for anything unusual that day: "Lakshmi seemed restless". Different purposes, different fields.`
+  ],
+  code:[
+    { file:"entity/animal/AnimalHealthRecord.java", sub:"Lakshmi's symptoms check result — every field explained",
+      code:`<span class="ann">@Entity</span> <span class="ann">@Table(name = "animal_health_records")</span>
+<span class="ann">@Data</span> <span class="ann">@NoArgsConstructor</span> <span class="ann">@AllArgsConstructor</span>
+<span class="kw">public class</span> <span class="cls">AnimalHealthRecord</span> {
+
+    <span class="ann">@Id</span> <span class="ann">@GeneratedValue(strategy = GenerationType.IDENTITY)</span>
+    <span class="ann">@Column(name = "health_record_id")</span>
+    <span class="kw">private</span> Long healthRecordId;
+
+    <span class="ann">@ManyToOne(fetch = FetchType.LAZY)</span>
+    <span class="ann">@JoinColumn(name = "animal_id", nullable = false)</span>
+    <span class="kw">private</span> Animal animal;
+    <span class="cmt">// MANY health records → ONE animal</span>
+    <span class="cmt">// Lakshmi can have 10 health checks over her lifetime. All point to animal_id=1.</span>
+
+    <span class="ann">@Column(name = "symptoms_json", nullable = false)</span>
+    <span class="kw">private</span> String symptomsJson;
+    <span class="cmt">// Predefined symptoms selected from tiles (from Symptom enum)</span>
+    <span class="cmt">// Stored as JSON: ["FEVER","NASAL_DISCHARGE","LETHARGY"]</span>
+    <span class="cmt">// Why JSON string and not a join table? — simpler, faster, one column</span>
+    <span class="cmt">// Symptom enum validates values before save — no invalid data reaches DB</span>
+
+    <span class="ann">@Column(name = "additional_notes", length = 1000)</span>
+    <span class="kw">private</span> String additionalNotes;
+    <span class="cmt">// Free text for anything NOT in the predefined symptom list</span>
+    <span class="cmt">// Real example: "passing blood in stool since 2 days" (Gowtham's dog)</span>
+    <span class="cmt">// Shown to the expert in chat when vet visit is needed</span>
+    <span class="cmt">// Nullable — most checks won't need this</span>
+
+    <span class="ann">@Column(name = "predicted_disease", length = 200)</span>
+    <span class="kw">private</span> String predictedDisease;
+    <span class="cmt">// Flask ML model output: "Foot and Mouth Disease"</span>
+
+    <span class="ann">@Column(name = "confidence_score")</span>
+    <span class="kw">private</span> Double confidenceScore;
+    <span class="cmt">// 0.78 = 78% confidence. Shown as a progress bar on the result screen.</span>
+
+    <span class="ann">@Enumerated(EnumType.STRING)</span>
+    <span class="ann">@Column(name = "severity", length = 20)</span>
+    <span class="kw">private</span> HealthStatus severity;
+    <span class="cmt">// Reusing HealthStatus enum: SICK / CRITICAL / RECOVERING</span>
+    <span class="cmt">// Drives the badge colour on the symptom result card</span>
+
+    <span class="ann">@Column(name = "action_required", length = 500)</span>
+    <span class="kw">private</span> String actionRequired;
+    <span class="cmt">// Plain text advice shown as main instruction: "Isolate immediately, call vet"</span>
+
+    <span class="ann">@Column(name = "is_vet_visit_required", nullable = false)</span>
+    <span class="kw">private</span> Boolean isVetVisitRequired = <span class="kw">false</span>;
+    <span class="cmt">// true → mobile app shows "Connect with Expert" button automatically</span>
+    <span class="cmt">// Expert chat opens pre-filled: animal name + disease + symptoms + notes</span>
+    <span class="cmt">// Gowtham doesn't retype anything. Expert sees everything.</span>
+
+    <span class="ann">@Column(name = "is_resolved", nullable = false)</span>
+    <span class="kw">private</span> Boolean isResolved = <span class="kw">false</span>;
+    <span class="cmt">// false = active issue, shows on dashboard as alert</span>
+    <span class="cmt">// true  = Gowtham marked it resolved, moves to history</span>
+
+    <span class="ann">@Column(name = "checked_at", nullable = false, updatable = false)</span>
+    <span class="kw">private</span> LocalDateTime checkedAt = LocalDateTime.now();
+    <span class="cmt">// Used to show "3 days ago" on Lakshmi's health history timeline</span>
+}` },
+    { file:"enums/animal/RecordType.java", sub:"unit property — mobile reads this to show correct label",
+      code:`<span class="kw">public enum</span> <span class="cls">RecordType</span> {
+
+    <span class="val">MILK</span>(<span class="str">"Milk"</span>, <span class="str">"litres"</span>),
+    <span class="cmt">// Cow, Buffalo, Goat, Sheep, Camel</span>
+    <span class="cmt">// Input field shows: "8.5 litres"</span>
+
+    <span class="val">EGG</span>(<span class="str">"Egg"</span>, <span class="str">"count"</span>),
+    <span class="cmt">// Hen, Duck, Dove, Quail, Turkey</span>
+    <span class="cmt">// Input field shows: "3 eggs"</span>
+
+    <span class="val">WEIGHT_YIELD</span>(<span class="str">"Weight Yield"</span>, <span class="str">"kg"</span>);
+    <span class="cmt">// Rabbit (fur), Sheep (wool), Silkworm (cocoons), Honey Bee (honey), Fish</span>
+    <span class="cmt">// Input field shows: "2.4 kg"</span>
+
+    <span class="kw">private final</span> String displayName;
+    <span class="kw">private final</span> String unit;
+
+    <span class="cls">RecordType</span>(String displayName, String unit) {
+        <span class="kw">this</span>.displayName = displayName;
+        <span class="kw">this</span>.unit = unit;
+    }
+
+    <span class="kw">public</span> String <span class="prop">getDisplayName</span>() { <span class="kw">return</span> displayName; }
+    <span class="kw">public</span> String <span class="prop">getUnit</span>() { <span class="kw">return</span> unit; }
+    <span class="cmt">// recordType.getUnit() → "litres" / "count" / "kg"</span>
+    <span class="cmt">// Mobile app shows the right unit label without any if/else logic</span>
+}` },
+    { file:"entity/animal/AnimalProductionRecord.java", sub:"milk, eggs, wool, honey — one entity for all",
+      code:`<span class="ann">@Entity</span> <span class="ann">@Table(name = "animal_production_records")</span>
+<span class="ann">@Data</span> <span class="ann">@NoArgsConstructor</span> <span class="ann">@AllArgsConstructor</span>
+<span class="kw">public class</span> <span class="cls">AnimalProductionRecord</span> {
+
+    <span class="ann">@Id</span> <span class="ann">@GeneratedValue(strategy = GenerationType.IDENTITY)</span>
+    <span class="ann">@Column(name = "production_record_id")</span>
+    <span class="kw">private</span> Long productionRecordId;
+
+    <span class="ann">@ManyToOne(fetch = FetchType.LAZY)</span>
+    <span class="ann">@JoinColumn(name = "animal_id", nullable = false)</span>
+    <span class="kw">private</span> Animal animal;
+    <span class="cmt">// MANY production records → ONE animal</span>
+    <span class="cmt">// Lakshmi has 730 records after one year (365 days × 2 sessions)</span>
+
+    <span class="ann">@Enumerated(EnumType.STRING)</span>
+    <span class="ann">@Column(name = "record_type", nullable = false, length = 20)</span>
+    <span class="kw">private</span> RecordType recordType;
+    <span class="cmt">// System fills from animal.getAnimalType().getRecordType()</span>
+    <span class="cmt">// Farmer never selects. Stored in DB for easy filtering:</span>
+    <span class="cmt">// SELECT * FROM animal_production_records WHERE record_type = 'EGG'</span>
+
+    <span class="ann">@Column(name = "record_date", nullable = false)</span>
+    <span class="kw">private</span> LocalDate recordDate;
+
+    <span class="ann">@Enumerated(EnumType.STRING)</span>
+    <span class="ann">@Column(name = "session", nullable = false, length = 10)</span>
+    <span class="kw">private</span> ProductionSession session;
+    <span class="cmt">// MORNING / EVENING → milk + egg animals (daily rhythm)</span>
+    <span class="cmt">// HARVEST           → wool, honey, silk, fish (periodic)</span>
+
+    <span class="ann">@Column(name = "quantity", nullable = false)</span>
+    <span class="kw">private</span> Double quantity;
+    <span class="cmt">// MILK → 8.5 litres. EGG → 3.0 eggs. WEIGHT_YIELD → 2.4 kg.</span>
+    <span class="cmt">// Unit label on screen comes from recordType.getUnit(). Zero extra code.</span>
+
+    <span class="ann">@Column(name = "is_drop_detected", nullable = false)</span>
+    <span class="kw">private</span> Boolean isDropDetected = <span class="kw">false</span>;
+    <span class="cmt">// System sets true when: quantity < (avg of last 3 days × 0.80)</span>
+    <span class="cmt">// i.e. more than 20% drop from recent average</span>
+    <span class="cmt">// When true → alert created → FCM push to Gowtham: "Lakshmi's milk dropped"</span>
+
+    <span class="ann">@Column(name = "harvest_cycle", length = 100)</span>
+    <span class="kw">private</span> String harvestCycle;
+    <span class="cmt">// WEIGHT_YIELD only: "Shearing cycle 1 — June 2026" or "Summer honey batch"</span>
+    <span class="cmt">// Nullable — not used for MILK and EGG records</span>
+
+    <span class="ann">@Column(name = "notes", length = 500)</span>
+    <span class="kw">private</span> String notes;
+    <span class="cmt">// Free text: "Lakshmi seemed restless during morning milking"</span>
+
+    <span class="ann">@Column(name = "recorded_at", nullable = false, updatable = false)</span>
+    <span class="kw">private</span> LocalDateTime recordedAt = LocalDateTime.now();
+}` },
+    { file:"entity/animal/VaccinationRecord.java", sub:"auto-seeded on animal registration — Gowtham never creates these manually",
+      code:`<span class="ann">@Entity</span> <span class="ann">@Table(name = "vaccination_records")</span>
+<span class="ann">@Data</span> <span class="ann">@NoArgsConstructor</span> <span class="ann">@AllArgsConstructor</span>
+<span class="kw">public class</span> <span class="cls">VaccinationRecord</span> {
+
+    <span class="ann">@Id</span> <span class="ann">@GeneratedValue(strategy = GenerationType.IDENTITY)</span>
+    <span class="ann">@Column(name = "vaccination_record_id")</span>
+    <span class="kw">private</span> Long vaccinationRecordId;
+
+    <span class="ann">@ManyToOne(fetch = FetchType.LAZY)</span>
+    <span class="ann">@JoinColumn(name = "animal_id", nullable = false)</span>
+    <span class="kw">private</span> Animal animal;
+    <span class="cmt">// MANY vaccination records → ONE animal</span>
+    <span class="cmt">// Lakshmi gets 4 records auto-seeded when Gowtham registers her</span>
+
+    <span class="ann">@Column(name = "vaccine_name", nullable = false, length = 200)</span>
+    <span class="kw">private</span> String vaccineName;      <span class="cmt">// "Foot and Mouth Disease (FMD) Vaccine"</span>
+    <span class="ann">@Column(name = "vaccine_name_tamil", length = 200)</span>
+    <span class="kw">private</span> String vaccineNameTamil; <span class="cmt">// shown when language = TA</span>
+    <span class="ann">@Column(name = "vaccine_name_hindi", length = 200)</span>
+    <span class="kw">private</span> String vaccineNameHindi; <span class="cmt">// shown when language = HI</span>
+
+    <span class="ann">@Column(name = "disease_protected_against", length = 200)</span>
+    <span class="kw">private</span> String diseaseProtectedAgainst;
+    <span class="cmt">// "Foot and Mouth Disease" — shown so Gowtham understands why it matters</span>
+
+    <span class="ann">@Column(name = "due_date", nullable = false)</span>
+    <span class="kw">private</span> LocalDate dueDate;
+    <span class="cmt">// @Scheduled AlertScheduler checks this every day</span>
+    <span class="cmt">// 3 days before → status=DUE_SOON + push notification sent</span>
+    <span class="cmt">// After due date, not done → status=OVERDUE + urgent dashboard alert</span>
+
+    <span class="ann">@Column(name = "administered_date")</span>
+    <span class="kw">private</span> LocalDate administeredDate;
+    <span class="cmt">// null = not yet given. Filled when Gowtham marks as COMPLETED.</span>
+
+    <span class="ann">@Column(name = "next_due_date")</span>
+    <span class="kw">private</span> LocalDate nextDueDate;
+    <span class="cmt">// Auto-calculated when COMPLETED: administeredDate + vaccine interval</span>
+    <span class="cmt">// FMD → every 6 months. Brucellosis → every 12 months.</span>
+    <span class="cmt">// System creates a NEW VaccinationRecord with this date. Cycle continues forever.</span>
+
+    <span class="ann">@Column(name = "administered_by", length = 200)</span>
+    <span class="kw">private</span> String administeredBy;
+    <span class="cmt">// Optional: "Dr. Rajesh, Karur Govt Vet Hospital"</span>
+
+    <span class="ann">@Enumerated(EnumType.STRING)</span>
+    <span class="ann">@Column(name = "vaccination_status", nullable = false, length = 20)</span>
+    <span class="kw">private</span> VaccinationStatus vaccinationStatus = VaccinationStatus.PENDING;
+    <span class="cmt">// PENDING  → grey badge,  waiting for due date</span>
+    <span class="cmt">// DUE_SOON → amber badge, 3 days before → push notification</span>
+    <span class="cmt">// OVERDUE  → red badge,   missed the date → urgent alert</span>
+    <span class="cmt">// COMPLETED → green badge, done → next dose auto-seeded</span>
+
+    <span class="ann">@Column(name = "notes", length = 500)</span>
+    <span class="kw">private</span> String notes;
+    <span class="cmt">// "Animal had mild reaction, monitor for 24 hours"</span>
+
+    <span class="ann">@Column(name = "created_at", nullable = false, updatable = false)</span>
+    <span class="kw">private</span> LocalDateTime createdAt = LocalDateTime.now();
+    <span class="ann">@Column(name = "updated_at")</span>
+    <span class="kw">private</span> LocalDateTime updatedAt = LocalDateTime.now();
+}` }
+  ],
+  extras:[
+    { type:"diagram", title:"The complete animal module — all 6 tables connected",
+      html:`<pre style="color:var(--ink2)"><span style="color:#E8E6E0;font-weight:600">Gowtham</span> (farmer_id=1)
+    │
+    └── <span style="color:var(--g)">Lakshmi</span> (animal_id=1, Cow, Jersey, FEMALE, HEALTHY)
+            │
+            ├── <span style="color:var(--g)">animal_health_records</span>
+            │       health_record_id=1
+            │       symptoms: ["FEVER","NASAL_DISCHARGE"]
+            │       additional_notes: "not eating since morning"
+            │       predicted_disease: "Foot and Mouth Disease"
+            │       confidence: 0.78, severity: CRITICAL
+            │       is_vet_visit_required: true  ──► Expert Chat opens pre-filled
+            │       is_resolved: false  ──► shows as active alert on dashboard
+            │
+            ├── <span style="color:var(--g)">animal_production_records</span>
+            │       record_id=1: MILK, 2026-06-13, MORNING, 8.5 litres, drop=false
+            │       record_id=2: MILK, 2026-06-13, EVENING, 6.0 litres, drop=false
+            │       record_id=3: MILK, 2026-06-14, MORNING, 6.1 litres, <span style="color:var(--r)">drop=true</span>
+            │                    ──► Alert: "Lakshmi's milk dropped 28%"
+            │
+            └── <span style="color:var(--g)">vaccination_records</span>
+                    vacc_id=1: FMD Vaccine, due 2026-12-13, PENDING
+                    vacc_id=2: HS Vaccine,  due 2026-12-13, PENDING
+                    vacc_id=3: BQ Vaccine,  due 2026-12-13, PENDING
+                    vacc_id=4: Brucellosis, due 2027-06-13, PENDING
+                    ──► All 4 auto-seeded when Lakshmi was registered
+                    ──► Gowtham never typed any of this</pre>` },
+    { type:"table", title:"RecordType → AnimalType mapping — every animal in Flora",
+      html:`<table class="ann-table">
+        <thead><tr><th>RecordType</th><th>Unit</th><th>Animals</th><th>Session</th></tr></thead>
+        <tbody>
+          <tr><td>MILK</td><td>litres</td><td>Cow, Buffalo, Goat, Sheep, Camel</td><td>MORNING + EVENING</td></tr>
+          <tr><td>EGG</td><td>count</td><td>Hen, Duck, Dove, Quail, Turkey</td><td>MORNING (once daily)</td></tr>
+          <tr><td>WEIGHT_YIELD</td><td>kg</td><td>Rabbit (fur), Sheep (wool), Silkworm (cocoons), Honey Bee (honey), Fish</td><td>HARVEST (periodic)</td></tr>
+          <tr><td>null</td><td>—</td><td>Pig, Dog, Horse (no daily production)</td><td>— (no production tracking)</td></tr>
+        </tbody>
+      </table>` }
   ],
   next:[
-    `<span>AnimalHealthRecord.java</span> — symptoms checker result per animal. Fields: symptoms, predictedDisease, confidenceScore, severity, actionRequired, isVetVisitRequired.`,
-    `<span>MilkRecord.java</span> — daily milk and egg yield. MORNING/EVENING sessions. Used for trend charts and 20% drop detection alert.`,
-    `<span>VaccinationRecord.java</span> — vaccination schedule per animal. dueDate drives the 3-day FCM push reminder. vaccinationStatus (PENDING/COMPLETED/OVERDUE).`,
-    `<span>Remaining entities</span> — SoilScan, WeatherSnapshot, Prediction, MarketPrice, ChatSession, ChatMessage, Alert, DeviceToken, Feedback.`
+    `<span>Remaining entities</span> — SoilScan, WeatherSnapshot, Prediction, MarketPrice for the crop module. ChatSession, ChatMessage for expert chat. Alert, DeviceToken for push notifications. Feedback for post-harvest ratings.`,
+    `<span>After all entities are done</span> — JWT authentication. POST /api/auth/register and POST /api/auth/login. First real working endpoints in the project.`
   ],
-  snapshot:{ entities:7, enums:5, tables:9, endpoints:0 }
+  snapshot:{ entities:10, enums:9, tables:12, endpoints:0 }
 }
 ];
-
 /* ============================================================================
    ENGINE — renders pages from data. No need to edit below to add a day.
    ========================================================================== */

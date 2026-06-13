@@ -59,6 +59,14 @@ public class Animal {
     @Column(name = "health_status", nullable = false, length = 20)
     private HealthStatus healthStatus = HealthStatus.HEALTHY;
 
+    //Is Pregnant
+    @Column(name = "is_pregnant")
+    private Boolean isPregnant = false;
+
+    //Expected Delivery Date
+    @Column(name = "expected_delivery_date")
+    private LocalDate expectedDeliveryDate;
+
     //Government Tag
     @Column(name = "unique_tag_number", unique = true, length = 50)
     private String uniqueTagNumber;
