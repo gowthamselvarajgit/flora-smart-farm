@@ -28,42 +28,60 @@ JOURNAL.push({
     `<span>A neat label vs a free note are different jobs</span> — "Shearing cycle 1 — June 2026" is a tidy label for grouping. "Lakshmi seemed restless" is a free note for a human to read later. Different purposes, different fields.`
   ],
   code:[
-    { file:"entity/animal/AnimalHealthRecord.java", sub:"the result of a symptom check — every field explained",
-      code:`<span class="ann">@Entity</span> <span class="ann">@Table(name = "animal_health_records")</span>
+    { file:"entity/animal/AnimalHealthRecord.java", sub:"one row = one symptom check; the AI's answer is saved with it",
+      code:`<span class="cmt">// ==================== WHAT THIS FILE IS ====================</span>
+<span class="cmt">// One row = one symptom check on an animal. Maps to "animal_health_records".</span>
+
+<span class="ann">@Entity</span> <span class="ann">@Table(name = "animal_health_records")</span>
 <span class="ann">@Data</span> <span class="ann">@NoArgsConstructor</span> <span class="ann">@AllArgsConstructor</span>
 <span class="kw">public class</span> <span class="cls">AnimalHealthRecord</span> {
+
+    <span class="cmt">// ==================== PRIMARY KEY ====================</span>
 
     <span class="ann">@Id</span> <span class="ann">@GeneratedValue(strategy = GenerationType.IDENTITY)</span>
     <span class="ann">@Column(name = "health_record_id")</span>
     <span class="kw">private</span> Long healthRecordId;
+    <span class="cmt">// the unique id of this check.   Example: 1</span>
+
+    <span class="cmt">// ==================== WHICH ANIMAL ====================</span>
 
     <span class="ann">@ManyToOne(fetch = FetchType.LAZY)</span>
     <span class="ann">@JoinColumn(name = "animal_id", nullable = false)</span>
     <span class="kw">private</span> Animal animal;
-    <span class="cmt">// MANY health checks → ONE animal. Lakshmi may have 10 over her life.</span>
+    <span class="cmt">// MANY checks → ONE animal. Lakshmi may have 10 checks over her life.</span>
+
+    <span class="cmt">// ==================== WHAT THE FARMER ENTERED ====================</span>
 
     <span class="ann">@Column(name = "symptoms_json", nullable = false)</span>
+    <span class="cmt">// the tapped symptoms, saved as a small list in one column</span>
     <span class="kw">private</span> String symptomsJson;
-    <span class="cmt">// the tapped symptoms, saved as a small list: ["FEVER","NASAL_DISCHARGE"]</span>
-    <span class="cmt">// one column instead of a whole extra table — simpler and faster</span>
+    <span class="cmt">// Example: ["FEVER","NASAL_DISCHARGE"]   (no extra table needed)</span>
 
     <span class="ann">@Column(name = "additional_notes", length = 1000)</span>
+    <span class="cmt">// optional free-text box, for anything not in the tile list</span>
     <span class="kw">private</span> String additionalNotes;
-    <span class="cmt">// the free-text box, for anything not in the tile list</span>
-    <span class="cmt">// real example: "passing blood in stool since 2 days"</span>
+    <span class="cmt">// Example: "passing blood in stool since 2 days"</span>
+
+    <span class="cmt">// ==================== THE AI'S ANSWER ====================</span>
 
     <span class="ann">@Column(name = "predicted_disease", length = 200)</span>
-    <span class="kw">private</span> String predictedDisease;     <span class="cmt">// the AI's best guess: "Foot and Mouth Disease"</span>
+    <span class="kw">private</span> String predictedDisease;
+    <span class="cmt">// the AI's best guess.   Example: "Foot and Mouth Disease"</span>
 
     <span class="ann">@Column(name = "confidence_score")</span>
-    <span class="kw">private</span> Double confidenceScore;       <span class="cmt">// 0.78 = 78% sure. Shown as a little bar.</span>
+    <span class="kw">private</span> Double confidenceScore;
+    <span class="cmt">// how sure the AI is.   Example: 0.78 = 78% (shown as a small bar)</span>
 
     <span class="ann">@Enumerated(EnumType.STRING)</span>
     <span class="ann">@Column(name = "severity", length = 20)</span>
-    <span class="kw">private</span> HealthStatus severity;        <span class="cmt">// reuses our health list: SICK / CRITICAL …</span>
+    <span class="kw">private</span> HealthStatus severity;
+    <span class="cmt">// reuses the HealthStatus list from Day 2: SICK / CRITICAL …</span>
 
     <span class="ann">@Column(name = "action_required", length = 500)</span>
-    <span class="kw">private</span> String actionRequired;        <span class="cmt">// plain advice: "Isolate immediately, call vet"</span>
+    <span class="kw">private</span> String actionRequired;
+    <span class="cmt">// plain advice.   Example: "Isolate immediately, call the vet"</span>
+
+    <span class="cmt">// ==================== FLAGS ====================</span>
 
     <span class="ann">@Column(name = "is_vet_visit_required", nullable = false)</span>
     <span class="kw">private</span> Boolean isVetVisitRequired = <span class="kw">false</span>;
@@ -71,14 +89,22 @@ JOURNAL.push({
 
     <span class="ann">@Column(name = "is_resolved", nullable = false)</span>
     <span class="kw">private</span> Boolean isResolved = <span class="kw">false</span>;
-    <span class="cmt">// false = still active (shows on dashboard). true = sorted, moves to history.</span>
+    <span class="cmt">// false = still active (shows on dashboard)   ·   true = sorted, moves to history</span>
+
+    <span class="cmt">// ==================== TIMESTAMP ====================</span>
 
     <span class="ann">@Column(name = "checked_at", nullable = false, updatable = false)</span>
     <span class="kw">private</span> LocalDateTime checkedAt = LocalDateTime.now();
     <span class="cmt">// used to show "3 days ago" on Lakshmi's health timeline</span>
 }` },
-    { file:"enums/animal/RecordType.java", sub:"each type carries its own unit, so the screen labels itself",
-      code:`<span class="kw">public enum</span> <span class="cls">RecordType</span> {
+    { file:"enums/animal/RecordType.java", sub:"a fixed list of what animals produce; each carries its own unit",
+      code:`<span class="cmt">// ==================== WHAT THIS FILE IS ====================</span>
+<span class="cmt">// A fixed list of what an animal produces. Each choice also carries its unit,</span>
+<span class="cmt">// so the input screen can label itself with no extra code.</span>
+
+<span class="kw">public enum</span> <span class="cls">RecordType</span> {
+
+    <span class="cmt">// ============ THE ALLOWED CHOICES (name, unit) ============</span>
 
     <span class="val">MILK</span>(<span class="str">"Milk"</span>, <span class="str">"litres"</span>),
     <span class="cmt">// Cow, Buffalo, Goat, Sheep, Camel → input shows "8.5 litres"</span>
@@ -89,110 +115,158 @@ JOURNAL.push({
     <span class="val">WEIGHT_YIELD</span>(<span class="str">"Weight Yield"</span>, <span class="str">"kg"</span>);
     <span class="cmt">// Wool, honey, silk cocoons, fish → input shows "2.4 kg"</span>
 
-    <span class="kw">private final</span> String displayName;
-    <span class="kw">private final</span> String unit;
+    <span class="cmt">// ============ THE TWO LABELS EACH CHOICE CARRIES ============</span>
+
+    <span class="kw">private final</span> String displayName;  <span class="cmt">// the friendly name, e.g. "Milk"</span>
+    <span class="kw">private final</span> String unit;         <span class="cmt">// the unit, e.g. "litres"</span>
+
+    <span class="cmt">// ============ CONSTRUCTOR (runs once for each choice) ============</span>
 
     <span class="cls">RecordType</span>(String displayName, String unit) {
         <span class="kw">this</span>.displayName = displayName;
         <span class="kw">this</span>.unit = unit;
     }
 
+    <span class="cmt">// ============ GETTERS (read the labels back) ============</span>
+
     <span class="kw">public</span> String <span class="prop">getDisplayName</span>() { <span class="kw">return</span> displayName; }
     <span class="kw">public</span> String <span class="prop">getUnit</span>() { <span class="kw">return</span> unit; }
-    <span class="cmt">// the app reads .getUnit() to print the right label — no if/else needed</span>
+    <span class="cmt">// Example: RecordType.MILK.getUnit() → "litres" — the screen needs no if/else</span>
 }` },
-    { file:"entity/animal/AnimalProductionRecord.java", sub:"milk, eggs, wool, honey — one simple book for all",
-      code:`<span class="ann">@Entity</span> <span class="ann">@Table(name = "animal_production_records")</span>
+    { file:"entity/animal/AnimalProductionRecord.java", sub:"one row = one day's milk, eggs or yield — one book for all",
+      code:`<span class="cmt">// ==================== WHAT THIS FILE IS ====================</span>
+<span class="cmt">// One row = one day's milk, eggs or yield. Maps to "animal_production_records".</span>
+
+<span class="ann">@Entity</span> <span class="ann">@Table(name = "animal_production_records")</span>
 <span class="ann">@Data</span> <span class="ann">@NoArgsConstructor</span> <span class="ann">@AllArgsConstructor</span>
 <span class="kw">public class</span> <span class="cls">AnimalProductionRecord</span> {
+
+    <span class="cmt">// ==================== PRIMARY KEY ====================</span>
 
     <span class="ann">@Id</span> <span class="ann">@GeneratedValue(strategy = GenerationType.IDENTITY)</span>
     <span class="ann">@Column(name = "production_record_id")</span>
     <span class="kw">private</span> Long productionRecordId;
+    <span class="cmt">// the unique id of this record.   Example: 1</span>
+
+    <span class="cmt">// ==================== WHICH ANIMAL ====================</span>
 
     <span class="ann">@ManyToOne(fetch = FetchType.LAZY)</span>
     <span class="ann">@JoinColumn(name = "animal_id", nullable = false)</span>
     <span class="kw">private</span> Animal animal;
-    <span class="cmt">// MANY records → ONE animal. Lakshmi has 730 in a year (twice daily).</span>
+    <span class="cmt">// MANY records → ONE animal. Lakshmi has 730 in a year (twice a day).</span>
+
+    <span class="cmt">// ==================== WHAT + WHEN ====================</span>
 
     <span class="ann">@Enumerated(EnumType.STRING)</span>
     <span class="ann">@Column(name = "record_type", nullable = false, length = 20)</span>
     <span class="kw">private</span> RecordType recordType;
-    <span class="cmt">// the app fills this from the animal's type. Saved here so "all egg records"</span>
-    <span class="cmt">// is a one-line search instead of a three-table lookup.</span>
+    <span class="cmt">// the app fills this from the animal's type (MILK / EGG / WEIGHT_YIELD).</span>
+    <span class="cmt">// saved here so "all egg records" is a one-line search, not a 3-table join.</span>
 
     <span class="ann">@Column(name = "record_date", nullable = false)</span>
     <span class="kw">private</span> LocalDate recordDate;
+    <span class="cmt">// just the day.   Example: 2026-06-13</span>
 
     <span class="ann">@Enumerated(EnumType.STRING)</span>
     <span class="ann">@Column(name = "session", nullable = false, length = 10)</span>
     <span class="kw">private</span> ProductionSession session;
     <span class="cmt">// MORNING / EVENING for milk + eggs. HARVEST for wool, honey, silk, fish.</span>
 
+    <span class="cmt">// ==================== THE NUMBER ====================</span>
+
     <span class="ann">@Column(name = "quantity", nullable = false)</span>
     <span class="kw">private</span> Double quantity;
-    <span class="cmt">// 8.5 litres / 3 eggs / 2.4 kg. The unit label comes from the type. Zero extra code.</span>
+    <span class="cmt">// Example: 8.5 (litres) / 3 (eggs) / 2.4 (kg). The unit comes from recordType.</span>
+
+    <span class="cmt">// ==================== DROP DETECTOR ====================</span>
 
     <span class="ann">@Column(name = "is_drop_detected", nullable = false)</span>
     <span class="kw">private</span> Boolean isDropDetected = <span class="kw">false</span>;
     <span class="cmt">// turns true when today is &gt;20% below the recent average → warns Gowtham early</span>
 
+    <span class="cmt">// ==================== EXTRA NOTES ====================</span>
+
     <span class="ann">@Column(name = "harvest_cycle", length = 100)</span>
     <span class="kw">private</span> String harvestCycle;
-    <span class="cmt">// a tidy label for yield records: "Shearing cycle 1 — June 2026". Blank for milk/eggs.</span>
+    <span class="cmt">// a tidy label for yield records, e.g. "Shearing cycle 1 — June 2026". Blank for milk/eggs.</span>
 
     <span class="ann">@Column(name = "notes", length = 500)</span>
-    <span class="kw">private</span> String notes;          <span class="cmt">// free note: "Lakshmi seemed restless this morning"</span>
+    <span class="kw">private</span> String notes;
+    <span class="cmt">// free note.   Example: "Lakshmi seemed restless this morning"</span>
+
+    <span class="cmt">// ==================== TIMESTAMP ====================</span>
 
     <span class="ann">@Column(name = "recorded_at", nullable = false, updatable = false)</span>
     <span class="kw">private</span> LocalDateTime recordedAt = LocalDateTime.now();
 }` },
-    { file:"entity/animal/VaccinationRecord.java", sub:"created automatically — Gowtham never adds these by hand",
-      code:`<span class="ann">@Entity</span> <span class="ann">@Table(name = "vaccination_records")</span>
+    { file:"entity/animal/VaccinationRecord.java", sub:"one row = one vaccine reminder; created automatically",
+      code:`<span class="cmt">// ==================== WHAT THIS FILE IS ====================</span>
+<span class="cmt">// One row = one vaccine reminder for an animal. Maps to "vaccination_records".</span>
+<span class="cmt">// These are created automatically when an animal is registered.</span>
+
+<span class="ann">@Entity</span> <span class="ann">@Table(name = "vaccination_records")</span>
 <span class="ann">@Data</span> <span class="ann">@NoArgsConstructor</span> <span class="ann">@AllArgsConstructor</span>
 <span class="kw">public class</span> <span class="cls">VaccinationRecord</span> {
+
+    <span class="cmt">// ==================== PRIMARY KEY ====================</span>
 
     <span class="ann">@Id</span> <span class="ann">@GeneratedValue(strategy = GenerationType.IDENTITY)</span>
     <span class="ann">@Column(name = "vaccination_record_id")</span>
     <span class="kw">private</span> Long vaccinationRecordId;
+    <span class="cmt">// the unique id of this reminder.   Example: 1</span>
+
+    <span class="cmt">// ==================== WHICH ANIMAL ====================</span>
 
     <span class="ann">@ManyToOne(fetch = FetchType.LAZY)</span>
     <span class="ann">@JoinColumn(name = "animal_id", nullable = false)</span>
     <span class="kw">private</span> Animal animal;
-    <span class="cmt">// 4 records appear for Lakshmi the moment she's registered</span>
+    <span class="cmt">// 4 reminders appear for Lakshmi the moment she is registered</span>
+
+    <span class="cmt">// ============ VACCINE NAME (in three languages) ============</span>
 
     <span class="ann">@Column(name = "vaccine_name", nullable = false, length = 200)</span>
-    <span class="kw">private</span> String vaccineName;      <span class="cmt">// "Foot and Mouth Disease (FMD) Vaccine"</span>
+    <span class="kw">private</span> String vaccineName;      <span class="cmt">// Example: "Foot and Mouth Disease (FMD) Vaccine"</span>
     <span class="ann">@Column(name = "vaccine_name_tamil", length = 200)</span>
     <span class="kw">private</span> String vaccineNameTamil;
     <span class="ann">@Column(name = "vaccine_name_hindi", length = 200)</span>
     <span class="kw">private</span> String vaccineNameHindi;
 
     <span class="ann">@Column(name = "disease_protected_against", length = 200)</span>
-    <span class="kw">private</span> String diseaseProtectedAgainst;   <span class="cmt">// so Gowtham sees why it matters</span>
+    <span class="kw">private</span> String diseaseProtectedAgainst;
+    <span class="cmt">// shown so Gowtham sees why the shot matters</span>
+
+    <span class="cmt">// ==================== DATES ====================</span>
 
     <span class="ann">@Column(name = "due_date", nullable = false)</span>
     <span class="kw">private</span> LocalDate dueDate;
     <span class="cmt">// the app checks this daily. 3 days before → "due soon" + a push.</span>
 
     <span class="ann">@Column(name = "administered_date")</span>
-    <span class="kw">private</span> LocalDate administeredDate;        <span class="cmt">// blank until the shot is given</span>
+    <span class="kw">private</span> LocalDate administeredDate;
+    <span class="cmt">// blank until the shot is actually given</span>
 
     <span class="ann">@Column(name = "next_due_date")</span>
     <span class="kw">private</span> LocalDate nextDueDate;
-    <span class="cmt">// worked out automatically after a shot (e.g. +6 months) → a fresh record is</span>
-    <span class="cmt">// created for that date. The cycle keeps going on its own, forever.</span>
+    <span class="cmt">// worked out after a shot (e.g. +6 months) → a fresh reminder is created.</span>
+    <span class="cmt">// the cycle keeps itself going, forever.</span>
+
+    <span class="cmt">// ==================== WHO GAVE IT ====================</span>
 
     <span class="ann">@Column(name = "administered_by", length = 200)</span>
-    <span class="kw">private</span> String administeredBy;            <span class="cmt">// "Dr. Rajesh, Karur Govt Vet Hospital"</span>
+    <span class="kw">private</span> String administeredBy;
+    <span class="cmt">// optional.   Example: "Dr. Rajesh, Karur Govt Vet Hospital"</span>
+
+    <span class="cmt">// ==================== STATUS ====================</span>
 
     <span class="ann">@Enumerated(EnumType.STRING)</span>
     <span class="ann">@Column(name = "vaccination_status", nullable = false, length = 20)</span>
     <span class="kw">private</span> VaccinationStatus vaccinationStatus = VaccinationStatus.PENDING;
     <span class="cmt">// PENDING grey · DUE_SOON amber + push · OVERDUE red + alert · COMPLETED green</span>
 
+    <span class="cmt">// ==================== NOTES + TIMESTAMPS ====================</span>
+
     <span class="ann">@Column(name = "notes", length = 500)</span>
-    <span class="kw">private</span> String notes;          <span class="cmt">// "Mild reaction, monitor for 24 hours"</span>
+    <span class="kw">private</span> String notes;          <span class="cmt">// Example: "Mild reaction, monitor for 24 hours"</span>
 
     <span class="ann">@Column(name = "created_at", nullable = false, updatable = false)</span>
     <span class="kw">private</span> LocalDateTime createdAt = LocalDateTime.now();
@@ -261,7 +335,35 @@ JOURNAL.push({
           <tr><td>Weight / yield</td><td>kg</td><td>Wool, honey, silk cocoons, fish</td><td>At harvest</td></tr>
           <tr><td>None</td><td>—</td><td>Pig, Dog, Horse</td><td>No production tracking</td></tr>
         </tbody>
-      </table>` }
+      </table>` },
+    { type:"versus", title:"The one time it's OK to store what you could calculate",
+      bad:{ label:"Work it out every time", code:`<span class="cmt">// to list all EGG records, join</span>
+<span class="cmt">// 3 tables every single time:</span>
+<span class="cmt">//   production → animal → animal_type</span>
+<span class="cmt">// then keep only type = EGG.</span>
+<span class="cmt">// slow, and repeated all over the code.</span>` },
+      good:{ label:"Copy it onto the record", code:`<span class="ann">@Enumerated(EnumType.STRING)</span>
+<span class="kw">private</span> RecordType recordType;
+
+<span class="cmt">// the app fills this from the animal.</span>
+<span class="cmt">// now \"all egg records\" is one line:</span>
+<span class="cmt">//   WHERE record_type = 'EGG'</span>
+<span class="cmt">// fast. a deliberate, worth-it copy.</span>` },
+      note:`<b>One-line answer:</b> normally never store what you can calculate. The exception: a value you <b>filter by constantly</b> — copying it turns a slow 3-table join into a one-line search.` },
+    { type:"qa", title:"Interview questions — Day 3 (tap to reveal the answer)",
+      items:[
+        { q:"Why save the symptoms as a JSON string instead of a separate table?",
+          a:`The symptoms are a short list of tick-boxes we always read together as a whole. Saving them as a small JSON list in one column is simpler and faster than building and joining a separate table for a handful of values.` },
+        { q:"You said never store derived data — but record_type is derived. Why store it?",
+          a:`Because we <b>filter by it all the time</b> (\"show all egg records\"). Calculating it would mean joining three tables on every query. Copying it onto each record makes that a one-line search. It's a deliberate, worth-it exception to the rule.` },
+        { q:"How does one production table handle milk, eggs and wool together?",
+          a:`Each record has a <b>RecordType</b> (MILK / EGG / WEIGHT_YIELD), and the type carries its own unit (litres / count / kg). So one table and one \"quantity\" field cover every animal, and the screen shows the right unit with no extra code.` },
+        { q:"How does the vaccination schedule keep itself going?",
+          a:`When a dose is marked done, the app calculates the <b>next due date</b> (e.g. +6 months) and creates a fresh reminder for it. So the loop renews itself forever — the farmer never has to set a reminder by hand.` },
+        { q:"How does a health check connect to the expert chat?",
+          a:`The health record has an <b>is_vet_visit_required</b> flag. When it's true, the app shows a \"Connect with Expert\" button and opens the chat already filled with the animal, the likely illness, and the notes — so nothing is retyped.` }
+      ]
+    }
   ],
   next:[
     `<span>The crop side begins</span> — soil tests, live weather, and the AI advice that grows out of them.`

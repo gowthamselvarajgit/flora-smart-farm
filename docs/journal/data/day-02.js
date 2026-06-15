@@ -29,89 +29,151 @@ JOURNAL.push({
     `<span>Optional, but still unique</span> — The government ear-tag is optional, but if it IS given, no two animals can share it. Optional and unique at the same time.`
   ],
   code:[
-    { file:"enums/animal/HealthStatus.java", sub:"colours the badge on every animal card",
-      code:`<span class="kw">public enum</span> <span class="cls">HealthStatus</span> {
+    { file:"enums/animal/HealthStatus.java", sub:"a fixed list of health states; each one colours a badge",
+      code:`<span class="cmt">// ==================== WHAT THIS FILE IS ====================</span>
+<span class="cmt">// A fixed list of an animal's health states.</span>
+<span class="cmt">// The app turns each one into a coloured badge on the animal's card.</span>
 
-    <span class="val">HEALTHY</span>(<span class="str">"Healthy"</span>),       <span class="cmt">// 🟢 green  — Lakshmi is fine, nothing to do</span>
-    <span class="val">SICK</span>(<span class="str">"Sick"</span>),             <span class="cmt">// 🔴 red    — needs attention now</span>
-    <span class="val">RECOVERING</span>(<span class="str">"Recovering"</span>), <span class="cmt">// 🟡 amber  — was sick, getting better</span>
-    <span class="val">CRITICAL</span>(<span class="str">"Critical"</span>),     <span class="cmt">// 🔴 urgent — call the vet immediately</span>
-    <span class="val">DECEASED</span>(<span class="str">"Deceased"</span>);     <span class="cmt">// ⬛ grey    — kept for past records</span>
+<span class="kw">public enum</span> <span class="cls">HealthStatus</span> {
+
+    <span class="cmt">// ==================== THE ALLOWED CHOICES ====================</span>
+
+    <span class="val">HEALTHY</span>(<span class="str">"Healthy"</span>),
+    <span class="cmt">// 🟢 green badge — the animal is fine, nothing to do</span>
+
+    <span class="val">SICK</span>(<span class="str">"Sick"</span>),
+    <span class="cmt">// 🔴 red badge — needs attention now</span>
+
+    <span class="val">RECOVERING</span>(<span class="str">"Recovering"</span>),
+    <span class="cmt">// 🟡 amber badge — was sick, now getting better</span>
+
+    <span class="val">CRITICAL</span>(<span class="str">"Critical"</span>),
+    <span class="cmt">// 🔴 urgent — call the vet immediately</span>
+
+    <span class="val">DECEASED</span>(<span class="str">"Deceased"</span>);
+    <span class="cmt">// ⬛ grey — kept only for past records</span>
+
+    <span class="cmt">// ==================== THE LABEL EACH CHOICE CARRIES ====================</span>
 
     <span class="kw">private final</span> String displayName;
-    <span class="cls">HealthStatus</span>(String d) { <span class="kw">this</span>.displayName = d; }
+    <span class="cmt">// the friendly word shown on screen, e.g. "Healthy"</span>
+
+    <span class="cmt">// ============ CONSTRUCTOR (runs once for each choice) ============</span>
+
+    <span class="cls">HealthStatus</span>(String displayName) {
+        <span class="kw">this</span>.displayName = displayName;
+    }
+
+    <span class="cmt">// ============ GETTER (reads the label back) ============</span>
+
     <span class="kw">public</span> String <span class="prop">getDisplayName</span>() { <span class="kw">return</span> displayName; }
-}
-<span class="cmt">// The app reads the status and shows the matching colour.</span>
-<span class="cmt">// Gowtham understands instantly — no reading needed. Colour does the talking.</span>` },
-    { file:"entity/animal/Breed.java", sub:"a breed belongs to one animal type, so the list stays clean",
-      code:`<span class="ann">@Entity</span> <span class="ann">@Table(name = "breeds")</span>
+    <span class="cmt">// Example: HealthStatus.SICK.getDisplayName() → "Sick"</span>
+    <span class="cmt">// the app picks the colour from the value — Gowtham just sees red or green</span>
+}` },
+    { file:"entity/animal/Breed.java", sub:"one row = one breed (like Jersey); belongs to one animal type",
+      code:`<span class="cmt">// ==================== WHAT THIS FILE IS ====================</span>
+<span class="cmt">// One row = one breed, e.g. Jersey. Maps to the "breeds" table.</span>
+<span class="cmt">// Each breed belongs to one animal type, so the dropdown stays clean.</span>
+
+<span class="ann">@Entity</span> <span class="ann">@Table(name = "breeds")</span>
 <span class="ann">@Data</span> <span class="ann">@NoArgsConstructor</span> <span class="ann">@AllArgsConstructor</span>
 <span class="kw">public class</span> <span class="cls">Breed</span> {
+
+    <span class="cmt">// ==================== PRIMARY KEY ====================</span>
 
     <span class="ann">@Id</span> <span class="ann">@GeneratedValue(strategy = GenerationType.IDENTITY)</span>
     <span class="ann">@Column(name = "breed_id")</span>
     <span class="kw">private</span> Long breedId;
+    <span class="cmt">// the unique id of the breed.   Example: 1</span>
+
+    <span class="cmt">// ==================== NAMES (in three languages) ====================</span>
 
     <span class="ann">@Column(name = "breed_name", nullable = false, length = 100)</span>
-    <span class="kw">private</span> String breedName;       <span class="cmt">// "Holstein Friesian"</span>
+    <span class="cmt">// nullable = false → must be filled in</span>
+    <span class="kw">private</span> String breedName;       <span class="cmt">// Example: "Holstein Friesian"</span>
     <span class="ann">@Column(name = "breed_name_tamil", length = 100)</span>
     <span class="kw">private</span> String breedNameTamil;  <span class="cmt">// shown when the app is in Tamil</span>
     <span class="ann">@Column(name = "breed_name_hindi", length = 100)</span>
     <span class="kw">private</span> String breedNameHindi;  <span class="cmt">// shown when the app is in Hindi</span>
 
+    <span class="cmt">// ============ RELATIONSHIP: which animal type this is ============</span>
+
     <span class="ann">@ManyToOne(fetch = FetchType.LAZY)</span>
+    <span class="cmt">// MANY breeds belong to ONE animal type</span>
+    <span class="cmt">// LAZY → load the AnimalType only when we actually use it</span>
     <span class="ann">@JoinColumn(name = "animal_type_id", nullable = false)</span>
+    <span class="cmt">// makes an "animal_type_id" column pointing to the animal_types table</span>
     <span class="kw">private</span> AnimalType animalType;
-    <span class="cmt">// MANY breeds belong to ONE type. Jersey → Cow. Boer → Goat.</span>
-    <span class="cmt">// Pick "Cow" and only Jersey, Holstein, Gir, Sahiwal show up.</span>
+    <span class="cmt">// Example: Jersey → Cow. So picking "Cow" shows only cow breeds.</span>
+
+    <span class="cmt">// ==================== STATUS FLAG ====================</span>
 
     <span class="ann">@Column(name = "is_active", nullable = false)</span>
     <span class="kw">private</span> Boolean isActive = <span class="kw">true</span>;
+    <span class="cmt">// true = shown in the list   ·   false = hidden, kept for old records</span>
 }` },
-    { file:"entity/animal/Animal.java", sub:"one real animal — Lakshmi's full profile",
-      code:`<span class="ann">@Entity</span> <span class="ann">@Table(name = "animals")</span>
+    { file:"entity/animal/Animal.java", sub:"one row = one real animal — Lakshmi's full profile",
+      code:`<span class="cmt">// ==================== WHAT THIS FILE IS ====================</span>
+<span class="cmt">// One row = one real animal, e.g. Lakshmi. Maps to the "animals" table.</span>
+
+<span class="ann">@Entity</span> <span class="ann">@Table(name = "animals")</span>
 <span class="ann">@Data</span> <span class="ann">@NoArgsConstructor</span> <span class="ann">@AllArgsConstructor</span>
 <span class="kw">public class</span> <span class="cls">Animal</span> {
+
+    <span class="cmt">// ==================== PRIMARY KEY ====================</span>
 
     <span class="ann">@Id</span> <span class="ann">@GeneratedValue(strategy = GenerationType.IDENTITY)</span>
     <span class="ann">@Column(name = "animal_id")</span>
     <span class="kw">private</span> Long animalId;
-    <span class="cmt">// Lakshmi becomes animal_id=1. Like an Aadhaar card for the animal.</span>
+    <span class="cmt">// the unique id of the animal.   Example: Lakshmi = 1</span>
+
+    <span class="cmt">// ==================== WHO OWNS IT ====================</span>
 
     <span class="ann">@ManyToOne(fetch = FetchType.LAZY)</span>
     <span class="ann">@JoinColumn(name = "farmer_id", nullable = false)</span>
     <span class="kw">private</span> Farmer farmer;
-    <span class="cmt">// MANY animals → ONE farmer. All 8 of Gowtham's animals point to farmer_id=1.</span>
+    <span class="cmt">// MANY animals → ONE farmer. All 8 of Gowtham's animals point to farmer_id = 1.</span>
+
+    <span class="cmt">// ==================== WHAT IT IS (type + breed) ====================</span>
 
     <span class="ann">@ManyToOne(fetch = FetchType.LAZY)</span>
     <span class="ann">@JoinColumn(name = "animal_type_id", nullable = false)</span>
     <span class="kw">private</span> AnimalType animalType;
-    <span class="cmt">// MANY animals → ONE type. Lakshmi and Ponni are both Cows.</span>
+    <span class="cmt">// MANY animals → ONE type.   Example: Lakshmi and Ponni are both Cows.</span>
 
     <span class="ann">@ManyToOne(fetch = FetchType.LAZY)</span>
-    <span class="ann">@JoinColumn(name = "breed_id")</span>   <span class="cmt">// blank allowed — he may not know the breed</span>
+    <span class="ann">@JoinColumn(name = "breed_id")</span>
+    <span class="cmt">// no "nullable = false" here → the breed is OPTIONAL (he may not know it)</span>
     <span class="kw">private</span> Breed breed;
-    <span class="cmt">// Lakshmi → Jersey. An unnamed cow → blank. Both are fine.</span>
+    <span class="cmt">// Example: Lakshmi → Jersey.   An unnamed cow → blank. Both are fine.</span>
+
+    <span class="cmt">// ==================== BASIC DETAILS ====================</span>
 
     <span class="ann">@Column(name = "animal_name", length = 100)</span>
-    <span class="kw">private</span> String animalName;        <span class="cmt">// "Lakshmi" — blank allowed (hens rarely get names)</span>
+    <span class="kw">private</span> String animalName;
+    <span class="cmt">// optional — people name cows, rarely hens.   Example: "Lakshmi"</span>
 
     <span class="ann">@Enumerated(EnumType.STRING)</span>
     <span class="ann">@Column(name = "gender", length = 10)</span>
     <span class="kw">private</span> AnimalGender gender;
-    <span class="cmt">// FEMALE → show milk/egg tracking.  MALE → hide it.</span>
+    <span class="cmt">// FEMALE → show milk/egg tracking.   MALE → hide it.</span>
 
     <span class="ann">@Column(name = "date_of_birth")</span>
-    <span class="kw">private</span> LocalDate dateOfBirth;    <span class="cmt">// just the date — no clock time needed</span>
+    <span class="kw">private</span> LocalDate dateOfBirth;
+    <span class="cmt">// LocalDate = just the day, no clock time.   Example: 2024-06-12</span>
 
     <span class="ann">@Column(name = "weight_kg")</span>
-    <span class="kw">private</span> Double weightKg;          <span class="cmt">// used later to work out the right feed amount</span>
+    <span class="kw">private</span> Double weightKg;
+    <span class="cmt">// used later to work out the right feed amount.   Example: 320.0</span>
+
+    <span class="cmt">// ==================== HEALTH ====================</span>
 
     <span class="ann">@Enumerated(EnumType.STRING)</span>
     <span class="ann">@Column(name = "health_status", nullable = false, length = 20)</span>
     <span class="kw">private</span> HealthStatus healthStatus = HealthStatus.HEALTHY;
     <span class="cmt">// starts Healthy. Turns red the moment a symptom check says otherwise.</span>
+
+    <span class="cmt">// ==================== PREGNANCY ====================</span>
 
     <span class="ann">@Column(name = "is_pregnant")</span>
     <span class="kw">private</span> Boolean isPregnant = <span class="kw">false</span>;
@@ -121,12 +183,19 @@ JOURNAL.push({
     <span class="kw">private</span> LocalDate expectedDeliveryDate;
     <span class="cmt">// filled only when pregnant. Two weeks before → a reminder push to Gowtham.</span>
 
+    <span class="cmt">// ==================== GOVERNMENT TAG ====================</span>
+
     <span class="ann">@Column(name = "unique_tag_number", unique = true, length = 50)</span>
+    <span class="cmt">// unique = true → if given, no two animals can share it</span>
+    <span class="cmt">// but still optional — most small farmers don't have one</span>
     <span class="kw">private</span> String uniqueTagNumber;
-    <span class="cmt">// the government ear-tag. Optional — but no two animals can share one.</span>
+    <span class="cmt">// Example: a government ear-tag id, or blank</span>
+
+    <span class="cmt">// ==================== TIMESTAMPS ====================</span>
 
     <span class="ann">@Column(name = "registered_at", nullable = false, updatable = false)</span>
     <span class="kw">private</span> LocalDateTime registeredAt = LocalDateTime.now();
+    <span class="cmt">// LocalDateTime = date + time. updatable = false → set once, never changed.</span>
     <span class="ann">@Column(name = "updated_at")</span>
     <span class="kw">private</span> LocalDateTime updatedAt = LocalDateTime.now();
 }` }
@@ -193,7 +262,39 @@ JOURNAL.push({
           <tr><td>Animal → Animal type</td><td>many-to-one</td><td>Lakshmi is a Cow.</td><td>animals.animal_type_id</td></tr>
           <tr><td>Animal → Breed</td><td>many-to-one</td><td>Lakshmi is a Jersey.</td><td>animals.breed_id (optional)</td></tr>
         </tbody>
-      </table>` }
+      </table>` },
+    { type:"versus", title:"Pick the smallest date type that fits",
+      bad:{ label:"LocalDateTime for a birthday", code:`<span class="ann">@Column(name = "date_of_birth")</span>
+<span class="kw">private</span> LocalDateTime dob;
+
+<span class="cmt">// stores 2024-06-12T00:00:00</span>
+<span class="cmt">// the time is fake noise — we never</span>
+<span class="cmt">// knew the hour a calf was born.</span>
+<span class="cmt">// confusing to sort and show.</span>` },
+      good:{ label:"LocalDate for a birthday", code:`<span class="ann">@Column(name = "date_of_birth")</span>
+<span class="kw">private</span> LocalDate dob;
+
+<span class="cmt">// stores just 2024-06-12</span>
+<span class="cmt">// exactly what we know, nothing more.</span>
+<span class="cmt">// (registeredAt still uses date+time —</span>
+<span class="cmt">//  there the exact moment matters.)</span>` },
+      note:`<b>One-line answer:</b> use <b>LocalDate</b> when only the day matters (a birthday) and <b>LocalDateTime</b> when the exact moment matters (when a record was created). Don't store a clock time you never knew.` },
+    { type:"qa", title:"Interview questions — Day 2 (tap to reveal the answer)",
+      items:[
+        { q:"It's one relationship — why does it have two names (@ManyToOne and @OneToMany)?",
+          a:`Because you can read the same link from either end. Standing in <b>Animal</b>: \"many animals belong to one farmer\" (@ManyToOne). Standing in <b>Farmer</b>: \"one farmer has many animals\" (@OneToMany). It's one connection described from two sides.` },
+        { q:"Which side actually stores the link?",
+          a:`Always the <b>@ManyToOne side</b> (the \"many\" side). Each animal row carries a <b>farmer_id</b> pointing to its owner. The farmer row stores no list of animal ids — that couldn't fit in a single column.` },
+        { q:"How do you make sure only cow breeds show when the farmer picks 'Cow'?",
+          a:`Each breed is linked to one animal type (Jersey → Cow). So when the farmer picks Cow, the app asks only for that type's breeds. A goat breed can never appear in the cow list — the link makes the wrong choice impossible.` },
+        { q:"When do you use LocalDate vs LocalDateTime?",
+          a:`<b>LocalDate</b> when only the day matters — a birthday. <b>LocalDateTime</b> when the exact moment matters — when a record was created, for sorting and history. Pick the smallest type that fits.` },
+        { q:"Why is the breed field allowed to be blank?",
+          a:`Because a farmer may genuinely not know his animal's breed. Forcing it would block him from registering at all. We never make a field required if a real, valid case can leave it empty.` },
+        { q:"How can the government tag be optional but still unique?",
+          a:`Optional means it can be blank (most small farmers have none). Unique means if it <b>is</b> given, no two animals can share it. A field can be both — not required, but one-of-a-kind when present.` }
+      ]
+    }
   ],
   next:[
     `<span>Animal records</span> — health checks, daily milk/egg production, and an auto-managed vaccination schedule, all linked to each animal.`

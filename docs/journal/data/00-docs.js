@@ -68,8 +68,8 @@ var DOCS = {
   modules: [
     { name:"Farmer", icon:"🧑‍🌾", status:"In progress", purpose:"Who the farmer is, and where their fields are.",
       done:["State","District","Farmer","Land"], pending:[] },
-    { name:"Crop", icon:"🌱", status:"In progress", purpose:"Soil tests, weather, and the AI's crop advice.",
-      done:["Crop","SoilScan","WeatherSnapshot","Prediction"], pending:["MarketPrice"] },
+    { name:"Crop", icon:"🌱", status:"Done", purpose:"Soil tests, weather, and the AI's crop advice (5 models).",
+      done:["Crop","SoilScan","WeatherSnapshot","Prediction","MarketPrice"], pending:[] },
     { name:"Animal", icon:"🐄", status:"Done", purpose:"Livestock, plus health, production and vaccination records.",
       done:["AnimalType","Breed","Animal","AnimalHealthRecord","AnimalProductionRecord","VaccinationRecord"], pending:[] },
     { name:"Chat", icon:"💬", status:"Planned", purpose:"Talk to a real expert or vet, in real time.",
@@ -92,8 +92,8 @@ var DOCS = {
       { name:"Crop", pk:"crop_id", cols:["crop_name","crop_name_tamil"], fks:[] },
       { name:"SoilScan", pk:"scan_id", cols:["nitrogen","phosphorus","potassium","pH","moisture","season"], fks:["land_id → Land"] },
       { name:"WeatherSnapshot", pk:"weather_snapshot_id", cols:["temperature","humidity","rainfall","forecast_json"], fks:["scan_id → SoilScan (one-to-one)"] },
-      { name:"Prediction", pk:"prediction_id", cols:["confidence","fertilizer_advice","disease_risk","yield"], fks:["scan_id → SoilScan (one-to-one)","recommended_crop_id → Crop"] },
-      { name:"MarketPrice", pk:"(planned)", cols:["price per crop, per town"], fks:["→ Crop","→ District"] }
+      { name:"Prediction", pk:"prediction_id", cols:["top-3 crops (names) + confidence","fertiliser (urea/DAP/MOP)","disease_risk_level","irrigation","predicted_price_json"], fks:["scan_id → SoilScan (one-to-one)","weather_snapshot_id → WeatherSnapshot (one-to-one)"] },
+      { name:"MarketPrice", pk:"market_price_id", cols:["price_per_quintal","min/max/modal","price_date","mandi_name","source"], fks:["crop_id → Crop","district_id → District"] }
     ]},
     { module:"Animal module", entities:[
       { name:"AnimalType", pk:"animal_type_id", cols:["type_name","record_type"], fks:[] },
@@ -117,6 +117,7 @@ var DOCS = {
     { path:"entity/crop/SoilScan.java", type:"Entity", module:"Crop", status:"Done" },
     { path:"entity/crop/WeatherSnapshot.java", type:"Entity", module:"Crop", status:"Done" },
     { path:"entity/crop/Prediction.java", type:"Entity", module:"Crop", status:"Done" },
+    { path:"entity/crop/MarketPrice.java", type:"Entity", module:"Crop", status:"Done" },
     { path:"entity/animal/AnimalType.java", type:"Entity", module:"Animal", status:"Done" },
     { path:"entity/animal/Breed.java", type:"Entity", module:"Animal", status:"Done" },
     { path:"entity/animal/Animal.java", type:"Entity", module:"Animal", status:"Done" },
@@ -132,13 +133,11 @@ var DOCS = {
     { path:"enums/animal/ProductionSession.java", type:"Enum", module:"Animal", status:"Done" },
     { path:"enums/animal/RecordType.java", type:"Enum", module:"Animal", status:"Done" },
     { path:"enums/animal/VaccinationStatus.java", type:"Enum", module:"Animal", status:"Done" },
-    { path:"enums/crop/CropSeason.java", type:"Enum", module:"Crop", status:"Done" },
-    { path:"enums/crop/RiskLevel.java", type:"Enum", module:"Crop", status:"Done" }
+    { path:"enums/crop/CropSeason.java", type:"Enum", module:"Crop", status:"Done" }
   ],
 
   /* what is still to come (so the reader knows the map isn't finished) */
   pending: [
-    { path:"entity/crop/MarketPrice.java", type:"Entity", module:"Crop" },
     { path:"entity/chat/ChatSession.java + ChatMessage.java", type:"Entity", module:"Chat" },
     { path:"entity/alert/Alert.java + DeviceToken.java", type:"Entity", module:"Alert" },
     { path:"entity/feedback/Feedback.java", type:"Entity", module:"Feedback" },
@@ -157,7 +156,6 @@ var DOCS = {
     { name:"ProductionSession", values:"MORNING, EVENING, HARVEST", use:"when milk/eggs/yield is recorded" },
     { name:"RecordType", values:"MILK, EGG, WEIGHT_YIELD", use:"what an animal produces (+ its unit)" },
     { name:"VaccinationStatus", values:"PENDING, DUE_SOON, OVERDUE, COMPLETED", use:"badge + reminder timing" },
-    { name:"CropSeason", values:"KHARIF, RABI, ZAID, PERENNIAL", use:"set from today's date on a soil test" },
-    { name:"RiskLevel", values:"LOW, MEDIUM, HIGH", use:"disease risk in the AI advice" }
+    { name:"CropSeason", values:"KHARIF, RABI, ZAID, PERENNIAL", use:"set from today's date on a soil test" }
   ]
 };

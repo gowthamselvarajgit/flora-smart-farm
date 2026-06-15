@@ -47,100 +47,203 @@ JOURNAL.push({
     `<span>States and districts are data, not code</span> — If a new district is created, we just add a row. No code change needed.`
   ],
   code:[
-    { file:"enums/farmer/Language.java", sub:"a 'pick one' list that also keeps a friendly label",
-      code:`<span class="kw">public enum</span> <span class="cls">Language</span> {
+    { file:"enums/farmer/Language.java", sub:"a fixed 'pick one' list that also carries a friendly label",
+      code:`<span class="cmt">// ==================== WHAT THIS FILE IS ====================</span>
+<span class="cmt">// A fixed list of the languages the app supports.</span>
+<span class="cmt">// EN, TA, HI are the ONLY values allowed — anywhere in the code.</span>
 
-    <span class="val">EN</span>(<span class="str">"English"</span>),  <span class="cmt">// saved as "EN", shown as "English"</span>
+<span class="kw">public enum</span> <span class="cls">Language</span> {
+
+    <span class="cmt">// ==================== THE ALLOWED CHOICES ====================</span>
+
+    <span class="val">EN</span>(<span class="str">"English"</span>),
+    <span class="cmt">// stored in the database as the short code "EN"</span>
+    <span class="cmt">// shown on the screen as the friendly word "English"</span>
+
     <span class="val">TA</span>(<span class="str">"Tamil"</span>),
-    <span class="val">HI</span>(<span class="str">"Hindi"</span>);
+    <span class="cmt">// stored as "TA", shown as "Tamil"</span>
 
-    <span class="kw">private final</span> String displayName;   <span class="cmt">// the friendly label</span>
+    <span class="val">HI</span>(<span class="str">"Hindi"</span>);
+    <span class="cmt">// stored as "HI", shown as "Hindi"</span>
+    <span class="cmt">// the semicolon ends the list of choices</span>
+
+    <span class="cmt">// ==================== THE LABEL EACH CHOICE CARRIES ====================</span>
+
+    <span class="kw">private final</span> String displayName;
+    <span class="cmt">// private = only this enum can touch it directly</span>
+    <span class="cmt">// final   = once set, it never changes</span>
+    <span class="cmt">// String  = it holds text, like "English"</span>
+
+    <span class="cmt">// ============ CONSTRUCTOR (runs once for each choice) ============</span>
 
     <span class="cls">Language</span>(String displayName) {
+    <span class="cmt">// Java runs this automatically for EN, TA and HI above</span>
         <span class="kw">this</span>.displayName = displayName;
+        <span class="cmt">// save the friendly label onto this choice</span>
     }
-    <span class="kw">public</span> String <span class="prop">getDisplayName</span>() { <span class="kw">return</span> displayName; }
-}
-<span class="cmt">// database keeps the short "TA"; the screen shows "Tamil".</span>` },
-    { file:"entity/farmer/District.java", sub:"a district belongs to one state",
-      code:`<span class="ann">@Entity</span>                       <span class="cmt">// this class is a table</span>
-<span class="ann">@Table(name = "districts")</span>      <span class="cmt">// name the table "districts"</span>
-<span class="ann">@Data</span> <span class="ann">@NoArgsConstructor</span> <span class="ann">@AllArgsConstructor</span>
+
+    <span class="cmt">// ============ GETTER (reads the label back) ============</span>
+
+    <span class="kw">public</span> String <span class="prop">getDisplayName</span>() {
+        <span class="kw">return</span> displayName;
+    }
+    <span class="cmt">// Example: Language.TA.getDisplayName() → "Tamil"  (for the screen)</span>
+    <span class="cmt">// Example: Language.TA.name()           → "TA"     (for the database)</span>
+}` },
+    { file:"entity/farmer/District.java", sub:"one row = one district (like Karur); belongs to one state",
+      code:`<span class="cmt">// ==================== WHAT THIS FILE IS ====================</span>
+<span class="cmt">// One row = one district, e.g. Karur. Maps to the "districts" table.</span>
+
+<span class="cmt">// ==================== CLASS ANNOTATIONS ====================</span>
+
+<span class="ann">@Entity</span>
+<span class="cmt">// tells the app: turn this class into a database table</span>
+
+<span class="ann">@Table(name = "districts")</span>
+<span class="cmt">// the table is named "districts" (without this it would guess "district")</span>
+
+<span class="ann">@Data</span>
+<span class="cmt">// Lombok: writes the get/set methods for us</span>
+
+<span class="ann">@NoArgsConstructor</span> <span class="ann">@AllArgsConstructor</span>
+<span class="cmt">// Lombok: an empty constructor and a full-of-values one</span>
+
 <span class="kw">public class</span> <span class="cls">District</span> {
 
-    <span class="ann">@Id</span> <span class="ann">@GeneratedValue(strategy = GenerationType.IDENTITY)</span>
+    <span class="cmt">// ============ PRIMARY KEY (the unique row number) ============</span>
+
+    <span class="ann">@Id</span>
+    <span class="cmt">// this field is the primary key — the unique id of each row</span>
+    <span class="ann">@GeneratedValue(strategy = GenerationType.IDENTITY)</span>
+    <span class="cmt">// the database hands out the number automatically: 1, 2, 3 …</span>
     <span class="ann">@Column(name = "district_id")</span>
-    <span class="kw">private</span> Long districtId;        <span class="cmt">// the unique row number</span>
+    <span class="kw">private</span> Long districtId;
+    <span class="cmt">// Type: Long (a whole number).   Example: 3</span>
+
+    <span class="cmt">// ==================== BASIC FIELD ====================</span>
 
     <span class="ann">@Column(name = "district_name", nullable = false, length = 100)</span>
-    <span class="kw">private</span> String districtName;     <span class="cmt">// "Karur" — must be filled in</span>
+    <span class="cmt">// nullable = false → must be filled in (the database rejects a blank)</span>
+    <span class="cmt">// length = 100    → at most 100 characters</span>
+    <span class="kw">private</span> String districtName;
+    <span class="cmt">// Example: "Karur"</span>
+
+    <span class="cmt">// ============ RELATIONSHIP: which state it sits in ============</span>
 
     <span class="ann">@ManyToOne(fetch = FetchType.LAZY)</span>
+    <span class="cmt">// MANY districts belong to ONE state</span>
+    <span class="cmt">// LAZY → load the State only when we actually use it</span>
     <span class="ann">@JoinColumn(name = "state_id", nullable = false)</span>
-    <span class="kw">private</span> State state;             <span class="cmt">// many districts → one state</span>
+    <span class="cmt">// makes a "state_id" column here that points to the states table</span>
+    <span class="kw">private</span> State state;
+    <span class="cmt">// Example: Karur's state_id = 1 → Tamil Nadu</span>
+
+    <span class="cmt">// ==================== STATUS FLAG ====================</span>
 
     <span class="ann">@Column(name = "is_active", nullable = false)</span>
     <span class="kw">private</span> Boolean isActive = <span class="kw">true</span>;
+    <span class="cmt">// true = in use   ·   false = hidden, but kept for old records</span>
 }` },
-    { file:"entity/farmer/Farmer.java", sub:"the heart of the app — everything links back to the farmer",
-      code:`<span class="ann">@Entity</span> <span class="ann">@Table(name = "farmers")</span>
+    { file:"entity/farmer/Farmer.java", sub:"the heart of the app — every record links back to a farmer",
+      code:`<span class="cmt">// ==================== WHAT THIS FILE IS ====================</span>
+<span class="cmt">// One row = one farmer, e.g. Gowtham. Maps to the "farmers" table.</span>
+<span class="cmt">// Almost everything in Flora links back to a farmer_id.</span>
+
+<span class="ann">@Entity</span> <span class="ann">@Table(name = "farmers")</span>
 <span class="ann">@Data</span> <span class="ann">@NoArgsConstructor</span> <span class="ann">@AllArgsConstructor</span>
 <span class="kw">public class</span> <span class="cls">Farmer</span> {
 
-    <span class="ann">@Id</span> <span class="ann">@GeneratedValue(strategy = GenerationType.IDENTITY)</span>
+    <span class="cmt">// ==================== PRIMARY KEY ====================</span>
+
+    <span class="ann">@Id</span>
+    <span class="ann">@GeneratedValue(strategy = GenerationType.IDENTITY)</span>
     <span class="ann">@Column(name = "farmer_id")</span>
-    <span class="kw">private</span> Long farmerId;          <span class="cmt">// Gowtham = 1. Everything links to this.</span>
+    <span class="kw">private</span> Long farmerId;
+    <span class="cmt">// the unique id of the farmer.   Example: Gowtham = 1</span>
+    <span class="cmt">// every animal, field and soil test points back to this number</span>
+
+    <span class="cmt">// ==================== LOGIN DETAILS ====================</span>
 
     <span class="ann">@Column(name = "phone_number", unique = true, nullable = false, length = 15)</span>
-    <span class="kw">private</span> String phoneNumber;      <span class="cmt">// his login. No two farmers share one.</span>
+    <span class="cmt">// unique = true    → no two farmers can share a number</span>
+    <span class="cmt">// nullable = false → required</span>
+    <span class="kw">private</span> String phoneNumber;
+    <span class="cmt">// his login id.   Example: "9876543210"</span>
 
     <span class="ann">@Column(name = "hashed_password", nullable = false)</span>
-    <span class="kw">private</span> String hashedPassword;   <span class="cmt">// scrambled. The real password is never stored.</span>
+    <span class="kw">private</span> String hashedPassword;
+    <span class="cmt">// the password after scrambling.   Example: "$2a$10$xY…"</span>
+    <span class="cmt">// the real password is NEVER stored — safe even if the data leaks</span>
+
+    <span class="cmt">// ==================== NAME ====================</span>
 
     <span class="ann">@Column(name = "first_name", nullable = false, length = 50)</span>
-    <span class="kw">private</span> String firstName;
+    <span class="kw">private</span> String firstName;   <span class="cmt">// Example: "Gowtham"</span>
     <span class="ann">@Column(name = "last_name", nullable = false, length = 50)</span>
-    <span class="kw">private</span> String lastName;          <span class="cmt">// split, so alerts can say just "Gowtham"</span>
+    <span class="kw">private</span> String lastName;    <span class="cmt">// Example: "Selvaraj"</span>
+    <span class="cmt">// kept separate so an alert can greet just "Gowtham"</span>
+
+    <span class="cmt">// ==================== ONBOARDING ANSWERS ====================</span>
 
     <span class="ann">@Enumerated(EnumType.STRING)</span>
+    <span class="cmt">// store the word ("TA"), not a number — safe if the list is reordered</span>
     <span class="ann">@Column(name = "preferred_language", nullable = false, length = 10)</span>
-    <span class="kw">private</span> Language preferredLanguage = Language.EN;   <span class="cmt">// pick Tamil → whole app turns Tamil</span>
+    <span class="kw">private</span> Language preferredLanguage = Language.EN;
+    <span class="cmt">// Q1.   Example: TA → the whole app turns Tamil</span>
 
     <span class="ann">@ManyToOne(fetch = FetchType.LAZY)</span>
     <span class="ann">@JoinColumn(name = "district_id", nullable = false)</span>
-    <span class="kw">private</span> District district;        <span class="cmt">// his town → drives weather, advice, prices</span>
+    <span class="kw">private</span> District district;
+    <span class="cmt">// Q2. his home town.   Example: Karur → drives weather, advice, prices</span>
 
     <span class="ann">@Enumerated(EnumType.STRING)</span>
     <span class="ann">@Column(name = "primary_activity", nullable = false, length = 10)</span>
     <span class="kw">private</span> PrimaryActivity primaryActivity = PrimaryActivity.CROP;
+    <span class="cmt">// Q3. CROP / ANIMAL / BOTH → which screens show first</span>
 
     <span class="ann">@Column(name = "land_size_acres")</span>
-    <span class="kw">private</span> Double landSizeAcres;     <span class="cmt">// (moves to the Land block on Day 4)</span>
+    <span class="kw">private</span> Double landSizeAcres;
+    <span class="cmt">// Q4.   Example: 2.0   (on Day 4 this moves onto the Land block)</span>
 
     <span class="ann">@ManyToMany(fetch = FetchType.LAZY)</span>
     <span class="ann">@JoinTable(name = "farmer_crops",</span>
         <span class="ann">joinColumns = @JoinColumn(name = "farmer_id"),</span>
         <span class="ann">inverseJoinColumns = @JoinColumn(name = "crop_id"))</span>
-    <span class="kw">private</span> List&lt;Crop&gt; currentlyGrowingCrops;   <span class="cmt">// grows many crops (many ↔ many)</span>
+    <span class="kw">private</span> List&lt;Crop&gt; currentlyGrowingCrops;
+    <span class="cmt">// Q5. grows many crops, and a crop has many farmers (many ↔ many)</span>
+    <span class="cmt">// the app builds a small "farmer_crops" table to list the pairs</span>
 
     <span class="ann">@ManyToMany(fetch = FetchType.LAZY)</span>
     <span class="ann">@JoinTable(name = "farmer_animal_types",</span>
         <span class="ann">joinColumns = @JoinColumn(name = "farmer_id"),</span>
         <span class="ann">inverseJoinColumns = @JoinColumn(name = "animal_type_id"))</span>
-    <span class="kw">private</span> List&lt;AnimalType&gt; ownedAnimalTypes;  <span class="cmt">// quick "I own cows + hens" snapshot</span>
+    <span class="kw">private</span> List&lt;AnimalType&gt; ownedAnimalTypes;
+    <span class="cmt">// Q6. a quick "I own cows + hens" snapshot for the home screen</span>
 
     <span class="ann">@Column(name = "alert_time")</span>
-    <span class="kw">private</span> LocalTime alertTime;       <span class="cmt">// 6 AM → daily push at 06:00</span>
+    <span class="kw">private</span> LocalTime alertTime;
+    <span class="cmt">// Q7.   Example: 06:00 → the daily push is sent at 6 AM</span>
+
+    <span class="cmt">// ==================== APP STATE ====================</span>
 
     <span class="ann">@Column(name = "is_onboarding_complete", nullable = false)</span>
     <span class="kw">private</span> Boolean isOnboardingComplete = <span class="kw">false</span>;
+    <span class="cmt">// false → show the setup wizard   ·   true → show the dashboard</span>
+
+    <span class="cmt">// ==================== TIMESTAMPS ====================</span>
 
     <span class="ann">@Column(name = "created_at", nullable = false, updatable = false)</span>
-    <span class="kw">private</span> LocalDateTime createdAt = LocalDateTime.now();  <span class="cmt">// set once, never changed</span>
+    <span class="kw">private</span> LocalDateTime createdAt = LocalDateTime.now();
+    <span class="cmt">// updatable = false → set once when he joins, then never changed</span>
     <span class="ann">@Column(name = "updated_at")</span>
     <span class="kw">private</span> LocalDateTime updatedAt = LocalDateTime.now();
+    <span class="cmt">// refreshed every time his profile changes</span>
+
+    <span class="cmt">// ============ HELPER (built when needed, not stored) ============</span>
 
     <span class="kw">public</span> String <span class="prop">getFullName</span>() { <span class="kw">return</span> firstName + <span class="str">" "</span> + lastName; }
+    <span class="cmt">// joins first + last on the fly.   Example: "Gowtham Selvaraj"</span>
+    <span class="cmt">// never saved as its own column — so it can never go out of sync</span>
 }` }
   ],
   extras:[
@@ -243,7 +346,40 @@ JOURNAL.push({
                     ├── grows  → <span style="color:var(--g)">Cotton</span>, <span style="color:var(--g)">Groundnut</span>
                     └── owns   → <span style="color:var(--g)">Cow</span>, <span style="color:var(--g)">Hen</span>
 
-<span style="color:var(--ink3)">// Everything points back to one number: farmer 1.</span></pre>` }
+<span style="color:var(--ink3)">// Everything points back to one number: farmer 1.</span></pre>` },
+    { type:"versus", title:"Store the word, not a number — a classic interview point",
+      bad:{ label:"EnumType.ORDINAL — risky", code:`<span class="ann">@Enumerated(EnumType.ORDINAL)</span>
+<span class="kw">private</span> Language lang;
+
+<span class="cmt">// database saves a position number:</span>
+<span class="cmt">//   EN → 0,  TA → 1,  HI → 2</span>
+<span class="cmt">// reorder the list one day and every</span>
+<span class="cmt">// old row points to the WRONG language.</span>
+<span class="cmt">// a silent, scary bug.</span>` },
+      good:{ label:"EnumType.STRING — safe", code:`<span class="ann">@Enumerated(EnumType.STRING)</span>
+<span class="kw">private</span> Language lang;
+
+<span class="cmt">// database saves the word itself:</span>
+<span class="cmt">//   EN → "EN",  TA → "TA"</span>
+<span class="cmt">// reorder freely — "TA" always means</span>
+<span class="cmt">// Tamil. and it's readable in the table.</span>` },
+      note:`<b>One-line answer:</b> ORDINAL saves the position (0,1,2), so reordering the enum corrupts old rows. STRING saves the name, which stays correct forever and reads clearly in the database.` },
+    { type:"qa", title:"Interview questions — Day 1 (tap a question to see a model answer)",
+      items:[
+        { q:"What does the @Entity annotation do?",
+          a:`It marks a plain Java class as a database table. Once a class has <b>@Entity</b>, the app (through Hibernate) creates the matching table and turns each saved object into one row — so we never write \"CREATE TABLE\" ourselves.` },
+        { q:"Why store an enum as STRING instead of a number?",
+          a:`Because <b>STRING saves the readable name</b> (\"TA\"), while ORDINAL saves a position (1). If we later reorder the enum, every old row keeps the right meaning with STRING but silently breaks with ORDINAL. STRING also reads clearly straight from the database.` },
+        { q:"What's the difference between @ManyToOne and @ManyToMany?",
+          a:`<b>@ManyToOne</b> is \"many rows point to one parent\" — many districts belong to one state, stored as a single linking column. <b>@ManyToMany</b> is \"both sides have many\" — a farmer grows many crops and a crop has many farmers — so the app builds a small extra table just to list the pairs.` },
+        { q:"Why are State and District database tables, not enums?",
+          a:`Because they are <b>data that can change</b>. India has 36 states and 788 districts, and new ones get created. With a table we just add a row; with an enum we'd have to edit code and redeploy every time.` },
+        { q:"What is fetch = LAZY and why use it?",
+          a:`LAZY means <b>\"load the related data only when I actually use it.\"</b> Fetching a farmer does not load his animals and crops until we touch them. This keeps the first query small and the app fast.` },
+        { q:"Why not store the farmer's full name as its own column?",
+          a:`Because it can be <b>built from first name + last name</b> any time we need it. Storing it separately means two places to keep in sync — a common source of bugs. We never store what we can calculate.` }
+      ]
+    }
   ],
   next:[
     `<span>The animal side</span> — add Breed and Animal blocks so Gowtham can register each cow and hen by name.`

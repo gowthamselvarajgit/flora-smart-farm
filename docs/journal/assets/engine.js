@@ -67,6 +67,8 @@ function renderExtra(e){
     return `<div class="extra-title">${e.title}</div><div class="gloss">${rows}</div>`;
   }
   if(e.type==='concept') return renderConcept(e);
+  if(e.type==='qa') return renderQa(e);
+  if(e.type==='versus') return renderVersus(e);
   if(e.type==='farm') return renderFarm(e);
   if(e.type==='flow') return renderFlow(e);
   if(e.type==='diagram'){
@@ -74,6 +76,26 @@ function renderExtra(e){
   }
   // default: table (or any raw html block)
   return `<div class="extra-title">${e.title}</div>${e.html}`;
+}
+
+/* Interview Q&A — each question opens to reveal a model answer (native <details>).
+   Data: { type:'qa', title, items:[{q, a}] } */
+function renderQa(e){
+  const items=(e.items||[]).map(it=>
+    `<details class="qa reveal"><summary><span class="qmark">Q</span><span class="qx">${it.q}</span></summary><div class="qa-ans"><span class="amark">A</span>${it.a}</div></details>`
+  ).join('');
+  return `<div class="extra-title">${e.title||'Interview questions'}</div>${items}`;
+}
+
+/* Good vs Bad — two code columns side by side, with a one-line takeaway.
+   Data: { type:'versus', title, bad:{label,code}, good:{label,code}, note } */
+function renderVersus(e){
+  const note=e.note?`<div class="doc-note" style="margin-top:8px">${e.note}</div>`:'';
+  return `<div class="extra-title">${e.title}</div>
+    <div class="versus reveal">
+      <div class="vcol bad"><div class="vh">✗ ${(e.bad&&e.bad.label)||'Avoid'}</div><pre>${(e.bad&&e.bad.code)||''}</pre></div>
+      <div class="vcol good"><div class="vh">✓ ${(e.good&&e.good.label)||'Better'}</div><pre>${(e.good&&e.good.code)||''}</pre></div>
+    </div>${note}`;
 }
 
 /* Concept card — one idea explained 3 ways: a real-life analogy, numbered
