@@ -237,6 +237,120 @@ a{color:inherit;text-decoration:none}
 @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 .empty-state{text-align:center;padding:60px 20px;color:var(--ink3)}
 .empty-state .es-ico{font-size:40px;margin-bottom:12px;opacity:.5}
+/* ============================================================
+   READABILITY + VISUALS + ANIMATION TOOLKIT
+   story intro · scroll-reveal · farm scenes · flow pipelines
+   ============================================================ */
+/* scroll reveal — blocks ease in as you scroll to them */
+.reveal{opacity:0;transform:translateY(16px);transition:opacity .55s ease,transform .55s cubic-bezier(.2,.7,.2,1)}
+.reveal.in{opacity:1;transform:none}
+@media(prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}}
+/* plain-english story card at the top of each day */
+.story{position:relative;background:linear-gradient(135deg,var(--bg2),var(--bg3));border:1px solid var(--line);border-left:3px solid var(--g);border-radius:12px;padding:20px 22px 18px;margin-bottom:14px;overflow:hidden}
+.story::after{content:'🌱';position:absolute;right:-6px;bottom:-14px;font-size:90px;opacity:.05}
+.story-label{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--g);margin-bottom:10px}
+.story p{font-size:14.5px;line-height:1.85;color:var(--ink2);margin-bottom:11px;position:relative;z-index:1}
+.story p:last-child{margin-bottom:0}
+.story p b{color:var(--ink);font-weight:600}
+.story p .hl{color:var(--g);font-weight:600}
+/* ---------- FARM SCENE: farmer → plots → crops + animals ---------- */
+.farm{border:1px solid var(--line2);border-radius:14px;padding:18px;margin:8px 0 6px;background:radial-gradient(130% 90% at 50% -30%,rgba(42,157,106,.12),transparent 62%),var(--bg)}
+.farm-farmer{display:flex;align-items:center;gap:12px;margin-bottom:16px;padding-bottom:14px;border-bottom:1px dashed var(--line2)}
+.farm-farmer .who{font-size:30px;line-height:1;animation:bob 3.4s ease-in-out infinite}
+.farm-farmer .meta{font-size:14px;color:var(--ink);font-weight:600}
+.farm-farmer .meta span{display:block;font-size:11px;color:var(--ink3);font-family:var(--mono);font-weight:400;margin-top:3px}
+.plots{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.plot{background:linear-gradient(165deg,var(--glt),var(--bg2));border:1px solid var(--gdim);border-radius:12px;padding:14px 14px 18px;position:relative;overflow:hidden}
+.plot::after{content:'';position:absolute;left:0;right:0;bottom:0;height:26px;background:linear-gradient(transparent,rgba(26,92,62,.30))}
+.plot-top{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:3px}
+.plot-name{font-size:13.5px;font-weight:600;color:var(--ink)}
+.plot-badge{font-family:var(--mono);font-size:9.5px;color:var(--g);background:var(--bg);border:1px solid var(--gdim);border-radius:20px;padding:2px 9px;white-space:nowrap}
+.plot-size{font-family:var(--mono);font-size:10.5px;color:var(--ink3);margin-bottom:8px}
+.plot-row{display:flex;flex-wrap:wrap;gap:7px;margin-top:8px;position:relative;z-index:1}
+.tag-chip{display:inline-flex;align-items:center;gap:6px;background:var(--bg);border:1px solid var(--line2);border-radius:9px;padding:4px 10px;font-size:12px;color:var(--ink2)}
+.tag-chip .ic{font-size:17px;display:inline-block;transform-origin:bottom center}
+.tag-chip.crop .ic{animation:sway 3s ease-in-out infinite}
+.tag-chip.animal .ic{animation:bob 2.2s ease-in-out infinite}
+.tag-chip .cnt{font-family:var(--mono);font-size:10px;color:var(--g)}
+@keyframes sway{0%,100%{transform:rotate(-7deg)}50%{transform:rotate(7deg)}}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+/* ---------- FLOW PIPELINE: animated step-by-step ---------- */
+.flow{display:flex;align-items:stretch;flex-wrap:wrap;gap:6px;margin:8px 0 6px}
+.flow-step{flex:1;min-width:116px;background:var(--bg2);border:1px solid var(--line2);border-radius:11px;padding:13px 11px;text-align:center;opacity:0;animation:popin .5s ease forwards}
+.flow-step .fic{font-size:25px;display:block;margin-bottom:7px}
+.flow-step .flab{font-size:12.5px;font-weight:600;color:var(--ink);display:block;line-height:1.3}
+.flow-step .fnote{font-size:10.5px;color:var(--ink3);margin-top:4px;display:block;line-height:1.45}
+.flow-arrow{display:flex;align-items:center;justify-content:center;min-width:18px;color:var(--g);font-size:17px;font-family:var(--mono);animation:flowpulse 1.8s ease-in-out infinite}
+@keyframes popin{from{opacity:0;transform:translateY(10px) scale(.96)}to{opacity:1;transform:none}}
+@keyframes flowpulse{0%,100%{opacity:.25}50%{opacity:1}}
+@media(prefers-reduced-motion:reduce){.flow-step{opacity:1;animation:none}.flow-arrow,.tag-chip .ic,.farm-farmer .who{animation:none}}
+@media(max-width:600px){.flow{flex-direction:column}.flow-arrow{transform:rotate(90deg);min-height:14px}.story p{font-size:13.5px}}
+/* ---------- CONCEPT CARD: analogy + numbered steps + a real data table ---------- */
+.concept{border:1px solid var(--line2);border-radius:12px;margin:12px 0;overflow:hidden;background:var(--bg)}
+.concept-term{font-family:var(--mono);font-size:13px;font-weight:700;color:var(--a);background:var(--alt);padding:11px 16px;border-bottom:1px solid var(--line2)}
+.concept-body{padding:15px 16px}
+.concept-meaning{font-size:15.5px;color:var(--ink);font-weight:600;line-height:1.55;margin-bottom:6px}
+.cseg{margin-top:15px}
+.cseg-label{font-size:10.5px;font-family:var(--mono);text-transform:uppercase;letter-spacing:.08em;color:var(--ink3);margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.canalogy{font-size:13.5px;color:var(--ink2);line-height:1.75;background:var(--bg2);border-left:3px solid var(--g);border-radius:0 8px 8px 0;padding:11px 14px}
+.canalogy b{color:var(--g);font-weight:600}
+.csteps{list-style:none;counter-reset:cs;display:flex;flex-direction:column;gap:9px}
+.csteps li{position:relative;padding-left:36px;font-size:13.5px;color:var(--ink2);line-height:1.6;counter-increment:cs;opacity:0;animation:stepin .5s ease forwards}
+.csteps li b{color:var(--ink);font-weight:600}
+.csteps li::before{content:counter(cs);position:absolute;left:0;top:-1px;width:23px;height:23px;border-radius:50%;background:var(--glt);border:1px solid var(--gdim);color:var(--g);font-family:var(--mono);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center}
+@keyframes stepin{from{opacity:0;transform:translateX(-10px)}to{opacity:1;transform:none}}
+.ctable{width:100%;border-collapse:collapse;margin-top:2px;font-family:var(--mono);font-size:12px;border:1px solid var(--line2);border-radius:8px;overflow:hidden}
+.ctable caption{caption-side:top;text-align:left;font-size:11px;color:var(--ink3);font-family:var(--mono);margin-bottom:6px}
+.ctable th{background:var(--bg3);color:var(--ink3);font-weight:600;padding:7px 12px;text-align:left;border-bottom:1px solid var(--line2)}
+.ctable td{padding:7px 12px;color:var(--ink2);border-bottom:1px solid var(--line)}
+.ctable tr:last-child td{border-bottom:none}
+.ctable td.hl{background:var(--glt);color:var(--g);font-weight:700;animation:colpulse 2.2s ease-in-out infinite}
+@keyframes colpulse{0%,100%{background:var(--glt)}50%{background:rgba(42,157,106,.30)}}
+.cnote{font-size:12px;color:var(--ink3);margin-top:8px;line-height:1.6}
+.cnote b{color:var(--g)}
+@media(prefers-reduced-motion:reduce){.csteps li{opacity:1;animation:none}.ctable td.hl{animation:none}}
+/* ============================================================
+   PROJECT DOCS PAGE
+   ============================================================ */
+.doc-intro{font-size:14.5px;line-height:1.85;color:var(--ink2)}
+.doc-intro p{margin-bottom:12px}
+.doc-intro b{color:var(--ink);font-weight:600}
+.doc-intro .hl{color:var(--g);font-weight:600}
+.stack-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(248px,1fr));gap:12px}
+.stack-group{background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.stack-group h4{font-size:13px;color:var(--ink);margin-bottom:8px;display:flex;align-items:center;gap:8px;font-weight:600}
+.stack-item{padding:8px 0;border-top:1px solid var(--line)}
+.stack-item b{font-size:12.5px;color:var(--g);font-family:var(--mono)}
+.stack-item span{display:block;font-size:12px;color:var(--ink3);line-height:1.55;margin-top:2px}
+.layer{display:flex;gap:14px;align-items:flex-start;padding:12px 0;border-bottom:1px solid var(--line)}
+.layer:last-child{border-bottom:none}
+.layer .ln{font-family:var(--mono);font-size:12.5px;color:var(--a);width:100px;flex-shrink:0;font-weight:700}
+.layer .lr{font-size:13.5px;color:var(--ink2);line-height:1.55}
+.layer .lr em{color:var(--ink3);font-style:normal;font-family:var(--mono);font-size:11px;display:block;margin-top:3px}
+.mod-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(232px,1fr));gap:12px}
+.mod-card{background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:15px 16px}
+.mod-card .mh{display:flex;align-items:center;gap:9px;margin-bottom:7px}
+.mod-card .mh .mi{font-size:22px;line-height:1}
+.mod-card .mh .mn{font-size:14.5px;font-weight:600;color:var(--ink);flex:1}
+.mod-card .mp{font-size:12.5px;color:var(--ink3);line-height:1.55;margin-bottom:11px}
+.mod-files{display:flex;flex-wrap:wrap;gap:5px}
+.mf{font-family:var(--mono);font-size:10.5px;padding:3px 8px;border-radius:6px}
+.mf.done{background:var(--glt);color:var(--g);border:1px solid var(--gdim)}
+.mf.todo{background:var(--bg3);color:var(--ink3);border:1px solid var(--line)}
+.pill{font-family:var(--mono);font-size:9px;padding:3px 9px;border-radius:20px;text-transform:uppercase;letter-spacing:.05em;white-space:nowrap}
+.pill.done{background:var(--glt);color:var(--g);border:1px solid var(--gdim)}
+.pill.progress{background:var(--alt);color:var(--a);border:1px solid #4A3010}
+.pill.planned{background:var(--bg3);color:var(--ink3);border:1px solid var(--line)}
+.erd{display:grid;grid-template-columns:repeat(auto-fit,minmax(214px,1fr));gap:14px}
+.erd-col h4{font-size:11px;font-family:var(--mono);color:var(--ink3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:9px}
+.erd-box{background:var(--bg2);border:1px solid var(--line2);border-radius:10px;margin-bottom:10px;overflow:hidden}
+.erd-box .et{font-family:var(--mono);font-size:12.5px;font-weight:700;color:var(--ink);background:var(--bg3);padding:7px 12px;border-bottom:1px solid var(--line2)}
+.erd-box ul{list-style:none;padding:6px 0}
+.erd-box li{font-family:var(--mono);font-size:11px;color:var(--ink3);padding:3px 12px;line-height:1.45}
+.erd-box li.pk{color:var(--a)}
+.erd-box li.fk{color:var(--g)}
+.doc-note{font-size:12.5px;color:var(--ink3);line-height:1.7;background:var(--bg2);border:1px solid var(--line);border-radius:10px;padding:12px 15px;margin-top:6px}
+.doc-note b{color:var(--ink)}
 </style>
 </head>
 <body>
@@ -253,6 +367,7 @@ a{color:inherit;text-decoration:none}
   </div>
   <div class="sidebar-section">Navigate</div>
   <a class="nav-item" data-view="dashboard" href="#/dashboard"><div class="nav-ico">◧</div><div class="nav-text"><strong>Dashboard</strong>Overview &amp; progress</div></a>
+  <a class="nav-item" data-view="docs" href="#/docs"><div class="nav-ico">📘</div><div class="nav-text"><strong>Project Docs</strong>Understand the whole app</div></a>
   <a class="nav-item" data-view="calendar" href="#/calendar"><div class="nav-ico">▦</div><div class="nav-text"><strong>Calendar</strong>Month view</div></a>
   <a class="nav-item" data-view="timeline" href="#/timeline"><div class="nav-ico">≡</div><div class="nav-text"><strong>Timeline</strong>Every day, in order</div></a>
   <a class="nav-item" data-view="roadmap" href="#/roadmap"><div class="nav-ico">◈</div><div class="nav-text"><strong>Roadmap</strong>The 4-phase plan</div></a>
@@ -274,9 +389,11 @@ a{color:inherit;text-decoration:none}
      Order matters: meta first, then days in order.
      ============================================================ -->
 <script src="data/00-meta.js"></script>
+<script src="data/00-docs.js"></script>
 <script src="data/day-01.js"></script>
 <script src="data/day-02.js"></script>
 <script src="data/day-03.js"></script>
+<script src="data/day-04.js"></script>
 
 <!-- ENGINE — renders all pages from the data above. Never needs editing. -->
 <script src="assets/engine.js"></script>

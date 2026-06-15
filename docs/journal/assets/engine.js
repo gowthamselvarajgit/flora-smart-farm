@@ -66,6 +66,9 @@ function renderExtra(e){
     ).join('');
     return `<div class="extra-title">${e.title}</div><div class="gloss">${rows}</div>`;
   }
+  if(e.type==='concept') return renderConcept(e);
+  if(e.type==='farm') return renderFarm(e);
+  if(e.type==='flow') return renderFlow(e);
   if(e.type==='diagram'){
     return `<div class="extra-title">${e.title}</div><div class="rel-diagram">${e.html}</div>`;
   }
@@ -73,20 +76,95 @@ function renderExtra(e){
   return `<div class="extra-title">${e.title}</div>${e.html}`;
 }
 
+/* Concept card — one idea explained 3 ways: a real-life analogy, numbered
+   steps that animate in, and a small table showing what actually gets stored.
+   Data: { type:'concept', title, items:[{ term, meaning, analogy,
+           steps:[...], table:{caption,head:[...],rows:[[...]],highlightCol,note} }] } */
+function renderConcept(e){
+  const cards=(e.items||[]).map(c=>{
+    const steps=(c.steps||[]).map((s,i)=>`<li style="animation-delay:${i*150}ms">${s}</li>`).join('');
+    let table='';
+    if(c.table){
+      const t=c.table;
+      const head=(t.head||[]).map(h=>`<th>${h}</th>`).join('');
+      const rows=(t.rows||[]).map(r=>`<tr>`+r.map((cell,ci)=>`<td class="${t.highlightCol===ci?'hl':''}">${cell}</td>`).join('')+`</tr>`).join('');
+      table=`<div class="cseg"><div class="cseg-label">🗄️ what actually gets stored</div>
+        <table class="ctable">${t.caption?`<caption>${t.caption}</caption>`:''}<thead><tr>${head}</tr></thead><tbody>${rows}</tbody></table>
+        ${t.note?`<div class="cnote">${t.note}</div>`:''}</div>`;
+    }
+    return `<div class="concept reveal">
+      <div class="concept-term">${c.term}</div>
+      <div class="concept-body">
+        ${c.meaning?`<div class="concept-meaning">${c.meaning}</div>`:''}
+        ${c.analogy?`<div class="cseg"><div class="cseg-label">🌾 like in real life</div><div class="canalogy">${c.analogy}</div></div>`:''}
+        ${steps?`<div class="cseg"><div class="cseg-label">🪜 step by step</div><ol class="csteps">${steps}</ol></div>`:''}
+        ${table}
+      </div>
+    </div>`;
+  }).join('');
+  return `<div class="extra-title">${e.title}</div>${cards}`;
+}
+
+/* Farm scene — a farmer, their plots of land, and the crops + animals on each.
+   Data: { type:'farm', title, farmer:{name,sub,emoji}, lands:[{name,district,size,
+           crops:[{name,emoji}], animals:[{name,emoji,count}]}] }  */
+function renderFarm(e){
+  const f=e.farmer||{};
+  const plots=(e.lands||e.plots||[]).map((p,i)=>{
+    const crops=(p.crops||[]).map(c=>`<span class="tag-chip crop"><span class="ic">${c.emoji||'🌱'}</span>${c.name}</span>`).join('');
+    const animals=(p.animals||[]).map(a=>`<span class="tag-chip animal"><span class="ic">${a.emoji||'🐄'}</span>${a.name}${a.count?` <span class="cnt">×${a.count}</span>`:''}</span>`).join('');
+    return `<div class="plot reveal" style="transition-delay:${i*90}ms">
+      <div class="plot-top"><div class="plot-name">${p.name||'Land'}</div>${p.district?`<div class="plot-badge">📍 ${p.district}</div>`:''}</div>
+      ${p.size?`<div class="plot-size">${p.size}</div>`:''}
+      ${crops?`<div class="plot-row">${crops}</div>`:''}
+      ${animals?`<div class="plot-row">${animals}</div>`:''}
+    </div>`;
+  }).join('');
+  return `<div class="extra-title">${e.title}</div>
+    <div class="farm">
+      ${f.name?`<div class="farm-farmer"><div class="who">${f.emoji||'🧑‍🌾'}</div><div class="meta">${f.name}${f.sub?`<span>${f.sub}</span>`:''}</div></div>`:''}
+      <div class="plots">${plots}</div>
+    </div>`;
+}
+
+/* Flow pipeline — animated left-to-right steps with arrows between them.
+   Data: { type:'flow', title, steps:[{icon,label,note}] }  */
+function renderFlow(e){
+  const steps=e.steps||[];
+  let h='';
+  steps.forEach((s,i)=>{
+    h+=`<div class="flow-step" style="animation-delay:${i*130}ms"><span class="fic">${s.icon||'•'}</span><span class="flab">${s.label}</span>${s.note?`<span class="fnote">${s.note}</span>`:''}</div>`;
+    if(i<steps.length-1) h+=`<div class="flow-arrow">→</div>`;
+  });
+  return `<div class="extra-title">${e.title}</div><div class="flow">${h}</div>`;
+}
+
 function renderDayBody(d){
   let h='';
-  if(d.built&&d.built.length) h+=`<div class="block built"><div class="block-head">What we built</div><div class="block-body">${elist('built',d.built)}</div></div>`;
-  if(d.understood&&d.understood.length) h+=`<div class="block learned"><div class="block-head">What we understood</div><div class="block-body">${elist('learned',d.understood)}</div></div>`;
+  if(d.story) h+=`<div class="story reveal"><div class="story-label">// the story behind today</div>${d.story}</div>`;
+  if(d.built&&d.built.length) h+=`<div class="block built reveal"><div class="block-head">What we built</div><div class="block-body">${elist('built',d.built)}</div></div>`;
+  if(d.understood&&d.understood.length) h+=`<div class="block learned reveal"><div class="block-head">What clicked today</div><div class="block-body">${elist('learned',d.understood)}</div></div>`;
   if((d.code&&d.code.length)||(d.extras&&d.extras.length)){
-    h+=`<div class="block code"><div class="block-head">Code &amp; design — files explained</div><div class="block-body">`;
+    h+=`<div class="block code reveal"><div class="block-head">Code &amp; design — files explained</div><div class="block-body">`;
     (d.code||[]).forEach(c=>{
       h+=`<div class="code-file"><div class="code-file-label">📄 ${c.file} <span>— ${c.sub}</span></div><div class="code-block"><pre>${c.code}</pre></div></div>`;
     });
-    (d.extras||[]).forEach(e=>{ h+=renderExtra(e); });
+    (d.extras||[]).forEach(e=>{ h+=`<div class="reveal">${renderExtra(e)}</div>`; });
     h+=`</div></div>`;
   }
-  if(d.next&&d.next.length) h+=`<div class="block next"><div class="block-head">What comes next — Day ${d.day+1}</div><div class="block-body">${elist('next',d.next)}</div></div>`;
+  if(d.next&&d.next.length) h+=`<div class="block next reveal"><div class="block-head">What comes next — Day ${d.day+1}</div><div class="block-body">${elist('next',d.next)}</div></div>`;
   return h;
+}
+
+/* Scroll-reveal: ease blocks in as they enter the viewport. Falls back to
+   showing everything if the browser has no IntersectionObserver. */
+function observeReveals(){
+  const els=document.querySelectorAll('.reveal:not(.in)');
+  if(!('IntersectionObserver' in window)){ els.forEach(e=>e.classList.add('in')); return; }
+  const io=new IntersectionObserver((entries,obs)=>{
+    entries.forEach(en=>{ if(en.isIntersecting){ en.target.classList.add('in'); obs.unobserve(en.target); } });
+  },{rootMargin:'0px 0px -6% 0px',threshold:.06});
+  els.forEach(e=>io.observe(e));
 }
 
 /* ---------- DASHBOARD ---------- */
@@ -261,6 +339,91 @@ function viewDay(n){
   window.scrollTo(0,0);
 }
 
+/* ---------- PROJECT DOCS ---------- */
+function pillClass(s){
+  s=(s||'').toLowerCase();
+  if(s.includes('progress')) return 'progress';
+  if(s.includes('plan')||s.includes('pending')) return 'planned';
+  return 'done';
+}
+function viewDocs(){
+  const D=(typeof DOCS!=='undefined')?DOCS:null;
+  if(!D){ $app.innerHTML=`<div class="empty-state fade"><div class="es-ico">📘</div>Docs data not loaded.</div>`; return; }
+  const snap=totalSnapshot();
+  const doneFiles=D.files.length;
+
+  const stack=D.stack.map(g=>`<div class="stack-group reveal"><h4>${g.icon} ${g.group}</h4>${g.items.map(it=>`<div class="stack-item"><b>${it.name}</b><span>${it.what}</span></div>`).join('')}</div>`).join('');
+  const layers=D.layers.map(l=>`<div class="layer"><div class="ln">${l.name}</div><div class="lr">${l.role}<em>${l.eg}</em></div></div>`).join('');
+  const mods=D.modules.map(m=>{
+    const done=(m.done||[]).map(f=>`<span class="mf done">${f} ✓</span>`).join('');
+    const todo=(m.pending||[]).map(f=>`<span class="mf todo">${f}</span>`).join('');
+    return `<div class="mod-card reveal"><div class="mh"><span class="mi">${m.icon}</span><span class="mn">${m.name}</span><span class="pill ${pillClass(m.status)}">${m.status}</span></div><div class="mp">${m.purpose}</div><div class="mod-files">${done}${todo}</div></div>`;
+  }).join('');
+  const erd=D.erd.map(col=>{
+    const boxes=col.entities.map(en=>{
+      const pk=en.pk?`<li class="pk">🔑 ${en.pk}</li>`:'';
+      const cols=(en.cols||[]).map(c=>`<li>${c}</li>`).join('');
+      const fks=(en.fks||[]).map(f=>`<li class="fk">→ ${f}</li>`).join('');
+      return `<div class="erd-box"><div class="et">${en.name}</div><ul>${pk}${cols}${fks}</ul></div>`;
+    }).join('');
+    return `<div class="erd-col"><h4>${col.module}</h4>${boxes}</div>`;
+  }).join('');
+  const fileRows=D.files.map(f=>`<tr><td>${f.path}</td><td>${f.type}</td><td>${f.module}</td><td><span class="pill ${pillClass(f.status)}">${f.status}</span></td></tr>`).join('');
+  const pendRows=(D.pending||[]).map(f=>`<tr><td>${f.path}</td><td>${f.type}</td><td>${f.module}</td><td><span class="pill planned">Not yet</span></td></tr>`).join('');
+  const enumRows=D.enums.map(e=>`<tr><td>${e.name}</td><td>${e.values}</td><td>${e.use}</td></tr>`).join('');
+
+  $app.innerHTML=`
+  <div class="page-header fade">
+    <div class="page-eyebrow">// project documentation · ${D.updatedLabel||''}</div>
+    <div class="page-title">Understand Flora, top to bottom</div>
+    <div class="page-sub">Everything you need to read this project as if for the first time — what it is, what it's built with, how it's organised, and exactly which files exist today.</div>
+  </div>
+
+  <div class="stats fade">
+    ${statCard(snap.entities,'entities (tables)','var(--p)')}
+    ${statCard(snap.enums,'fixed lists (enums)','var(--g)')}
+    ${statCard(doneFiles,'files completed','var(--b)')}
+    ${statCard(D.modules.length,'feature modules','var(--a)')}
+  </div>
+
+  <div class="sec-head"><div class="sec-label">// 1 · what is Flora</div><div class="sec-line"></div></div>
+  <div class="block note reveal"><div class="block-body"><div class="doc-intro">${D.intro.join('')}</div></div></div>
+
+  <div class="sec-head"><div class="sec-label">// 2 · technology used</div><div class="sec-line"></div></div>
+  <div class="stack-grid">${stack}</div>
+
+  <div class="sec-head"><div class="sec-label">// 3 · how the code is organised</div><div class="sec-line"></div></div>
+  <div class="block note reveal"><div class="block-head">The layers — front door to database</div><div class="block-body">${layers}</div></div>
+  ${renderExtra({type:'flow',title:'One request, end to end',steps:D.requestFlow})}
+
+  <div class="sec-head"><div class="sec-label">// 4 · the feature modules</div><div class="sec-line"></div></div>
+  <div class="mod-grid">${mods}</div>
+
+  <div class="sec-head"><div class="sec-label">// 5 · the data model (ERD)</div><div class="sec-line"></div></div>
+  <div class="doc-note reveal">Each box is a table. <b>🔑</b> is its unique id. A <b style="color:var(--g)">→ green line</b> means "links to" another table. Read it like a map: a soil test points to a field, a field points to a farmer and a town.</div>
+  <div class="erd" style="margin-top:14px">${erd}</div>
+
+  <div class="sec-head"><div class="sec-label">// 6 · completed files</div><div class="sec-line"></div></div>
+  <div class="doc-note reveal"><b>${doneFiles} files</b> built and saved so far — ${snap.entities} entities and ${snap.enums} enums, plus the app setup. Everything below is live in the project right now.</div>
+  <table class="ann-table reveal" style="margin-top:12px">
+    <thead><tr><th>File</th><th>Type</th><th>Module</th><th>Status</th></tr></thead>
+    <tbody>${fileRows}</tbody>
+  </table>
+
+  <div class="extra-title" style="margin-top:22px">Still to build (the road ahead)</div>
+  <table class="ann-table reveal">
+    <thead><tr><th>File</th><th>Type</th><th>Module</th><th>Status</th></tr></thead>
+    <tbody>${pendRows}</tbody>
+  </table>
+
+  <div class="sec-head"><div class="sec-label">// 7 · the fixed lists (enums)</div><div class="sec-line"></div></div>
+  <table class="ann-table reveal">
+    <thead><tr><th>Name</th><th>Allowed values</th><th>What it's for</th></tr></thead>
+    <tbody>${enumRows}</tbody>
+  </table>
+  `;
+}
+
 /* ---------- ROADMAP ---------- */
 function viewRoadmap(){
   // Hide any planned day already logged in JOURNAL — no manual "move" needed.
@@ -321,6 +484,7 @@ function router(){
   const raw=location.hash.replace(/^#\/?/,'')||'dashboard';
   const [view,param]=raw.split('/');
   switch(view){
+    case 'docs': viewDocs(); break;
     case 'calendar': viewCalendar(); break;
     case 'timeline': viewTimeline(); break;
     case 'roadmap': viewRoadmap(); break;
@@ -328,6 +492,7 @@ function router(){
     default: viewDashboard();
   }
   setActiveNav(view,param);
+  observeReveals();
   if(window.innerWidth<=900) closeSidebar();
 }
 

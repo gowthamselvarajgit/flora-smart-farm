@@ -5,30 +5,30 @@ JOURNAL.push({
   day:3,
   date:"2026-06-13",
   title:"AnimalHealthRecord · AnimalProductionRecord · VaccinationRecord · Production system design",
-  phase:1, status:"today",
+  phase:1, status:"done",
   tags:["Animal domain","Health records","Production tracking","Vaccination","System design","Enums"],
-  summary:"Completed the full animal sub-entity chain. Deep dive on production tracking design — why RecordType belongs in DB, how MILK/EGG/WEIGHT_YIELD covers all animals, symptom strategy (enum + free text), and auto-seeded vaccination schedule.",
+  summary:"We gave each animal a memory. Flora can now record a health check, track daily milk and eggs (and spot a worrying drop), and run a vaccination schedule that looks after itself — Gowtham never has to set a reminder by hand.",
+  story:`<p>An animal isn't a one-time form — it's a living thing with a story over time. <span class="hl">Lakshmi</span> might fall ill in July, give less milk one cold morning, and need her vaccine every six months. Today we built the three "memory" books that follow each animal through its life.</p>
+  <p>The <b>health book</b> stores symptom checks and what to do. The <b>production book</b> records each day's milk or eggs and quietly flags a sudden drop. The <b>vaccination book</b> is the clever one: the moment Gowtham registers an animal, Flora <span class="hl">creates its vaccine reminders automatically</span> — and after each shot, it schedules the next one. The reminder loop never stops, and he never typed a thing.</p>`,
   built:[
-    `<span>AnimalHealthRecord entity</span> — symptoms checker result linked to one animal. Stores symptomsJson, additionalNotes (free text for edge cases like blood in stool), predictedDisease, confidenceScore, severity, actionRequired, isVetVisitRequired, isResolved.`,
-    `<span>Symptom enum created</span> — 21 predefined symptoms across 5 categories (General, Respiratory, Digestive, Physical, Reproductive, Behavioural). Drives the symptom tile grid on mobile. additionalNotes handles anything not in the list.`,
-    `<span>AnimalProductionRecord entity</span> — tracks milk, eggs, wool, honey, fish yield. RecordType (MILK/EGG/WEIGHT_YIELD) system-filled from animal type. ProductionSession (MORNING/EVENING/HARVEST). Drop detection flag for 20% decline alerts.`,
-    `<span>RecordType enum with unit property</span> — MILK("Milk","litres"), EGG("Egg","count"), WEIGHT_YIELD("Weight Yield","kg"). Mobile reads recordType.getUnit() to show correct label on input field.`,
-    `<span>ProductionSession enum</span> — MORNING, EVENING, HARVEST. HARVEST covers periodic yield: wool shearing, honey extraction, silk cocoon harvest, fish yield.`,
-    `<span>AnimalType updated</span> — added recordType field. Cow→MILK, Hen→EGG, Rabbit→WEIGHT_YIELD, Dog→null. System reads this to decide which production tracking to show.`,
-    `<span>VaccinationRecord entity</span> — per-animal vaccination schedule. vaccineName, dueDate, administeredDate, nextDueDate (auto-calculated on completion), VaccinationStatus (PENDING/DUE_SOON/OVERDUE/COMPLETED). Auto-seeded when animal is registered.`,
-    `<span>VaccinationStatus enum</span> — PENDING (grey), DUE_SOON (amber, 3 days before), OVERDUE (red), COMPLETED (green). Drives badge colours and FCM push timing.`,
-    `<span>3 new tables in MySQL</span> — animal_health_records, animal_production_records, vaccination_records. Total: 12 tables.`
+    `<span>Health check record</span> — stores the symptoms Gowtham picked, any extra notes he typed, the likely illness, how serious it is, and whether a vet visit is needed.`,
+    `<span>Symptom list</span> — 21 common symptoms as tappable tiles. A free-text box handles anything unusual that isn't on the list.`,
+    `<span>Production record</span> — one simple book for milk, eggs, wool, honey and fish. The app already knows which one to track for each animal.`,
+    `<span>Drop detector</span> — if today's milk is more than 20% below the recent average, the app flags it and warns Gowtham early.`,
+    `<span>Vaccination record</span> — vaccine name, due date, status, and the next due date worked out automatically after each dose.`,
+    `<span>Status list with colours</span> — Pending (grey), Due soon (amber), Overdue (red), Done (green). The colour decides the badge and when a reminder is sent.`,
+    `<span>3 new tables</span> — health, production and vaccination records. We're now at 12 tables.`
   ],
   understood:[
-    `<span>Why RecordType should be stored in DB even though system fills it</span> — The system can always calculate RecordType from animal → animalType, but querying "show me all egg records" would require a JOIN across 3 tables every time. Storing record_type='EGG' directly in animal_production_records makes it a simple WHERE clause. Store what you query — even if derived.`,
-    `<span>Fixed enum symptoms + free text = best of both worlds</span> — Predefined symptom tiles (from Symptom enum) are fast to select, AI-friendly, consistent. The additionalNotes free text field handles anything outside the list — like Gowtham's dog passing blood in stool. The AI uses structured symptoms for ML prediction. The vet in Expert Chat reads the additional notes for full context.`,
-    `<span>MILK/EGG/WEIGHT_YIELD covers every producing animal in India</span> — Cow/Buffalo/Goat/Sheep/Camel → MILK. Hen/Duck/Dove/Quail/Turkey → EGG. Rabbit/Silkworm/Honey Bee/Fish → WEIGHT_YIELD. Pig/Dog/Horse → null (no production tracking). This three-category system handles every animal a Tamil Nadu farmer could own.`,
-    `<span>Vaccination auto-seeding means zero effort for the farmer</span> — Gowtham registers Lakshmi. Flora immediately creates 4 vaccination records with due dates. Gowtham never has to manually add vaccine reminders. 3 days before each date, he gets a push notification. After the vet visit, he taps "Done" — Flora calculates the next dose and seeds a new record automatically. The cycle continues forever.`,
-    `<span>isVetVisitRequired connects health check to Expert Chat</span> — When the symptoms checker returns isVetVisitRequired=true, the mobile app automatically shows a "Connect with Expert" button. Tapping it opens the Expert Chat pre-filled with animal name, predicted disease, symptoms, and Gowtham's additional notes. The vet sees everything without Gowtham having to type it again.`,
-    `<span>harvestCycle vs notes — two different purposes</span> — harvestCycle is structured context for WEIGHT_YIELD records: "Shearing cycle 1 — June 2026" or "Honey harvest — Summer batch". notes is free text for anything unusual that day: "Lakshmi seemed restless". Different purposes, different fields.`
+    `<span>Sometimes you save what you could calculate — on purpose</span> — The app could always work out "is this a milk or egg record?" from the animal. But copying that answer straight into the record turns "show me all egg records" from a slow three-table lookup into a one-line search. Worth the small duplication.`,
+    `<span>Fixed tiles + a free-text box = the best of both</span> — Tappable symptom tiles are fast and tidy for the app to understand. The free-text box catches the rare, unusual things (like "passing blood since two days"). The AI uses the tiles; the vet reads the notes.`,
+    `<span>Three buckets cover every farm animal</span> — Milk (cow, buffalo, goat…), Eggs (hen, duck, quail…), and Weight/yield (wool, honey, silk, fish). Animals like dogs that produce nothing simply have no tracking. Three buckets, every Indian farm animal handled.`,
+    `<span>Auto-set reminders = zero effort</span> — Register Lakshmi and four vaccine reminders appear instantly with due dates. Three days before each, a push arrives. Tap "Done" and the next dose schedules itself. Gowtham never opens a calendar.`,
+    `<span>One flag can connect two features</span> — When a health check says "vet needed", a "Connect with Expert" button appears, and the chat opens already filled with the animal, the illness and the notes. Gowtham doesn't retype anything.`,
+    `<span>A neat label vs a free note are different jobs</span> — "Shearing cycle 1 — June 2026" is a tidy label for grouping. "Lakshmi seemed restless" is a free note for a human to read later. Different purposes, different fields.`
   ],
   code:[
-    { file:"entity/animal/AnimalHealthRecord.java", sub:"Lakshmi's symptoms check result — every field explained",
+    { file:"entity/animal/AnimalHealthRecord.java", sub:"the result of a symptom check — every field explained",
       code:`<span class="ann">@Entity</span> <span class="ann">@Table(name = "animal_health_records")</span>
 <span class="ann">@Data</span> <span class="ann">@NoArgsConstructor</span> <span class="ann">@AllArgsConstructor</span>
 <span class="kw">public class</span> <span class="cls">AnimalHealthRecord</span> {
@@ -40,70 +40,54 @@ JOURNAL.push({
     <span class="ann">@ManyToOne(fetch = FetchType.LAZY)</span>
     <span class="ann">@JoinColumn(name = "animal_id", nullable = false)</span>
     <span class="kw">private</span> Animal animal;
-    <span class="cmt">// MANY health records → ONE animal</span>
-    <span class="cmt">// Lakshmi can have 10 health checks over her lifetime. All point to animal_id=1.</span>
+    <span class="cmt">// MANY health checks → ONE animal. Lakshmi may have 10 over her life.</span>
 
     <span class="ann">@Column(name = "symptoms_json", nullable = false)</span>
     <span class="kw">private</span> String symptomsJson;
-    <span class="cmt">// Predefined symptoms selected from tiles (from Symptom enum)</span>
-    <span class="cmt">// Stored as JSON: ["FEVER","NASAL_DISCHARGE","LETHARGY"]</span>
-    <span class="cmt">// Why JSON string and not a join table? — simpler, faster, one column</span>
-    <span class="cmt">// Symptom enum validates values before save — no invalid data reaches DB</span>
+    <span class="cmt">// the tapped symptoms, saved as a small list: ["FEVER","NASAL_DISCHARGE"]</span>
+    <span class="cmt">// one column instead of a whole extra table — simpler and faster</span>
 
     <span class="ann">@Column(name = "additional_notes", length = 1000)</span>
     <span class="kw">private</span> String additionalNotes;
-    <span class="cmt">// Free text for anything NOT in the predefined symptom list</span>
-    <span class="cmt">// Real example: "passing blood in stool since 2 days" (Gowtham's dog)</span>
-    <span class="cmt">// Shown to the expert in chat when vet visit is needed</span>
-    <span class="cmt">// Nullable — most checks won't need this</span>
+    <span class="cmt">// the free-text box, for anything not in the tile list</span>
+    <span class="cmt">// real example: "passing blood in stool since 2 days"</span>
 
     <span class="ann">@Column(name = "predicted_disease", length = 200)</span>
-    <span class="kw">private</span> String predictedDisease;
-    <span class="cmt">// Flask ML model output: "Foot and Mouth Disease"</span>
+    <span class="kw">private</span> String predictedDisease;     <span class="cmt">// the AI's best guess: "Foot and Mouth Disease"</span>
 
     <span class="ann">@Column(name = "confidence_score")</span>
-    <span class="kw">private</span> Double confidenceScore;
-    <span class="cmt">// 0.78 = 78% confidence. Shown as a progress bar on the result screen.</span>
+    <span class="kw">private</span> Double confidenceScore;       <span class="cmt">// 0.78 = 78% sure. Shown as a little bar.</span>
 
     <span class="ann">@Enumerated(EnumType.STRING)</span>
     <span class="ann">@Column(name = "severity", length = 20)</span>
-    <span class="kw">private</span> HealthStatus severity;
-    <span class="cmt">// Reusing HealthStatus enum: SICK / CRITICAL / RECOVERING</span>
-    <span class="cmt">// Drives the badge colour on the symptom result card</span>
+    <span class="kw">private</span> HealthStatus severity;        <span class="cmt">// reuses our health list: SICK / CRITICAL …</span>
 
     <span class="ann">@Column(name = "action_required", length = 500)</span>
-    <span class="kw">private</span> String actionRequired;
-    <span class="cmt">// Plain text advice shown as main instruction: "Isolate immediately, call vet"</span>
+    <span class="kw">private</span> String actionRequired;        <span class="cmt">// plain advice: "Isolate immediately, call vet"</span>
 
     <span class="ann">@Column(name = "is_vet_visit_required", nullable = false)</span>
     <span class="kw">private</span> Boolean isVetVisitRequired = <span class="kw">false</span>;
-    <span class="cmt">// true → mobile app shows "Connect with Expert" button automatically</span>
-    <span class="cmt">// Expert chat opens pre-filled: animal name + disease + symptoms + notes</span>
-    <span class="cmt">// Gowtham doesn't retype anything. Expert sees everything.</span>
+    <span class="cmt">// true → a "Connect with Expert" button appears, chat pre-filled with everything</span>
 
     <span class="ann">@Column(name = "is_resolved", nullable = false)</span>
     <span class="kw">private</span> Boolean isResolved = <span class="kw">false</span>;
-    <span class="cmt">// false = active issue, shows on dashboard as alert</span>
-    <span class="cmt">// true  = Gowtham marked it resolved, moves to history</span>
+    <span class="cmt">// false = still active (shows on dashboard). true = sorted, moves to history.</span>
 
     <span class="ann">@Column(name = "checked_at", nullable = false, updatable = false)</span>
     <span class="kw">private</span> LocalDateTime checkedAt = LocalDateTime.now();
-    <span class="cmt">// Used to show "3 days ago" on Lakshmi's health history timeline</span>
+    <span class="cmt">// used to show "3 days ago" on Lakshmi's health timeline</span>
 }` },
-    { file:"enums/animal/RecordType.java", sub:"unit property — mobile reads this to show correct label",
+    { file:"enums/animal/RecordType.java", sub:"each type carries its own unit, so the screen labels itself",
       code:`<span class="kw">public enum</span> <span class="cls">RecordType</span> {
 
     <span class="val">MILK</span>(<span class="str">"Milk"</span>, <span class="str">"litres"</span>),
-    <span class="cmt">// Cow, Buffalo, Goat, Sheep, Camel</span>
-    <span class="cmt">// Input field shows: "8.5 litres"</span>
+    <span class="cmt">// Cow, Buffalo, Goat, Sheep, Camel → input shows "8.5 litres"</span>
 
     <span class="val">EGG</span>(<span class="str">"Egg"</span>, <span class="str">"count"</span>),
-    <span class="cmt">// Hen, Duck, Dove, Quail, Turkey</span>
-    <span class="cmt">// Input field shows: "3 eggs"</span>
+    <span class="cmt">// Hen, Duck, Dove, Quail, Turkey → input shows "3 eggs"</span>
 
     <span class="val">WEIGHT_YIELD</span>(<span class="str">"Weight Yield"</span>, <span class="str">"kg"</span>);
-    <span class="cmt">// Rabbit (fur), Sheep (wool), Silkworm (cocoons), Honey Bee (honey), Fish</span>
-    <span class="cmt">// Input field shows: "2.4 kg"</span>
+    <span class="cmt">// Wool, honey, silk cocoons, fish → input shows "2.4 kg"</span>
 
     <span class="kw">private final</span> String displayName;
     <span class="kw">private final</span> String unit;
@@ -115,10 +99,9 @@ JOURNAL.push({
 
     <span class="kw">public</span> String <span class="prop">getDisplayName</span>() { <span class="kw">return</span> displayName; }
     <span class="kw">public</span> String <span class="prop">getUnit</span>() { <span class="kw">return</span> unit; }
-    <span class="cmt">// recordType.getUnit() → "litres" / "count" / "kg"</span>
-    <span class="cmt">// Mobile app shows the right unit label without any if/else logic</span>
+    <span class="cmt">// the app reads .getUnit() to print the right label — no if/else needed</span>
 }` },
-    { file:"entity/animal/AnimalProductionRecord.java", sub:"milk, eggs, wool, honey — one entity for all",
+    { file:"entity/animal/AnimalProductionRecord.java", sub:"milk, eggs, wool, honey — one simple book for all",
       code:`<span class="ann">@Entity</span> <span class="ann">@Table(name = "animal_production_records")</span>
 <span class="ann">@Data</span> <span class="ann">@NoArgsConstructor</span> <span class="ann">@AllArgsConstructor</span>
 <span class="kw">public class</span> <span class="cls">AnimalProductionRecord</span> {
@@ -130,15 +113,13 @@ JOURNAL.push({
     <span class="ann">@ManyToOne(fetch = FetchType.LAZY)</span>
     <span class="ann">@JoinColumn(name = "animal_id", nullable = false)</span>
     <span class="kw">private</span> Animal animal;
-    <span class="cmt">// MANY production records → ONE animal</span>
-    <span class="cmt">// Lakshmi has 730 records after one year (365 days × 2 sessions)</span>
+    <span class="cmt">// MANY records → ONE animal. Lakshmi has 730 in a year (twice daily).</span>
 
     <span class="ann">@Enumerated(EnumType.STRING)</span>
     <span class="ann">@Column(name = "record_type", nullable = false, length = 20)</span>
     <span class="kw">private</span> RecordType recordType;
-    <span class="cmt">// System fills from animal.getAnimalType().getRecordType()</span>
-    <span class="cmt">// Farmer never selects. Stored in DB for easy filtering:</span>
-    <span class="cmt">// SELECT * FROM animal_production_records WHERE record_type = 'EGG'</span>
+    <span class="cmt">// the app fills this from the animal's type. Saved here so "all egg records"</span>
+    <span class="cmt">// is a one-line search instead of a three-table lookup.</span>
 
     <span class="ann">@Column(name = "record_date", nullable = false)</span>
     <span class="kw">private</span> LocalDate recordDate;
@@ -146,33 +127,27 @@ JOURNAL.push({
     <span class="ann">@Enumerated(EnumType.STRING)</span>
     <span class="ann">@Column(name = "session", nullable = false, length = 10)</span>
     <span class="kw">private</span> ProductionSession session;
-    <span class="cmt">// MORNING / EVENING → milk + egg animals (daily rhythm)</span>
-    <span class="cmt">// HARVEST           → wool, honey, silk, fish (periodic)</span>
+    <span class="cmt">// MORNING / EVENING for milk + eggs. HARVEST for wool, honey, silk, fish.</span>
 
     <span class="ann">@Column(name = "quantity", nullable = false)</span>
     <span class="kw">private</span> Double quantity;
-    <span class="cmt">// MILK → 8.5 litres. EGG → 3.0 eggs. WEIGHT_YIELD → 2.4 kg.</span>
-    <span class="cmt">// Unit label on screen comes from recordType.getUnit(). Zero extra code.</span>
+    <span class="cmt">// 8.5 litres / 3 eggs / 2.4 kg. The unit label comes from the type. Zero extra code.</span>
 
     <span class="ann">@Column(name = "is_drop_detected", nullable = false)</span>
     <span class="kw">private</span> Boolean isDropDetected = <span class="kw">false</span>;
-    <span class="cmt">// System sets true when: quantity < (avg of last 3 days × 0.80)</span>
-    <span class="cmt">// i.e. more than 20% drop from recent average</span>
-    <span class="cmt">// When true → alert created → FCM push to Gowtham: "Lakshmi's milk dropped"</span>
+    <span class="cmt">// turns true when today is &gt;20% below the recent average → warns Gowtham early</span>
 
     <span class="ann">@Column(name = "harvest_cycle", length = 100)</span>
     <span class="kw">private</span> String harvestCycle;
-    <span class="cmt">// WEIGHT_YIELD only: "Shearing cycle 1 — June 2026" or "Summer honey batch"</span>
-    <span class="cmt">// Nullable — not used for MILK and EGG records</span>
+    <span class="cmt">// a tidy label for yield records: "Shearing cycle 1 — June 2026". Blank for milk/eggs.</span>
 
     <span class="ann">@Column(name = "notes", length = 500)</span>
-    <span class="kw">private</span> String notes;
-    <span class="cmt">// Free text: "Lakshmi seemed restless during morning milking"</span>
+    <span class="kw">private</span> String notes;          <span class="cmt">// free note: "Lakshmi seemed restless this morning"</span>
 
     <span class="ann">@Column(name = "recorded_at", nullable = false, updatable = false)</span>
     <span class="kw">private</span> LocalDateTime recordedAt = LocalDateTime.now();
 }` },
-    { file:"entity/animal/VaccinationRecord.java", sub:"auto-seeded on animal registration — Gowtham never creates these manually",
+    { file:"entity/animal/VaccinationRecord.java", sub:"created automatically — Gowtham never adds these by hand",
       code:`<span class="ann">@Entity</span> <span class="ann">@Table(name = "vaccination_records")</span>
 <span class="ann">@Data</span> <span class="ann">@NoArgsConstructor</span> <span class="ann">@AllArgsConstructor</span>
 <span class="kw">public class</span> <span class="cls">VaccinationRecord</span> {
@@ -184,51 +159,40 @@ JOURNAL.push({
     <span class="ann">@ManyToOne(fetch = FetchType.LAZY)</span>
     <span class="ann">@JoinColumn(name = "animal_id", nullable = false)</span>
     <span class="kw">private</span> Animal animal;
-    <span class="cmt">// MANY vaccination records → ONE animal</span>
-    <span class="cmt">// Lakshmi gets 4 records auto-seeded when Gowtham registers her</span>
+    <span class="cmt">// 4 records appear for Lakshmi the moment she's registered</span>
 
     <span class="ann">@Column(name = "vaccine_name", nullable = false, length = 200)</span>
     <span class="kw">private</span> String vaccineName;      <span class="cmt">// "Foot and Mouth Disease (FMD) Vaccine"</span>
     <span class="ann">@Column(name = "vaccine_name_tamil", length = 200)</span>
-    <span class="kw">private</span> String vaccineNameTamil; <span class="cmt">// shown when language = TA</span>
+    <span class="kw">private</span> String vaccineNameTamil;
     <span class="ann">@Column(name = "vaccine_name_hindi", length = 200)</span>
-    <span class="kw">private</span> String vaccineNameHindi; <span class="cmt">// shown when language = HI</span>
+    <span class="kw">private</span> String vaccineNameHindi;
 
     <span class="ann">@Column(name = "disease_protected_against", length = 200)</span>
-    <span class="kw">private</span> String diseaseProtectedAgainst;
-    <span class="cmt">// "Foot and Mouth Disease" — shown so Gowtham understands why it matters</span>
+    <span class="kw">private</span> String diseaseProtectedAgainst;   <span class="cmt">// so Gowtham sees why it matters</span>
 
     <span class="ann">@Column(name = "due_date", nullable = false)</span>
     <span class="kw">private</span> LocalDate dueDate;
-    <span class="cmt">// @Scheduled AlertScheduler checks this every day</span>
-    <span class="cmt">// 3 days before → status=DUE_SOON + push notification sent</span>
-    <span class="cmt">// After due date, not done → status=OVERDUE + urgent dashboard alert</span>
+    <span class="cmt">// the app checks this daily. 3 days before → "due soon" + a push.</span>
 
     <span class="ann">@Column(name = "administered_date")</span>
-    <span class="kw">private</span> LocalDate administeredDate;
-    <span class="cmt">// null = not yet given. Filled when Gowtham marks as COMPLETED.</span>
+    <span class="kw">private</span> LocalDate administeredDate;        <span class="cmt">// blank until the shot is given</span>
 
     <span class="ann">@Column(name = "next_due_date")</span>
     <span class="kw">private</span> LocalDate nextDueDate;
-    <span class="cmt">// Auto-calculated when COMPLETED: administeredDate + vaccine interval</span>
-    <span class="cmt">// FMD → every 6 months. Brucellosis → every 12 months.</span>
-    <span class="cmt">// System creates a NEW VaccinationRecord with this date. Cycle continues forever.</span>
+    <span class="cmt">// worked out automatically after a shot (e.g. +6 months) → a fresh record is</span>
+    <span class="cmt">// created for that date. The cycle keeps going on its own, forever.</span>
 
     <span class="ann">@Column(name = "administered_by", length = 200)</span>
-    <span class="kw">private</span> String administeredBy;
-    <span class="cmt">// Optional: "Dr. Rajesh, Karur Govt Vet Hospital"</span>
+    <span class="kw">private</span> String administeredBy;            <span class="cmt">// "Dr. Rajesh, Karur Govt Vet Hospital"</span>
 
     <span class="ann">@Enumerated(EnumType.STRING)</span>
     <span class="ann">@Column(name = "vaccination_status", nullable = false, length = 20)</span>
     <span class="kw">private</span> VaccinationStatus vaccinationStatus = VaccinationStatus.PENDING;
-    <span class="cmt">// PENDING  → grey badge,  waiting for due date</span>
-    <span class="cmt">// DUE_SOON → amber badge, 3 days before → push notification</span>
-    <span class="cmt">// OVERDUE  → red badge,   missed the date → urgent alert</span>
-    <span class="cmt">// COMPLETED → green badge, done → next dose auto-seeded</span>
+    <span class="cmt">// PENDING grey · DUE_SOON amber + push · OVERDUE red + alert · COMPLETED green</span>
 
     <span class="ann">@Column(name = "notes", length = 500)</span>
-    <span class="kw">private</span> String notes;
-    <span class="cmt">// "Animal had mild reaction, monitor for 24 hours"</span>
+    <span class="kw">private</span> String notes;          <span class="cmt">// "Mild reaction, monitor for 24 hours"</span>
 
     <span class="ann">@Column(name = "created_at", nullable = false, updatable = false)</span>
     <span class="kw">private</span> LocalDateTime createdAt = LocalDateTime.now();
@@ -237,71 +201,70 @@ JOURNAL.push({
 }` }
   ],
   extras:[
-    { type:"glossary", title:"New design ideas on this page, in plain English",
-      items:[
-        { term:"Storing a list as a JSON String", def:"Sometimes you need to save a <b>small list inside one column</b> instead of building a whole extra table. We write the list as text in JSON format and store it in a single String column. Simpler and faster to read back when you always want the whole list at once.",
-          eg:"<em>symptoms_json = [\"FEVER\",\"NASAL_DISCHARGE\"]</em> sits in one cell — no separate \"symptoms\" table needed for a handful of tick-boxes." },
-        { term:"Enum validates before save", def:"Because the symptom tiles come from the <b>Symptom enum</b> (a fixed list), the app can only ever send valid values. Garbage like \"asdf\" can't reach the database — the closed list is the gatekeeper.",
-          eg:"The screen only shows the 21 real symptoms, so the JSON can only ever contain those 21 words. No typos, no junk." },
-        { term:"Reusing an enum as a field type (severity)", def:"You don't always invent a new enum. If an existing one already describes the values you need, <b>reuse it</b>. Less code, and the meaning stays consistent everywhere.",
-          eg:"<em>severity</em> reuses <em>HealthStatus</em> (SICK / CRITICAL / RECOVERING) instead of creating a brand-new \"Severity\" enum that says the same thing." },
-        { term:"Enum with TWO carried values", def:"An enum constant can hold <b>more than one extra value</b>. RecordType carries both a friendly name AND a unit. The constructor just takes two arguments instead of one.",
-          eg:"<em>MILK(\"Milk\", \"litres\")</em> — the app reads <em>.getUnit()</em> to print \"litres\" next to the number, with zero if/else code." },
-        { term:"\"Store what you query\" (controlled duplication)", def:"Normally you never store data you can calculate. The exception: if you'll <b>filter or search by it constantly</b>, copying it into its own column turns a slow 3-table join into a one-line WHERE. A deliberate, worth-it duplication.",
-          eg:"<em>record_type='EGG'</em> is copyable from the animal, but storing it lets \"show all egg records\" be instant instead of joining three tables every time." },
-        { term:"System-filled field (farmer never types it)", def:"A column the <b>app fills automatically</b> from other data, so the user never has to. Less to enter = fewer mistakes and a faster screen.",
-          eg:"<em>recordType</em> is read from the animal's type. Gowtham just enters \"8.5\" for milk; the app already knows it's MILK in litres." },
-        { term:"Auto-seeding (records created for you)", def:"When one thing is created, the app <b>automatically generates related records</b> in the background. The user gets a fully set-up experience without lifting a finger.",
-          eg:"Register Lakshmi → Flora instantly creates her 4 vaccination reminders with due dates. Gowtham never adds a single reminder by hand." },
-        { term:"A status enum that drives behaviour", def:"An enum whose value doesn't just label a row — it <b>decides what the app does</b>: which colour to show, when to send a notification, whether to raise an alert.",
-          eg:"<em>VaccinationStatus</em>: DUE_SOON turns the badge amber AND fires a push 3 days early; OVERDUE turns it red AND raises an urgent alert." },
-        { term:"Self-renewing cycle (nextDueDate)", def:"A record that, once completed, <b>spawns its own replacement</b> for the next time. The schedule maintains itself forever with no manual upkeep.",
-          eg:"Mark FMD vaccine done → app calculates +6 months → creates a fresh record for that date. The reminder loop never stops on its own." },
-        { term:"structured field vs free-text field", def:"<b>Structured</b> fields hold a known, predictable shape the app can reason about. <b>Free-text</b> fields hold whatever a human types, for context a machine can't predict. Good designs use both, each for its job.",
-          eg:"<em>harvestCycle</em> = \"Shearing cycle 1\" (structured, for grouping). <em>notes</em> = \"Lakshmi seemed restless\" (free text, for the human reading later)." }
+    { type:"flow", title:"The vaccination loop that runs itself",
+      steps:[
+        { icon:"🐄", label:"Register Lakshmi", note:"" },
+        { icon:"📅", label:"4 reminders appear", note:"with due dates, automatically" },
+        { icon:"🔔", label:"Push 3 days before", note:"\"FMD vaccine due Sunday\"" },
+        { icon:"💉", label:"Tap \"Done\"", note:"after the vet visit" },
+        { icon:"🔁", label:"Next dose scheduled", note:"+6 months, on its own" }
       ]
     },
-    { type:"diagram", title:"The complete animal module — all 6 tables connected",
-      html:`<pre style="color:var(--ink2)"><span style="color:#E8E6E0;font-weight:600">Gowtham</span> (farmer_id=1)
+    { type:"flow", title:"What happens when milk drops",
+      steps:[
+        { icon:"🥛", label:"Enter today's milk", note:"6.1 L this morning" },
+        { icon:"📉", label:"App compares", note:"vs recent average 8.5 L" },
+        { icon:"⚠️", label:"Drop flagged", note:"more than 20% down" },
+        { icon:"🔔", label:"Gowtham warned", note:"\"Lakshmi's milk dropped 28%\"" }
+      ]
+    },
+    { type:"glossary", title:"New ideas on this page, in plain English",
+      items:[
+        { term:"Saving a small list in one box", def:"Instead of a whole extra table for a few tick-boxes, we write the list as text in one column. Simpler, and quick to read back when you always want the whole list.",
+          eg:"<em>[\"FEVER\",\"NASAL_DISCHARGE\"]</em> sits in a single cell — no separate \"symptoms\" table needed." },
+        { term:"Reusing a list we already have", def:"If a list we already made fits perfectly, we reuse it instead of inventing a near-identical one. Less code, and the meaning stays the same everywhere.",
+          eg:"\"How serious is it?\" reuses the <em>HealthStatus</em> list (SICK / CRITICAL …) we built on Day 2." },
+        { term:"A choice that carries two facts", def:"A choice can hold more than one extra value. Each production type carries both a friendly name and its unit.",
+          eg:"<em>MILK = \"Milk\" + \"litres\"</em> — the screen prints \"litres\" next to the number, with no extra code." },
+        { term:"Copying a value on purpose (to search fast)", def:"Normally we never store what we can calculate. The exception: if we'll search by it constantly, copying it into its own column turns a slow lookup into an instant one.",
+          eg:"Saving <em>record_type = EGG</em> on each record makes \"show all egg records\" instant." },
+        { term:"A field the app fills for you", def:"A value the app works out from other data, so the farmer never types it. Less to enter means fewer mistakes.",
+          eg:"The app sets <em>recordType</em> from the animal's type. Gowtham just types \"8.5\"." },
+        { term:"Auto-creating related records", def:"When one thing is created, the app quietly sets up the related records too, so the user gets a ready-made experience.",
+          eg:"Register Lakshmi → her 4 vaccine reminders appear instantly. He adds nothing." },
+        { term:"A status that decides what happens", def:"A choice that doesn't just label a row — it drives the app: the badge colour, when a push is sent, whether an alert is raised.",
+          eg:"<em>DUE_SOON</em> turns the badge amber AND fires a push 3 days early; <em>OVERDUE</em> turns it red AND raises an alert." },
+        { term:"A loop that renews itself", def:"A record that, once finished, creates its own replacement for next time — so the schedule never needs manual upkeep.",
+          eg:"Mark the FMD vaccine done → the app makes a fresh reminder 6 months later. The loop never stops." }
+      ]
+    },
+    { type:"diagram", title:"Lakshmi's three record books, all linked to her",
+      html:`<pre style="color:var(--ink2)"><span style="color:#E8E6E0;font-weight:600">Lakshmi</span> (animal_id=1)
     │
-    └── <span style="color:var(--g)">Lakshmi</span> (animal_id=1, Cow, Jersey, FEMALE, HEALTHY)
-            │
-            ├── <span style="color:var(--g)">animal_health_records</span>
-            │       health_record_id=1
-            │       symptoms: ["FEVER","NASAL_DISCHARGE"]
-            │       additional_notes: "not eating since morning"
-            │       predicted_disease: "Foot and Mouth Disease"
-            │       confidence: 0.78, severity: CRITICAL
-            │       is_vet_visit_required: true  ──► Expert Chat opens pre-filled
-            │       is_resolved: false  ──► shows as active alert on dashboard
-            │
-            ├── <span style="color:var(--g)">animal_production_records</span>
-            │       record_id=1: MILK, 2026-06-13, MORNING, 8.5 litres, drop=false
-            │       record_id=2: MILK, 2026-06-13, EVENING, 6.0 litres, drop=false
-            │       record_id=3: MILK, 2026-06-14, MORNING, 6.1 litres, <span style="color:var(--r)">drop=true</span>
-            │                    ──► Alert: "Lakshmi's milk dropped 28%"
-            │
-            └── <span style="color:var(--g)">vaccination_records</span>
-                    vacc_id=1: FMD Vaccine, due 2026-12-13, PENDING
-                    vacc_id=2: HS Vaccine,  due 2026-12-13, PENDING
-                    vacc_id=3: BQ Vaccine,  due 2026-12-13, PENDING
-                    vacc_id=4: Brucellosis, due 2027-06-13, PENDING
-                    ──► All 4 auto-seeded when Lakshmi was registered
-                    ──► Gowtham never typed any of this</pre>` },
-    { type:"table", title:"RecordType → AnimalType mapping — every animal in Flora",
+    ├── <span style="color:var(--g)">Health checks</span>
+    │       fever + nasal discharge → likely "Foot &amp; Mouth", 78% sure
+    │       vet needed: yes  ──► opens Expert Chat, already filled in
+    │
+    ├── <span style="color:var(--g)">Production (milk)</span>
+    │       Mon morning 8.5 L · Mon evening 6.0 L
+    │       Tue morning 6.1 L  <span style="color:var(--r)">← 28% drop flagged</span>  ──► warns Gowtham
+    │
+    └── <span style="color:var(--g)">Vaccinations</span>
+            FMD · due 2026-12-13 · pending
+            + 3 more, all created automatically when she was registered</pre>` },
+    { type:"table", title:"Which animals produce what — the three buckets",
       html:`<table class="ann-table">
-        <thead><tr><th>RecordType</th><th>Unit</th><th>Animals</th><th>Session</th></tr></thead>
+        <thead><tr><th>Bucket</th><th>Unit</th><th>Animals</th><th>When recorded</th></tr></thead>
         <tbody>
-          <tr><td>MILK</td><td>litres</td><td>Cow, Buffalo, Goat, Sheep, Camel</td><td>MORNING + EVENING</td></tr>
-          <tr><td>EGG</td><td>count</td><td>Hen, Duck, Dove, Quail, Turkey</td><td>MORNING (once daily)</td></tr>
-          <tr><td>WEIGHT_YIELD</td><td>kg</td><td>Rabbit (fur), Sheep (wool), Silkworm (cocoons), Honey Bee (honey), Fish</td><td>HARVEST (periodic)</td></tr>
-          <tr><td>null</td><td>—</td><td>Pig, Dog, Horse (no daily production)</td><td>— (no production tracking)</td></tr>
+          <tr><td>Milk</td><td>litres</td><td>Cow, Buffalo, Goat, Sheep, Camel</td><td>Morning + evening</td></tr>
+          <tr><td>Eggs</td><td>count</td><td>Hen, Duck, Dove, Quail, Turkey</td><td>Once a day</td></tr>
+          <tr><td>Weight / yield</td><td>kg</td><td>Wool, honey, silk cocoons, fish</td><td>At harvest</td></tr>
+          <tr><td>None</td><td>—</td><td>Pig, Dog, Horse</td><td>No production tracking</td></tr>
         </tbody>
       </table>` }
   ],
   next:[
-    `<span>Remaining entities</span> — SoilScan, WeatherSnapshot, Prediction, MarketPrice for the crop module. ChatSession, ChatMessage for expert chat. Alert, DeviceToken for push notifications. Feedback for post-harvest ratings.`,
-    `<span>After all entities are done</span> — JWT authentication. POST /api/auth/register and POST /api/auth/login. First real working endpoints in the project.`
+    `<span>The crop side begins</span> — soil tests, live weather, and the AI advice that grows out of them.`
   ],
   snapshot:{ entities:10, enums:9, tables:12, endpoints:0 }
 });
