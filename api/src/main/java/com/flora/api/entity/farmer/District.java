@@ -24,6 +24,12 @@ public class District {
     @JoinColumn(name = "state_id", nullable = false)
     private State state;
 
+    @Column(name = "latitude")
+    private Double latitude;
+
+    @Column(name = "longitude")
+    private Double longitude;
+
     @Column(name = "is_active", nullable = false)
     private Boolean isActive = true;
 }

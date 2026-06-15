@@ -55,18 +55,13 @@ public class Farmer {
     @Column(name = "primary_activity", nullable = false, length = 10)
     private PrimaryActivity primaryActivity = PrimaryActivity.CROP;
 
-    //Onboarding Q4
-    @Column(name = "land_size_acres")
-    private Double landSizeAcres;
+    // --- Onboarding Q4 ---
+    // Land size and crops moved to Land entity
+    // Farmer can have multiple lands in different districts
 
-    //Onboarding Q5
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-            name = "farmer_crops",
-            joinColumns = @JoinColumn(name = "farmer_id"),
-            inverseJoinColumns = @JoinColumn(name = "crop_id")
-    )
-    private List<Crop> currentlyGrowingCrops;
+    // --- Onboarding Q5 ---
+    // currentlyGrowingCrops moved to Land entity
+    // Each land tracks its own crops independently
 
     //Onboarding Q6
     @ManyToMany(fetch = FetchType.LAZY)
