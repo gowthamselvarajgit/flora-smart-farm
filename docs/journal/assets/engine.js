@@ -167,7 +167,7 @@ function renderDayBody(d){
   if(d.built&&d.built.length) h+=`<div class="block built reveal"><div class="block-head">What we built</div><div class="block-body">${elist('built',d.built)}</div></div>`;
   if(d.understood&&d.understood.length) h+=`<div class="block learned reveal"><div class="block-head">What clicked today</div><div class="block-body">${elist('learned',d.understood)}</div></div>`;
   if((d.code&&d.code.length)||(d.extras&&d.extras.length)){
-    h+=`<div class="block code reveal"><div class="block-head">Code &amp; design — files explained</div><div class="block-body">`;
+    h+=`<div class="block code"><div class="block-head">Code &amp; design — files explained</div><div class="block-body">`;
     (d.code||[]).forEach(c=>{
       h+=`<div class="code-file"><div class="code-file-label">📄 ${c.file} <span>— ${c.sub}</span></div><div class="code-block"><pre>${c.code}</pre></div></div>`;
     });
