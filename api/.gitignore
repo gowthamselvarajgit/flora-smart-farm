@@ -31,3 +31,7 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Secrets — never commit the real .env (only .env.example) ###
+src/main/resources/.env
+.env

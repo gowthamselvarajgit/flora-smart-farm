@@ -19,7 +19,7 @@ public class WeatherSnapshot {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "weather_snapshot_id")
-    private Long weather_snapshot_id;
+    private Long weatherSnapshotId;
 
     //Linked to which scan
     @OneToOne(fetch = FetchType.LAZY)
@@ -31,7 +31,7 @@ public class WeatherSnapshot {
     private Double temperatureCelsius;
 
     @Column(name = "feels_like_celsius")
-    private Double feelLikeCelsius;
+    private Double feelsLikeCelsius;
 
     @Column(name = "humidity_percent")
     private Double humidityPercent;

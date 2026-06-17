@@ -27,7 +27,7 @@ public class AnimalHealthRecord {
     private Animal animal;
 
     //Symptoms entered by farmers
-    @Column(name = "symptoms_json", nullable = false)
+    @Column(name = "symptoms_json", nullable = false, columnDefinition = "TEXT")
     private String symptomsJson;
 
     //Additional Symptoms
@@ -35,7 +35,7 @@ public class AnimalHealthRecord {
     private String additionalNotes;
 
     //AI prediction results
-    @Column(name = "predicted_diseases", length = 200)
+    @Column(name = "predicted_disease", length = 200)
     private String predictedDisease;
 
     @Column(name = "confidence_score")
@@ -57,6 +57,6 @@ public class AnimalHealthRecord {
     private Boolean isResolved = false;
 
     //TimeStamp
-    @Column(name = "checked_at", nullable = false, unique = false)
+    @Column(name = "checked_at", nullable = false, updatable = false)
     private LocalDateTime checkedAt = LocalDateTime.now();
 }

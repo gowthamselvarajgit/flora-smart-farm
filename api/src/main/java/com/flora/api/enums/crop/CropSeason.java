@@ -1,7 +1,5 @@
 package com.flora.api.enums.crop;
 
-import com.flora.api.entity.crop.Crop;
-
 public enum CropSeason {
 
     KHARIF("Kharif", "June - November"),

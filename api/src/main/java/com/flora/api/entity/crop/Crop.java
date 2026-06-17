@@ -30,7 +30,5 @@ public class Crop {
     private String cropSeason;
 
     @Column(name = "is_active", nullable = false)
-    private Boolean isActive;
-
-
+    private Boolean isActive = true;
 }

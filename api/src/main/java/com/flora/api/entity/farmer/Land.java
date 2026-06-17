@@ -56,11 +56,15 @@ public class Land {
     private Boolean isActive = true;
 
     //Timestamps
-    @Column(name = "created_at", nullable = false, unique = false)
+    @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
     @Column(name = "updated_at")
     private LocalDateTime updatedAt = LocalDateTime.now();
 
-
+    //Auto-refresh updated_at on every change
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = LocalDateTime.now();
+    }
 }

@@ -87,6 +87,12 @@ public class Farmer {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt = LocalDateTime.now();
 
+    //Auto-refresh updated_at on every change
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = LocalDateTime.now();
+    }
+
     // --- Helper ---
     public String getFullName() {
         return firstName + " " + lastName;
