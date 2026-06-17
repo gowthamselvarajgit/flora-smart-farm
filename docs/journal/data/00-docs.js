@@ -120,6 +120,8 @@ var DOCS = {
   files: [
     { path:"ApiApplication.java", type:"Bootstrap", module:"Core", status:"Done" },
     { path:"resources/application.properties", type:"Config", module:"Core", status:"Done" },
+    { path:"resources/.env.example", type:"Config", module:"Core", status:"Done" },
+    { path:"config/JwtUtil.java", type:"Config", module:"Auth", status:"Done" },
     { path:"entity/farmer/State.java", type:"Entity", module:"Farmer", status:"Done" },
     { path:"entity/farmer/District.java", type:"Entity", module:"Farmer", status:"Done" },
     { path:"entity/farmer/Farmer.java", type:"Entity", module:"Farmer", status:"Done" },
@@ -161,7 +163,7 @@ var DOCS = {
 
   /* what is still to come (so the reader knows the map isn't finished) */
   pending: [
-    { path:"config/ — JWT security setup", type:"Config", module:"Core" },
+    { path:"config/ — SecurityConfig + JwtAuthFilter (JwtUtil ✓ done)", type:"Config", module:"Auth" },
     { path:"repository/ · service/ · controller/ · dto/", type:"Logic", module:"All" }
   ],
 
