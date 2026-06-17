@@ -5,7 +5,7 @@
    Update the lists as new files are built. The engine renders it on #/docs.
    ========================================================================== */
 var DOCS = {
-  updatedLabel: "as of Day 4 · 2026-06-15",
+  updatedLabel: "as of Day 5 · 2026-06-17",
 
   /* one-screen explanation of what this project even is */
   intro: [
@@ -72,12 +72,12 @@ var DOCS = {
       done:["Crop","SoilScan","WeatherSnapshot","Prediction","MarketPrice"], pending:[] },
     { name:"Animal", icon:"🐄", status:"Done", purpose:"Livestock, plus health, production and vaccination records.",
       done:["AnimalType","Breed","Animal","AnimalHealthRecord","AnimalProductionRecord","VaccinationRecord"], pending:[] },
-    { name:"Chat", icon:"💬", status:"Planned", purpose:"Talk to a real expert or vet, in real time.",
-      done:[], pending:["ChatSession","ChatMessage"] },
-    { name:"Alert", icon:"🔔", status:"Planned", purpose:"Reminders and push notifications.",
-      done:[], pending:["Alert","DeviceToken"] },
-    { name:"Feedback", icon:"⭐", status:"Planned", purpose:"Rate how good the advice was after harvest.",
-      done:[], pending:["Feedback"] }
+    { name:"Chat", icon:"💬", status:"Done", purpose:"Talk to a real expert or vet.",
+      done:["ChatSession","ChatMessage"], pending:[] },
+    { name:"Alert", icon:"🔔", status:"Done", purpose:"Reminders and push notifications.",
+      done:["Alert","DeviceToken"], pending:[] },
+    { name:"Feedback", icon:"⭐", status:"Done", purpose:"Rate the advice after harvest; record the real outcome.",
+      done:["Feedback"], pending:[] }
   ],
 
   /* ERD — entities grouped by module. pk = key, cols = plain fields, fks = links out */
@@ -102,6 +102,17 @@ var DOCS = {
       { name:"AnimalHealthRecord", pk:"health_record_id", cols:["symptoms","predicted_disease","severity"], fks:["animal_id → Animal"] },
       { name:"AnimalProductionRecord", pk:"production_record_id", cols:["record_type","quantity","session","drop?"], fks:["animal_id → Animal"] },
       { name:"VaccinationRecord", pk:"vaccination_record_id", cols:["vaccine_name","due_date","status"], fks:["animal_id → Animal"] }
+    ]},
+    { module:"Chat module", entities:[
+      { name:"ChatSession", pk:"session_id", cols:["category","status","title","farmer_rating"], fks:["farmer_id → Farmer","animal_id → Animal (optional)","health_record_id → AnimalHealthRecord (optional)"] },
+      { name:"ChatMessage", pk:"message_id", cols:["sender_type","message_content","is_read","attachment_url"], fks:["session_id → ChatSession"] }
+    ]},
+    { module:"Alert module", entities:[
+      { name:"Alert", pk:"alert_id", cols:["alert_type","severity","title","message","action_deep_link","is_read","is_push_sent"], fks:["farmer_id → Farmer"] },
+      { name:"DeviceToken", pk:"token_id", cols:["fcm_token","platform","device_model","is_active"], fks:["farmer_id → Farmer"] }
+    ]},
+    { module:"Feedback module", entities:[
+      { name:"Feedback", pk:"feedback_id", cols:["feedback_type","rating","actual_crop_grown","actual_yield_kg"], fks:["farmer_id → Farmer","prediction_id → Prediction (optional)"] }
     ]}
   ],
 
@@ -118,6 +129,11 @@ var DOCS = {
     { path:"entity/crop/WeatherSnapshot.java", type:"Entity", module:"Crop", status:"Done" },
     { path:"entity/crop/Prediction.java", type:"Entity", module:"Crop", status:"Done" },
     { path:"entity/crop/MarketPrice.java", type:"Entity", module:"Crop", status:"Done" },
+    { path:"entity/chat/ChatSession.java", type:"Entity", module:"Chat", status:"Done" },
+    { path:"entity/chat/ChatMessage.java", type:"Entity", module:"Chat", status:"Done" },
+    { path:"entity/alert/Alert.java", type:"Entity", module:"Alert", status:"Done" },
+    { path:"entity/alert/DeviceToken.java", type:"Entity", module:"Alert", status:"Done" },
+    { path:"entity/feedback/Feedback.java", type:"Entity", module:"Feedback", status:"Done" },
     { path:"entity/animal/AnimalType.java", type:"Entity", module:"Animal", status:"Done" },
     { path:"entity/animal/Breed.java", type:"Entity", module:"Animal", status:"Done" },
     { path:"entity/animal/Animal.java", type:"Entity", module:"Animal", status:"Done" },
@@ -133,14 +149,18 @@ var DOCS = {
     { path:"enums/animal/ProductionSession.java", type:"Enum", module:"Animal", status:"Done" },
     { path:"enums/animal/RecordType.java", type:"Enum", module:"Animal", status:"Done" },
     { path:"enums/animal/VaccinationStatus.java", type:"Enum", module:"Animal", status:"Done" },
-    { path:"enums/crop/CropSeason.java", type:"Enum", module:"Crop", status:"Done" }
+    { path:"enums/crop/CropSeason.java", type:"Enum", module:"Crop", status:"Done" },
+    { path:"enums/chat/ChatCategory.java", type:"Enum", module:"Chat", status:"Done" },
+    { path:"enums/chat/ChatStatus.java", type:"Enum", module:"Chat", status:"Done" },
+    { path:"enums/chat/SenderType.java", type:"Enum", module:"Chat", status:"Done" },
+    { path:"enums/alert/AlertType.java", type:"Enum", module:"Alert", status:"Done" },
+    { path:"enums/alert/AlertSeverity.java", type:"Enum", module:"Alert", status:"Done" },
+    { path:"enums/alert/DevicePlatform.java", type:"Enum", module:"Alert", status:"Done" },
+    { path:"enums/feedback/FeedbackType.java", type:"Enum", module:"Feedback", status:"Done" }
   ],
 
   /* what is still to come (so the reader knows the map isn't finished) */
   pending: [
-    { path:"entity/chat/ChatSession.java + ChatMessage.java", type:"Entity", module:"Chat" },
-    { path:"entity/alert/Alert.java + DeviceToken.java", type:"Entity", module:"Alert" },
-    { path:"entity/feedback/Feedback.java", type:"Entity", module:"Feedback" },
     { path:"config/ — JWT security setup", type:"Config", module:"Core" },
     { path:"repository/ · service/ · controller/ · dto/", type:"Logic", module:"All" }
   ],
@@ -156,6 +176,13 @@ var DOCS = {
     { name:"ProductionSession", values:"MORNING, EVENING, HARVEST", use:"when milk/eggs/yield is recorded" },
     { name:"RecordType", values:"MILK, EGG, WEIGHT_YIELD", use:"what an animal produces (+ its unit)" },
     { name:"VaccinationStatus", values:"PENDING, DUE_SOON, OVERDUE, COMPLETED", use:"badge + reminder timing" },
-    { name:"CropSeason", values:"KHARIF, RABI, ZAID, PERENNIAL", use:"set from today's date on a soil test" }
+    { name:"CropSeason", values:"KHARIF, RABI, ZAID, PERENNIAL", use:"set from today's date on a soil test" },
+    { name:"ChatCategory", values:"CROP, ANIMAL", use:"routes a chat to the right expert" },
+    { name:"ChatStatus", values:"OPEN, RESOLVED, CLOSED", use:"where a conversation stands" },
+    { name:"SenderType", values:"FARMER, EXPERT", use:"which side a chat bubble shows on" },
+    { name:"AlertType", values:"DISEASE, IRRIGATION, PRICE, WEATHER, VACCINATION, MILK_DROP", use:"what a notification is about" },
+    { name:"AlertSeverity", values:"LOW, MEDIUM, HIGH", use:"alert colour + urgency" },
+    { name:"DevicePlatform", values:"ANDROID, IOS", use:"which kind of phone for push" },
+    { name:"FeedbackType", values:"PREDICTION, APP", use:"what the feedback is about (expert rating lives on ChatSession)" }
   ]
 };

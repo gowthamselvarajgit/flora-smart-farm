@@ -69,7 +69,52 @@ JOURNAL.push({
     <span class="kw">public</span> String <span class="prop">getDisplayName</span>() { <span class="kw">return</span> displayName; }
     <span class="cmt">// Example: HealthStatus.SICK.getDisplayName() → "Sick"</span>
     <span class="cmt">// the app picks the colour from the value — Gowtham just sees red or green</span>
-}` },
+}`,
+      lines:[
+        { c:`package com.flora.api.enums.animal;`, e:`The <b>address of this file</b> — the <code>enums/animal</code> folder.` },
+        { c:`public enum HealthStatus {`, e:`A fixed "pick one" list of an animal's health states. The five values below are the only ones allowed.` },
+        { c:`HEALTHY("Healthy"),`, e:`Stored as <b>HEALTHY</b>, shown as <b>"Healthy"</b>. The app paints this badge green.` },
+        { c:`SICK("Sick"),`, e:`Stored as <b>SICK</b>, shown as <b>"Sick"</b> — red badge, needs attention now.` },
+        { c:`RECOVERING("Recovering"),`, e:`Was sick, now getting better — amber badge.` },
+        { c:`CRITICAL("Critical"),`, e:`Urgent — call the vet immediately.` },
+        { c:`DECEASED("Deceased");`, e:`Kept only for history. The <b>semicolon</b> ends the list of choices.` },
+        { c:`private final String displayName;`, e:`The friendly label each choice carries. <b>private</b> + <b>final</b> = hidden and never changes.` },
+        { c:`HealthStatus(String displayName){`, e:`The <b>constructor</b> — Java runs it once per choice, receiving that choice's label.` },
+        { c:`this.displayName = displayName;`, e:`Saves the label onto this choice. <b>this.</b> means "this choice's own field".` },
+        { c:`}`, e:`Closes the constructor.` },
+        { c:`public String getDisplayName(){ return displayName; }`, e:`The <b>getter</b> — lets code read the label. The badge colour, though, the app decides from the value itself.` },
+        { c:`}`, e:`Closes the enum.` }
+      ] },
+    { file:"enums/animal/AnimalGender.java", sub:"a fixed 'pick one' list — male or female",
+      code:`<span class="cmt">// ==================== WHAT THIS FILE IS ====================</span>
+<span class="cmt">// A fixed list of an animal's sex. Female turns ON milk/egg tracking;</span>
+<span class="cmt">// male hides it (a bull gives no milk).</span>
+
+<span class="kw">public enum</span> <span class="cls">AnimalGender</span> {
+
+    <span class="val">MALE</span>(<span class="str">"Male"</span>),
+    <span class="val">FEMALE</span>(<span class="str">"Female"</span>);
+
+    <span class="kw">private final</span> String displayName;
+
+    <span class="cls">AnimalGender</span>(String displayName){
+        <span class="kw">this</span>.displayName = displayName;
+    }
+
+    <span class="kw">public</span> String <span class="prop">getDisplayName</span>(){ <span class="kw">return</span> displayName; }
+}`,
+      lines:[
+        { c:`package com.flora.api.enums.animal;`, e:`The <b>address of this file</b> — the <code>enums/animal</code> folder.` },
+        { c:`public enum AnimalGender {`, e:`A fixed "pick one" list of an animal's sex — only MALE or FEMALE.` },
+        { c:`MALE("Male"),`, e:`Stored as <b>MALE</b>, shown as <b>"Male"</b>. For males, the app hides milk/egg tracking.` },
+        { c:`FEMALE("Female");`, e:`Stored as <b>FEMALE</b>, shown as <b>"Female"</b>. Females show production tracking. The <b>semicolon</b> ends the list.` },
+        { c:`private final String displayName;`, e:`The friendly label each choice carries.` },
+        { c:`AnimalGender(String displayName){`, e:`The <b>constructor</b> — runs once per choice with its label.` },
+        { c:`this.displayName = displayName;`, e:`Saves the label onto the choice.` },
+        { c:`}`, e:`Closes the constructor.` },
+        { c:`public String getDisplayName(){ return displayName; }`, e:`The <b>getter</b> — reads the label back for the screen.` },
+        { c:`}`, e:`Closes the enum.` }
+      ] },
     { file:"entity/animal/Breed.java", sub:"one row = one breed (like Jersey); belongs to one animal type",
       code:`<span class="cmt">// ==================== WHAT THIS FILE IS ====================</span>
 <span class="cmt">// One row = one breed, e.g. Jersey. Maps to the "breeds" table.</span>
@@ -111,7 +156,36 @@ JOURNAL.push({
     <span class="ann">@Column(name = "is_active", nullable = false)</span>
     <span class="kw">private</span> Boolean isActive = <span class="kw">true</span>;
     <span class="cmt">// true = shown in the list   ·   false = hidden, kept for old records</span>
-}` },
+}`,
+      lines:[
+        { c:`package com.flora.api.entity.animal;`, e:`The <b>address of this file</b> — the <code>entity/animal</code> folder.` },
+        { c:`import jakarta.persistence.*;`, e:`The <b>JPA toolbox</b> of database annotations.` },
+        { c:`import lombok.AllArgsConstructor;`, e:`Lombok all-args constructor tool.` },
+        { c:`import lombok.Data;`, e:`Lombok getters/setters tool.` },
+        { c:`import lombok.NoArgsConstructor;`, e:`Lombok empty-constructor tool.` },
+        { c:`@Entity`, e:`Marks this class as a database table — each breed is one row.` },
+        { c:`@Table(name = "breeds")`, e:`Names the table <b>breeds</b>.` },
+        { c:`@Data`, e:`Lombok writes the getters/setters and friends.` },
+        { c:`@NoArgsConstructor`, e:`Empty constructor JPA needs.` },
+        { c:`@AllArgsConstructor`, e:`All-fields constructor.` },
+        { c:`public class Breed {`, e:`Declares the class. Its fields define the <code>breeds</code> table.` },
+        { c:`@Id`, e:`The <b>primary key</b> — the breed's unique id.` },
+        { c:`@GeneratedValue(strategy = GenerationType.IDENTITY)`, e:`The database <b>auto-creates the id</b>.` },
+        { c:`@Column(name = "breed_id")`, e:`Maps to the <code>breed_id</code> column.` },
+        { c:`private Long breedId;`, e:`Holds the id.   Example: 1 = Jersey.` },
+        { c:`@Column(name = "breed_name", nullable = false, length = 100)`, e:`The name column: required, max 100. (No <b>unique</b> — different animal types could share a breed name.)` },
+        { c:`private String breedName;`, e:`Example: "Holstein Friesian".` },
+        { c:`@Column(name = "breed_name_tamil", length = 100)`, e:`Optional Tamil name.` },
+        { c:`private String breedNameTamil;`, e:`Shown when the app is in Tamil.` },
+        { c:`@Column(name = "breed_name_hindi", length = 100)`, e:`Optional Hindi name.` },
+        { c:`private String breedNameHindi;`, e:`Shown when the app is in Hindi.` },
+        { c:`@ManyToOne(fetch = FetchType.LAZY)`, e:`Many breeds → one animal type. <b>LAZY</b> = load the type only when used.` },
+        { c:`@JoinColumn(name = "animal_type_id", nullable = false)`, e:`Creates the <code>animal_type_id</code> linking column, required — every breed must belong to a type.` },
+        { c:`private AnimalType animalType;`, e:`Which animal type this breed is.   Example: Jersey → Cow. This is what keeps the breed dropdown showing only cow breeds when "Cow" is picked.` },
+        { c:`@Column(name = "is_active", nullable = false)`, e:`Required "in use" flag.` },
+        { c:`private Boolean isActive = true;`, e:`<b>Defaults to true</b> (we added this default during the audit so new rows are never left blank).` },
+        { c:`}`, e:`Closes the class. Everything above defines the <code>breeds</code> table.` }
+      ] },
     { file:"entity/animal/Animal.java", sub:"one row = one real animal — Lakshmi's full profile",
       code:`<span class="cmt">// ==================== WHAT THIS FILE IS ====================</span>
 <span class="cmt">// One row = one real animal, e.g. Lakshmi. Maps to the "animals" table.</span>
@@ -198,7 +272,61 @@ JOURNAL.push({
     <span class="cmt">// LocalDateTime = date + time. updatable = false → set once, never changed.</span>
     <span class="ann">@Column(name = "updated_at")</span>
     <span class="kw">private</span> LocalDateTime updatedAt = LocalDateTime.now();
-}` }
+}`,
+      lines:[
+        { c:`package com.flora.api.entity.animal;`, e:`The <b>address of this file</b> — the <code>entity/animal</code> folder.` },
+        { c:`import com.flora.api.entity.farmer.Farmer;`, e:`Brings in the <b>Farmer</b> class — used for the "owner" link below.` },
+        { c:`import com.flora.api.enums.animal.AnimalGender;`, e:`Brings in the <b>AnimalGender</b> choice list (MALE/FEMALE).` },
+        { c:`import com.flora.api.enums.animal.HealthStatus;`, e:`Brings in the <b>HealthStatus</b> choice list.` },
+        { c:`import jakarta.persistence.*;`, e:`The <b>JPA toolbox</b> of annotations.` },
+        { c:`import lombok.AllArgsConstructor;`, e:`Lombok all-args constructor tool.` },
+        { c:`import lombok.Data;`, e:`Lombok getters/setters tool.` },
+        { c:`import lombok.NoArgsConstructor;`, e:`Lombok empty-constructor tool.` },
+        { c:`import java.time.LocalDate;`, e:`A <b>date with no time</b> — for the birth date.` },
+        { c:`import java.time.LocalDateTime;`, e:`A <b>date and time</b> — for the timestamps.` },
+        { c:`@Entity`, e:`Marks this class as a database table — each animal is one row.` },
+        { c:`@Table(name = "animals")`, e:`Names the table <b>animals</b>.` },
+        { c:`@Data`, e:`Lombok writes the getters/setters and friends.` },
+        { c:`@NoArgsConstructor`, e:`Empty constructor JPA needs.` },
+        { c:`@AllArgsConstructor`, e:`All-fields constructor.` },
+        { c:`public class Animal {`, e:`Declares the class. Its fields define the <code>animals</code> table.` },
+        { c:`@Id`, e:`The <b>primary key</b> — the animal's unique id.` },
+        { c:`@GeneratedValue(strategy = GenerationType.IDENTITY)`, e:`The database <b>auto-creates the id</b>.` },
+        { c:`@Column(name = "animal_id")`, e:`Maps to the <code>animal_id</code> column.` },
+        { c:`private Long animalId;`, e:`Holds the id.   Example: Lakshmi = 1. Like an Aadhaar card for the animal.` },
+        { c:`@ManyToOne(fetch = FetchType.LAZY)`, e:`Many animals → one farmer. <b>LAZY</b> = load the farmer only when used.` },
+        { c:`@JoinColumn(name = "farmer_id", nullable = false)`, e:`Creates the <code>farmer_id</code> link, required — every animal has an owner.` },
+        { c:`private Farmer farmer;`, e:`Who owns this animal.   Example: all 8 animals → farmer_id 1 (Gowtham).` },
+        { c:`@ManyToOne(fetch = FetchType.LAZY)`, e:`Many animals → one animal type.` },
+        { c:`@JoinColumn(name = "animal_type_id", nullable = false)`, e:`Creates the <code>animal_type_id</code> link, required.` },
+        { c:`private AnimalType animalType;`, e:`What kind of animal it is.   Example: Lakshmi and Ponni are both Cows.` },
+        { c:`@ManyToOne(fetch = FetchType.LAZY)`, e:`Many animals → one breed.` },
+        { c:`@JoinColumn(name = "breed_id")`, e:`Creates the <code>breed_id</code> link. <b>No "nullable = false"</b> → it's optional.` },
+        { c:`private Breed breed;`, e:`The breed, if known.   Example: Lakshmi → Jersey; an unnamed cow → blank.` },
+        { c:`@Column(name = "animal_name", length = 100)`, e:`Optional name column, max 100.` },
+        { c:`private String animalName;`, e:`Example: "Lakshmi". Blank for animals people don't name (like hens).` },
+        { c:`@Enumerated(EnumType.STRING)`, e:`Store the gender as a readable word (MALE/FEMALE).` },
+        { c:`@Column(name = "gender", length = 10)`, e:`The gender column.` },
+        { c:`private AnimalGender gender;`, e:`<b>FEMALE</b> → show milk/egg tracking; <b>MALE</b> → hide it.` },
+        { c:`@Column(name = "date_of_birth")`, e:`Optional birth date column.` },
+        { c:`private LocalDate dateOfBirth;`, e:`Just the day (no clock time).   Example: 2024-06-12.` },
+        { c:`@Column(name = "weight_kg")`, e:`Optional weight column.` },
+        { c:`private Double weightKg;`, e:`Used later to work out the right feed amount.   Example: 320.0.` },
+        { c:`@Enumerated(EnumType.STRING)`, e:`Store the health state as a readable word.` },
+        { c:`@Column(name = "health_status", nullable = false, length = 20)`, e:`The health column — required.` },
+        { c:`private HealthStatus healthStatus = HealthStatus.HEALTHY;`, e:`<b>Defaults to HEALTHY</b>; turns red the moment a symptom check says otherwise.` },
+        { c:`@Column(name = "is_pregnant")`, e:`Optional pregnancy flag column.` },
+        { c:`private Boolean isPregnant = false;`, e:`Mark it on → the app shows a countdown and adjusts milk expectations.` },
+        { c:`@Column(name = "expected_delivery_date")`, e:`Optional due-date column.` },
+        { c:`private LocalDate expectedDeliveryDate;`, e:`Filled only when pregnant. Two weeks before → a reminder push.` },
+        { c:`@Column(name = "unique_tag_number", unique = true, length = 50)`, e:`The government ear-tag column: <b>unique</b> (no two animals share one), but optional.` },
+        { c:`private String uniqueTagNumber;`, e:`A government ear-tag id, or blank — most small farmers don't have one.` },
+        { c:`@Column(name = "registered_at", nullable = false, updatable = false)`, e:`<b>updatable=false</b> → set once when registered, never changed.` },
+        { c:`private LocalDateTime registeredAt = LocalDateTime.now();`, e:`When the animal was added.` },
+        { c:`@Column(name = "updated_at")`, e:`Refreshed whenever the animal's record changes (via the @PreUpdate hook we added in the audit).` },
+        { c:`private LocalDateTime updatedAt = LocalDateTime.now();`, e:`The last-changed time.` },
+        { c:`}`, e:`Closes the class. Everything above defines the <code>animals</code> table.` }
+      ] }
   ],
   extras:[
     { type:"flow", title:"Why Gowtham can never pick the wrong breed",

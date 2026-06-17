@@ -169,13 +169,24 @@ function renderDayBody(d){
   if((d.code&&d.code.length)||(d.extras&&d.extras.length)){
     h+=`<div class="block code"><div class="block-head">Code &amp; design — files explained</div><div class="block-body">`;
     (d.code||[]).forEach(c=>{
-      h+=`<div class="code-file"><div class="code-file-label">📄 ${c.file} <span>— ${c.sub}</span></div><div class="code-block"><pre>${c.code}</pre></div></div>`;
+      h+=`<div class="code-file"><div class="code-file-label">📄 ${c.file} <span>— ${c.sub}</span></div><div class="code-block"><pre>${c.code}</pre></div>${renderLineRef(c.lines)}</div>`;
     });
     (d.extras||[]).forEach(e=>{ h+=`<div class="reveal">${renderExtra(e)}</div>`; });
     h+=`</div></div>`;
   }
   if(d.next&&d.next.length) h+=`<div class="block next reveal"><div class="block-head">What comes next — Day ${d.day+1}</div><div class="block-body">${elist('next',d.next)}</div></div>`;
   return h;
+}
+
+/* Line-by-line explanation panel shown under a code block.
+   Data: a code entry's optional `lines:[{c:"<one line of code>", e:"explanation html"}]`.
+   The `c` (code) is HTML-escaped so raw Java like List<Crop> renders literally;
+   the `e` (explanation) is treated as HTML so it can use <b> and <code>. */
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function renderLineRef(lines){
+  if(!lines||!lines.length) return '';
+  const rows=lines.map(l=>`<div class="lr-row"><code class="lr-code">${esc(l.c)}</code><div class="lr-exp">${l.e}</div></div>`).join('');
+  return `<details class="lineref"><summary>📖 Line-by-line explanation — every line in plain English</summary><div class="lineref-body">${rows}</div></details>`;
 }
 
 /* Scroll-reveal: ease blocks in as they enter the viewport. Falls back to

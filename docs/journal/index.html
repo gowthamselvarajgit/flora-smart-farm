@@ -373,6 +373,20 @@ a{color:inherit;text-decoration:none}
 .vcol.good .vh{background:var(--glt);color:var(--g)}
 .vcol pre{font-family:var(--mono);font-size:11.5px;line-height:1.7;padding:12px 13px;white-space:pre-wrap;overflow-x:auto;background:var(--bg);margin:0}
 @media(max-width:600px){.versus{grid-template-columns:1fr}}
+/* ---------- LINE-BY-LINE EXPLANATION (under each code block) ---------- */
+.lineref{border:1px solid var(--line2);border-top:none;border-radius:0 0 8px 8px;background:var(--bg2);margin:-1px 0 22px}
+.lineref summary{cursor:pointer;padding:11px 14px;font-family:var(--mono);font-size:11.5px;color:var(--t);list-style:none;display:flex;align-items:center;gap:8px;transition:background .15s}
+.lineref summary:hover{background:var(--bg3)}
+.lineref summary::-webkit-details-marker{display:none}
+.lineref summary::after{content:'▾ show';margin-left:auto;color:var(--ink3);font-size:10px}
+.lineref[open] summary::after{content:'▴ hide'}
+.lineref-body{padding:2px 14px 12px}
+.lr-row{display:grid;grid-template-columns:minmax(170px,40%) 1fr;gap:16px;padding:11px 0;border-top:1px solid var(--line)}
+.lr-code{font-family:var(--mono);font-size:11.5px;color:var(--ink);background:var(--bg);border-left:2px solid var(--t);border-radius:4px;padding:8px 10px;white-space:pre-wrap;word-break:break-word;align-self:start}
+.lr-exp{font-size:12.5px;color:var(--ink2);line-height:1.65;align-self:center}
+.lr-exp b{color:var(--ink);font-weight:600}
+.lr-exp code{font-family:var(--mono);font-size:11px;color:var(--g);background:var(--glt);padding:1px 5px;border-radius:3px}
+@media(max-width:640px){.lr-row{grid-template-columns:1fr;gap:6px}.lr-exp{align-self:start}}
 </style>
 </head>
 <body>
@@ -416,6 +430,7 @@ a{color:inherit;text-decoration:none}
 <script src="data/day-02.js"></script>
 <script src="data/day-03.js"></script>
 <script src="data/day-04.js"></script>
+<script src="data/day-05.js"></script>
 
 <!-- ENGINE — renders all pages from the data above. Never needs editing. -->
 <script src="assets/engine.js"></script>

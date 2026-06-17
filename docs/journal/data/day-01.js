@@ -89,7 +89,81 @@ JOURNAL.push({
     }
     <span class="cmt">// Example: Language.TA.getDisplayName() → "Tamil"  (for the screen)</span>
     <span class="cmt">// Example: Language.TA.name()           → "TA"     (for the database)</span>
-}` },
+}`,
+      lines:[
+        { c:`package com.flora.api.enums.farmer;`, e:`The <b>address of this file</b> in the project — it lives in the <code>enums/farmer</code> folder. Packages group related files together and stop name clashes. Every Java file begins with its package line.` },
+        { c:`public enum Language {`, e:`Declares an <b>enum</b> — a fixed, closed list of choices. <b>public</b> means any other file may use it. The only allowed languages are the three listed below; nothing else is ever possible.` },
+        { c:`EN("English"),`, e:`The first choice. <b>EN</b> is the short code stored in the database; <b>"English"</b> is the friendly label carried next to it for the screen. The comma separates it from the next choice.` },
+        { c:`TA("Tamil"),`, e:`The second choice — stored as <b>"TA"</b>, shown as <b>"Tamil"</b>. Exactly the same pattern as the line above.` },
+        { c:`HI("Hindi");`, e:`The third and last choice — stored as <b>"HI"</b>, shown as <b>"Hindi"</b>. The <b>semicolon</b> ends the list of choices (it's required before the enum's normal code begins).` },
+        { c:`private final String displayName;`, e:`A field each choice carries — its friendly label. <b>private</b> = only this enum touches it directly. <b>final</b> = once set it never changes. <b>String</b> = it holds text.` },
+        { c:`Language(String displayName) {`, e:`The <b>constructor</b>. Java runs it once for each choice (EN, TA, HI), passing in the label written in the brackets. This is how "English", "Tamil" and "Hindi" get attached to their codes.` },
+        { c:`this.displayName = displayName;`, e:`Saves the label that was passed in onto this choice's own <code>displayName</code> field. <b>this.</b> means "this choice's own field", telling it apart from the parameter that has the same name.` },
+        { c:`public String getDisplayName(){`, e:`The start of a <b>getter</b> — a public way for other code to read the friendly label. It hands back a String and takes no input.` },
+        { c:`return displayName;`, e:`Gives back the label for this choice. So <code>Language.TA.getDisplayName()</code> returns <b>"Tamil"</b>, while the built-in <code>Language.TA.name()</code> returns <b>"TA"</b> — one list, two faces.` },
+        { c:`}`, e:`Closes the enum. Everything above defines the three allowed languages and the single label each one carries.` }
+      ] },
+    { file:"entity/farmer/State.java", sub:"one row = one Indian state; the top of the location chain",
+      code:`<span class="cmt">// ==================== WHAT THIS FILE IS ====================</span>
+<span class="cmt">// One row = one state, e.g. Tamil Nadu. Maps to the "states" table.</span>
+<span class="cmt">// A state has many districts; a district has many farmers.</span>
+
+<span class="ann">@Entity</span> <span class="ann">@Table(name = "states")</span>
+<span class="ann">@Data</span> <span class="ann">@NoArgsConstructor</span> <span class="ann">@AllArgsConstructor</span>
+<span class="kw">public class</span> <span class="cls">State</span> {
+
+    <span class="cmt">// ==================== PRIMARY KEY ====================</span>
+
+    <span class="ann">@Id</span> <span class="ann">@GeneratedValue(strategy = GenerationType.IDENTITY)</span>
+    <span class="ann">@Column(name = "state_id")</span>
+    <span class="kw">private</span> Long stateId;
+    <span class="cmt">// the unique id of the state.   Example: 1 = Tamil Nadu</span>
+
+    <span class="cmt">// ==================== NAME + CODE ====================</span>
+
+    <span class="ann">@Column(name = "state_name", nullable = false, unique = true, length = 100)</span>
+    <span class="kw">private</span> String stateName;   <span class="cmt">// "Tamil Nadu" — required, no duplicates</span>
+    <span class="ann">@Column(name = "state_code", nullable = false, unique = true, length = 5)</span>
+    <span class="kw">private</span> String stateCode;   <span class="cmt">// short code "TN" — required, no duplicates</span>
+
+    <span class="cmt">// ==================== STATUS ====================</span>
+
+    <span class="ann">@Column(name = "is_active", nullable = false)</span>
+    <span class="kw">private</span> Boolean isActive = <span class="kw">true</span>;
+
+    <span class="cmt">// ============ ITS DISTRICTS (the "many" side) ============</span>
+
+    <span class="ann">@OneToMany(mappedBy = "state", fetch = FetchType.LAZY)</span>
+    <span class="kw">private</span> List&lt;District&gt; districts;
+    <span class="cmt">// one state → many districts. The link lives on District (state_id), not here.</span>
+}`,
+      lines:[
+        { c:`package com.flora.api.entity.farmer;`, e:`The <b>address of this file</b> in the project — it lives in the <code>entity/farmer</code> folder. Packages keep related files together and prevent name clashes.` },
+        { c:`import jakarta.persistence.*;`, e:`Brings in the <b>JPA toolbox</b> — all the database annotations like <code>@Entity</code>, <code>@Id</code>, <code>@Column</code>, <code>@Table</code>. The <code>*</code> means "everything from it".` },
+        { c:`import lombok.AllArgsConstructor;`, e:`Brings in Lombok's tool for a <b>"fill every field" constructor</b> (explained at its annotation below).` },
+        { c:`import lombok.Data;`, e:`Brings in Lombok's <code>@Data</code> tool, which auto-writes the getters, setters, <code>toString()</code> and more.` },
+        { c:`import lombok.NoArgsConstructor;`, e:`Brings in Lombok's tool for an <b>empty constructor</b> — the one JPA needs to rebuild rows it reads.` },
+        { c:`import java.util.List;`, e:`Brings in Java's built-in <b>List</b> type. We need it because one state holds <b>many</b> districts.` },
+        { c:`@Entity`, e:`Tells Hibernate "turn this class into a database table." Without it, <code>State</code> would be a plain object the database ignores. Each object saved becomes one <b>row</b>.` },
+        { c:`@Table(name = "states")`, e:`Sets the table name to <b>states</b> (lowercase, plural — the usual database style). Without it Hibernate would guess the name from the class.` },
+        { c:`@Data`, e:`The Lombok annotation that writes all the boring code — a getter and setter for every field, plus <code>toString()</code>, <code>equals()</code> and <code>hashCode()</code>.` },
+        { c:`@NoArgsConstructor`, e:`Generates the <b>empty constructor</b> <code>new State()</code>. JPA requires it: when reading a row it makes an empty object first, then fills the fields.` },
+        { c:`@AllArgsConstructor`, e:`Generates a constructor taking <b>every field at once</b>, handy for building a full object in one line.` },
+        { c:`public class State {`, e:`Declares the class. <b>public</b> = any file may use it. Together with <code>@Entity</code>, its fields define the shape of the <code>states</code> table.` },
+        { c:`@Id`, e:`Marks the next field as the <b>primary key</b> — the one unique number for each row. Every entity needs exactly one. Like an Aadhaar number for the state.` },
+        { c:`@GeneratedValue(strategy = GenerationType.IDENTITY)`, e:`Tells the database to <b>create the id automatically</b> (1, 2, 3…) using its own auto-increment column. We never set it ourselves.` },
+        { c:`@Column(name = "state_id")`, e:`Maps this field to a column named <code>state_id</code>. Java uses camelCase (<code>stateId</code>); databases prefer snake_case — this line links the two.` },
+        { c:`private Long stateId;`, e:`The field holding the id. <b>Long</b> is a whole number that can grow large. <b>private</b> means outside code reads it through the Lombok getter.` },
+        { c:`@Column(name = "state_name", nullable = false, unique = true, length = 100)`, e:`Maps the next field to <code>state_name</code> and sets its rules: <b>nullable=false</b> (must be filled), <b>unique=true</b> (no duplicate names), <b>length=100</b> (max 100 characters).` },
+        { c:`private String stateName;`, e:`Holds the state's name, e.g. <b>"Tamil Nadu"</b>. <b>String</b> means text.` },
+        { c:`@Column(name = "state_code", nullable = false, unique = true, length = 5)`, e:`Maps the next field to <code>state_code</code> with the same kind of rules; a code is short so <b>length=5</b> is plenty.` },
+        { c:`private String stateCode;`, e:`Holds the short official code, e.g. <b>"TN"</b> — handy for compact displays and matching government data.` },
+        { c:`@Column(name = "is_active", nullable = false)`, e:`Maps the next field to <code>is_active</code>, which must always have a value. We flip this flag instead of deleting rows, so history is never lost.` },
+        { c:`private Boolean isActive = true;`, e:`A true/false field saying whether the state is in use, <b>defaulting to true</b>. So a new state starts active without anyone setting it.` },
+        { c:`@OneToMany(mappedBy = "state", fetch = FetchType.LAZY)`, e:`The <b>"one state, many districts"</b> side. <b>mappedBy="state"</b> says the real link lives on District (its <code>state</code> field), so this side adds no column. <b>LAZY</b> = load districts only when asked.` },
+        { c:`private List<District> districts;`, e:`Lets us read all districts of this state via <code>state.getDistricts()</code>. It's a convenience for reading — the real link is the <code>state_id</code> column on each district row.` },
+        { c:`}`, e:`Closes the class. Everything above defines the <code>states</code> table.` }
+      ] },
     { file:"entity/farmer/District.java", sub:"one row = one district (like Karur); belongs to one state",
       code:`<span class="cmt">// ==================== WHAT THIS FILE IS ====================</span>
 <span class="cmt">// One row = one district, e.g. Karur. Maps to the "districts" table.</span>
@@ -143,7 +217,32 @@ JOURNAL.push({
     <span class="ann">@Column(name = "is_active", nullable = false)</span>
     <span class="kw">private</span> Boolean isActive = <span class="kw">true</span>;
     <span class="cmt">// true = in use   ·   false = hidden, but kept for old records</span>
-}` },
+}`,
+      lines:[
+        { c:`package com.flora.api.entity.farmer;`, e:`The <b>address of this file</b> — it lives in the <code>entity/farmer</code> folder, next to State and Farmer.` },
+        { c:`import jakarta.persistence.*;`, e:`Brings in the <b>JPA toolbox</b> of database annotations (<code>@Entity</code>, <code>@Id</code>, <code>@ManyToOne</code>, etc.).` },
+        { c:`import lombok.AllArgsConstructor;`, e:`Lombok tool for a <b>"fill every field" constructor</b>.` },
+        { c:`import lombok.Data;`, e:`Lombok tool that <b>auto-writes getters/setters</b> and friends.` },
+        { c:`import lombok.NoArgsConstructor;`, e:`Lombok tool for the <b>empty constructor</b> JPA needs.` },
+        { c:`@Entity`, e:`Marks this class as a database table — each <code>District</code> becomes one row.` },
+        { c:`@Table(name = "districts")`, e:`Names the table <b>districts</b> (lowercase, plural).` },
+        { c:`@Data`, e:`Lombok writes the getters, setters, <code>toString()</code>, <code>equals()</code>, <code>hashCode()</code>.` },
+        { c:`@NoArgsConstructor`, e:`Generates the empty constructor <code>new District()</code> — required by JPA to rebuild rows.` },
+        { c:`@AllArgsConstructor`, e:`Generates a constructor that takes every field at once.` },
+        { c:`public class District {`, e:`Declares the class; <b>public</b> means any file may use it. Its fields define the <code>districts</code> table.` },
+        { c:`@Id`, e:`Marks the next field as the <b>primary key</b> — the unique id of each district row.` },
+        { c:`@GeneratedValue(strategy = GenerationType.IDENTITY)`, e:`The database <b>auto-creates the id</b> (1, 2, 3…) via its auto-increment column.` },
+        { c:`@Column(name = "district_id")`, e:`Maps this field to the <code>district_id</code> column.` },
+        { c:`private Long districtId;`, e:`Holds the id. <b>Long</b> = a large whole number.   Example: 3 = Karur.` },
+        { c:`@Column(name = "district_name", nullable = false, length = 100)`, e:`Maps the next field to <code>district_name</code>: <b>nullable=false</b> (required) and <b>length=100</b> (max 100 characters). Note: no <b>unique</b> here — two states can each have a "Salem".` },
+        { c:`private String districtName;`, e:`Holds the district's name, e.g. <b>"Karur"</b>.` },
+        { c:`@ManyToOne(fetch = FetchType.LAZY)`, e:`The <b>"many districts belong to one state"</b> link. <b>LAZY</b> = don't load the State until we actually use it, which keeps queries light.` },
+        { c:`@JoinColumn(name = "state_id", nullable = false)`, e:`Creates the actual linking column <code>state_id</code> in the districts table, and requires it (every district must sit in a state). This column holds the id of a row in the states table.` },
+        { c:`private State state;`, e:`The field that holds which state this district belongs to.   Example: Karur's <code>state_id = 1</code> → Tamil Nadu.` },
+        { c:`@Column(name = "is_active", nullable = false)`, e:`Maps the next field to <code>is_active</code>; must always have a value.` },
+        { c:`private Boolean isActive = true;`, e:`True/false "in use" flag, <b>defaulting to true</b>.` },
+        { c:`}`, e:`Closes the class. Everything above defines the <code>districts</code> table.` }
+      ] },
     { file:"entity/farmer/Farmer.java", sub:"the heart of the app — every record links back to a farmer",
       code:`<span class="cmt">// ==================== WHAT THIS FILE IS ====================</span>
 <span class="cmt">// One row = one farmer, e.g. Gowtham. Maps to the "farmers" table.</span>
@@ -244,7 +343,253 @@ JOURNAL.push({
     <span class="kw">public</span> String <span class="prop">getFullName</span>() { <span class="kw">return</span> firstName + <span class="str">" "</span> + lastName; }
     <span class="cmt">// joins first + last on the fly.   Example: "Gowtham Selvaraj"</span>
     <span class="cmt">// never saved as its own column — so it can never go out of sync</span>
-}` }
+}`,
+      lines:[
+        { c:`package com.flora.api.entity.farmer;`, e:`The <b>address of this file</b> — it lives in the <code>entity/farmer</code> folder.` },
+        { c:`import com.flora.api.entity.animal.AnimalType;`, e:`Brings in the <b>AnimalType</b> class, used below for the "animals I own" link.` },
+        { c:`import com.flora.api.entity.crop.Crop;`, e:`Brings in the <b>Crop</b> class, used below for the "crops I grow" link.` },
+        { c:`import com.flora.api.enums.farmer.Language;`, e:`Brings in the <b>Language</b> choice list (EN/TA/HI).` },
+        { c:`import com.flora.api.enums.farmer.PrimaryActivity;`, e:`Brings in the <b>PrimaryActivity</b> choice list (CROP/ANIMAL/BOTH).` },
+        { c:`import jakarta.persistence.*;`, e:`The <b>JPA toolbox</b> of database annotations.` },
+        { c:`import lombok.AllArgsConstructor;`, e:`Lombok tool for a <b>"fill every field" constructor</b>.` },
+        { c:`import lombok.Data;`, e:`Lombok tool that <b>auto-writes getters/setters</b> and friends.` },
+        { c:`import lombok.NoArgsConstructor;`, e:`Lombok tool for the <b>empty constructor</b> JPA needs.` },
+        { c:`import java.time.LocalTime;`, e:`A <b>clock time with no date</b> (like 06:00) — used for the daily alert time.` },
+        { c:`import java.time.LocalDateTime;`, e:`A <b>date and time together</b> — used for the created/updated timestamps.` },
+        { c:`import java.util.List;`, e:`The <b>List</b> type — needed for the "many crops" and "many animal types" links.` },
+        { c:`@Entity`, e:`Marks this class as a database table — each farmer becomes one row.` },
+        { c:`@Table(name = "farmers")`, e:`Names the table <b>farmers</b>.` },
+        { c:`@Data`, e:`Lombok writes all the getters, setters, <code>toString()</code> and friends.` },
+        { c:`@NoArgsConstructor`, e:`Generates the empty constructor JPA needs to rebuild rows.` },
+        { c:`@AllArgsConstructor`, e:`Generates a constructor that takes every field at once.` },
+        { c:`public class Farmer {`, e:`Declares the class — the heart of the app. Almost everything links back to a farmer.` },
+        { c:`@Id`, e:`Marks the next field as the <b>primary key</b> — the farmer's unique id.` },
+        { c:`@GeneratedValue(strategy = GenerationType.IDENTITY)`, e:`The database <b>auto-creates the id</b> (1, 2, 3…).` },
+        { c:`@Column(name = "farmer_id")`, e:`Maps this field to the <code>farmer_id</code> column.` },
+        { c:`private Long farmerId;`, e:`Holds the id.   Example: Gowtham = 1. Every animal, field and scan points back to this number.` },
+        { c:`@Column(name = "phone_number", unique = true, nullable = false, length = 15)`, e:`The phone column: <b>unique</b> (no two farmers share one), <b>required</b>, max 15 characters.` },
+        { c:`private String phoneNumber;`, e:`His login id.   Example: "9876543210".` },
+        { c:`@Column(name = "hashed_password", nullable = false)`, e:`The password column — required.` },
+        { c:`private String hashedPassword;`, e:`Stores the <b>scrambled</b> password, never the real one — safe even if the data leaks.` },
+        { c:`@Column(name = "first_name", nullable = false, length = 50)`, e:`Required, max 50 characters.` },
+        { c:`private String firstName;`, e:`Example: "Gowtham".` },
+        { c:`@Column(name = "last_name", nullable = false, length = 50)`, e:`Required, max 50 characters.` },
+        { c:`private String lastName;`, e:`Example: "Selvaraj". Kept separate so alerts can greet just the first name.` },
+        { c:`@Enumerated(EnumType.STRING)`, e:`For the enum field below: <b>store the word</b> ("TA"), not a hidden number — safe if the list is ever reordered.` },
+        { c:`@Column(name = "preferred_language", nullable = false, length = 10)`, e:`The language column — required.` },
+        { c:`private Language preferredLanguage = Language.EN;`, e:`Which language the app speaks, <b>defaulting to English</b> until the farmer picks one.` },
+        { c:`@ManyToOne(fetch = FetchType.LAZY)`, e:`Many farmers → one district. <b>LAZY</b> = load the District only when used.` },
+        { c:`@JoinColumn(name = "district_id", nullable = false)`, e:`Creates the <code>district_id</code> linking column, and requires it.` },
+        { c:`private District district;`, e:`His home district.   Example: Karur — drives weather, advice and prices.` },
+        { c:`@Enumerated(EnumType.STRING)`, e:`Again, store the activity as a readable word.` },
+        { c:`@Column(name = "primary_activity", nullable = false, length = 10)`, e:`Required.` },
+        { c:`private PrimaryActivity primaryActivity = PrimaryActivity.CROP;`, e:`CROP / ANIMAL / BOTH — decides which screens show first, <b>defaulting to CROP</b>.` },
+        { c:`@Column(name = "land_size_acres")`, e:`Optional land size.` },
+        { c:`private Double landSizeAcres;`, e:`Example: 2.0. (On Day 4 this moves onto the new Land block, since a farmer can have several fields.)` },
+        { c:`@ManyToMany(fetch = FetchType.LAZY)`, e:`A <b>many-to-many</b> link: a farmer grows many crops, and a crop is grown by many farmers.` },
+        { c:`@JoinTable(name = "farmer_crops", joinColumns = @JoinColumn(name = "farmer_id"), inverseJoinColumns = @JoinColumn(name = "crop_id"))`, e:`Builds the little <b>farmer_crops</b> middle table that lists each (farmer, crop) pairing.` },
+        { c:`private List<Crop> currentlyGrowingCrops;`, e:`The crops he grows. (Also moves to the Land block on Day 4.)` },
+        { c:`@ManyToMany(fetch = FetchType.LAZY)`, e:`Another many-to-many link, this time for animal types.` },
+        { c:`@JoinTable(name = "farmer_animal_types", joinColumns = @JoinColumn(name = "farmer_id"), inverseJoinColumns = @JoinColumn(name = "animal_type_id"))`, e:`Builds the <b>farmer_animal_types</b> middle table of (farmer, animal-type) pairs.` },
+        { c:`private List<AnimalType> ownedAnimalTypes;`, e:`A quick "I own cows + hens" snapshot for the home screen.` },
+        { c:`@Column(name = "alert_time")`, e:`Optional clock time for the daily nudge.` },
+        { c:`private LocalTime alertTime;`, e:`Example: 06:00 → the daily push is sent at 6 AM.` },
+        { c:`@Column(name = "is_onboarding_complete", nullable = false)`, e:`A required true/false flag.` },
+        { c:`private Boolean isOnboardingComplete = false;`, e:`<b>false</b> → show the setup wizard; <b>true</b> → show the dashboard.` },
+        { c:`@Column(name = "created_at", nullable = false, updatable = false)`, e:`<b>updatable=false</b> → set once when he joins, then never changed.` },
+        { c:`private LocalDateTime createdAt = LocalDateTime.now();`, e:`Records when the farmer joined.` },
+        { c:`@Column(name = "updated_at")`, e:`Refreshed whenever his profile changes (via the @PreUpdate hook we added).` },
+        { c:`private LocalDateTime updatedAt = LocalDateTime.now();`, e:`The last-changed time.` },
+        { c:`public String getFullName() { return firstName + " " + lastName; }`, e:`A <b>helper</b> that builds the full name on the fly.   Example: "Gowtham Selvaraj". Never stored as its own column, so it can't go out of sync.` },
+        { c:`}`, e:`Closes the class. Everything above defines the <code>farmers</code> table.` }
+      ] },
+    { file:"entity/crop/Crop.java", sub:"one row = one crop the app knows about (reference data)",
+      code:`<span class="cmt">// ==================== WHAT THIS FILE IS ====================</span>
+<span class="cmt">// One row = one crop, e.g. Cotton. Maps to the "crops" table.</span>
+<span class="cmt">// Reference data — seeded once with ~80 Tamil Nadu crops.</span>
+
+<span class="ann">@Entity</span> <span class="ann">@Table(name = "crops")</span>
+<span class="ann">@Data</span> <span class="ann">@NoArgsConstructor</span> <span class="ann">@AllArgsConstructor</span>
+<span class="kw">public class</span> <span class="cls">Crop</span> {
+
+    <span class="cmt">// ==================== PRIMARY KEY ====================</span>
+    <span class="ann">@Id</span> <span class="ann">@GeneratedValue(strategy = GenerationType.IDENTITY)</span>
+    <span class="ann">@Column(name = "crop_id")</span>
+    <span class="kw">private</span> Long cropId;
+
+    <span class="cmt">// ==================== NAMES (three languages) ====================</span>
+    <span class="ann">@Column(name = "crop_name", nullable = false, unique = true, length = 100)</span>
+    <span class="kw">private</span> String cropName;        <span class="cmt">// "Cotton" — required, no duplicates</span>
+    <span class="ann">@Column(name = "crop_name_tamil", length = 100)</span>
+    <span class="kw">private</span> String cropNameTamil;
+    <span class="ann">@Column(name = "crop_name_hindi", length = 100)</span>
+    <span class="kw">private</span> String cropNameHindi;
+
+    <span class="cmt">// ==================== SEASON + STATUS ====================</span>
+    <span class="ann">@Column(name = "crop_season", length = 50)</span>
+    <span class="kw">private</span> String cropSeason;      <span class="cmt">// "Kharif" / "Rabi" (text label)</span>
+    <span class="ann">@Column(name = "is_active", nullable = false)</span>
+    <span class="kw">private</span> Boolean isActive = <span class="kw">true</span>;
+}`,
+      lines:[
+        { c:`package com.flora.api.entity.crop;`, e:`The <b>address of this file</b> — it lives in the <code>entity/crop</code> folder.` },
+        { c:`import jakarta.persistence.*;`, e:`The <b>JPA toolbox</b> of database annotations.` },
+        { c:`import lombok.AllArgsConstructor;`, e:`Lombok tool for a <b>"fill every field" constructor</b>.` },
+        { c:`import lombok.Data;`, e:`Lombok tool that <b>auto-writes getters/setters</b> and friends.` },
+        { c:`import lombok.NoArgsConstructor;`, e:`Lombok tool for the <b>empty constructor</b> JPA needs.` },
+        { c:`@Entity`, e:`Marks this class as a database table — each crop becomes one row.` },
+        { c:`@Table(name = "crops")`, e:`Names the table <b>crops</b>.` },
+        { c:`@Data`, e:`Lombok writes the getters, setters, <code>toString()</code> and friends.` },
+        { c:`@NoArgsConstructor`, e:`Generates the empty constructor JPA needs.` },
+        { c:`@AllArgsConstructor`, e:`Generates a constructor taking every field at once.` },
+        { c:`public class Crop {`, e:`Declares the class. Its fields define the <code>crops</code> table.` },
+        { c:`@Id`, e:`The <b>primary key</b> — the crop's unique id.` },
+        { c:`@GeneratedValue(strategy = GenerationType.IDENTITY)`, e:`The database <b>auto-creates the id</b> (1, 2, 3…).` },
+        { c:`@Column(name = "crop_id")`, e:`Maps this field to the <code>crop_id</code> column.` },
+        { c:`private Long cropId;`, e:`Holds the id.   Example: 2 = Cotton.` },
+        { c:`@Column(name = "crop_name", nullable = false, unique = true, length = 100)`, e:`The English name column: <b>required</b>, <b>unique</b> (no duplicate crops), max 100 characters.` },
+        { c:`private String cropName;`, e:`Example: "Cotton".` },
+        { c:`@Column(name = "crop_name_tamil", length = 100)`, e:`Optional Tamil name column (shown when the app is in Tamil).` },
+        { c:`private String cropNameTamil;`, e:`Example: "பருத்தி".` },
+        { c:`@Column(name = "crop_name_hindi", length = 100)`, e:`Optional Hindi name column.` },
+        { c:`private String cropNameHindi;`, e:`Example: "कपास".` },
+        { c:`@Column(name = "crop_season", length = 50)`, e:`A simple text label for the growing season.` },
+        { c:`private String cropSeason;`, e:`Example: "Kharif". (Stored as plain text here, since this is just reference data.)` },
+        { c:`@Column(name = "is_active", nullable = false)`, e:`Required "in use" flag.` },
+        { c:`private Boolean isActive = true;`, e:`<b>Defaults to true</b> (we just added this default during the audit, so new rows are never left blank).` },
+        { c:`}`, e:`Closes the class. Everything above defines the <code>crops</code> table.` }
+      ] },
+    { file:"entity/animal/AnimalType.java", sub:"one row = one kind of animal (Cow, Hen…) and what it produces",
+      code:`<span class="cmt">// ==================== WHAT THIS FILE IS ====================</span>
+<span class="cmt">// One row = one kind of animal, e.g. Cow. Maps to "animal_types".</span>
+<span class="cmt">// Reference data — also says WHAT each kind produces (milk/egg/yield).</span>
+
+<span class="ann">@Entity</span> <span class="ann">@Table(name = "animal_types")</span>
+<span class="ann">@Data</span> <span class="ann">@NoArgsConstructor</span> <span class="ann">@AllArgsConstructor</span>
+<span class="kw">public class</span> <span class="cls">AnimalType</span> {
+
+    <span class="ann">@Id</span> <span class="ann">@GeneratedValue(strategy = GenerationType.IDENTITY)</span>
+    <span class="ann">@Column(name = "animal_type_id")</span>
+    <span class="kw">private</span> Long animalTypeId;
+
+    <span class="cmt">// names in three languages</span>
+    <span class="ann">@Column(name = "type_name", nullable = false, unique = true, length = 50)</span>
+    <span class="kw">private</span> String typeName;        <span class="cmt">// "Cow"</span>
+    <span class="ann">@Column(name = "type_name_tamil", length = 50)</span>
+    <span class="kw">private</span> String typeNameTamil;
+    <span class="ann">@Column(name = "type_name_hindi", length = 50)</span>
+    <span class="kw">private</span> String typeNameHindi;
+
+    <span class="cmt">// pictures for the selection screen</span>
+    <span class="ann">@Column(name = "image_url", length = 500)</span>
+    <span class="kw">private</span> String imageUrl;        <span class="cmt">// a link, not the image itself</span>
+    <span class="ann">@Column(name = "lottie_url", length = 500)</span>
+    <span class="kw">private</span> String lottieUrl;       <span class="cmt">// a link to an animated icon</span>
+
+    <span class="cmt">// what this kind produces</span>
+    <span class="ann">@Enumerated(EnumType.STRING)</span>
+    <span class="ann">@Column(name = "record_type", length = 20)</span>
+    <span class="kw">private</span> RecordType recordType;  <span class="cmt">// MILK / EGG / WEIGHT_YIELD / null</span>
+
+    <span class="ann">@Column(name = "is_active", nullable = false)</span>
+    <span class="kw">private</span> Boolean isActive = <span class="kw">true</span>;
+}`,
+      lines:[
+        { c:`package com.flora.api.entity.animal;`, e:`The <b>address of this file</b> — it lives in the <code>entity/animal</code> folder.` },
+        { c:`import com.flora.api.enums.animal.RecordType;`, e:`Brings in the <b>RecordType</b> list (MILK/EGG/WEIGHT_YIELD), used below.` },
+        { c:`import jakarta.persistence.*;`, e:`The <b>JPA toolbox</b> of annotations.` },
+        { c:`import lombok.AllArgsConstructor;`, e:`Lombok all-args constructor tool.` },
+        { c:`import lombok.Data;`, e:`Lombok getters/setters tool.` },
+        { c:`import lombok.NoArgsConstructor;`, e:`Lombok empty-constructor tool.` },
+        { c:`@Entity`, e:`Marks this class as a database table.` },
+        { c:`@Table(name = "animal_types")`, e:`Names the table <b>animal_types</b>.` },
+        { c:`@Data`, e:`Lombok writes the getters/setters and friends.` },
+        { c:`@NoArgsConstructor`, e:`Empty constructor JPA needs.` },
+        { c:`@AllArgsConstructor`, e:`All-fields constructor.` },
+        { c:`public class AnimalType {`, e:`Declares the class. Its fields define the <code>animal_types</code> table.` },
+        { c:`@Id`, e:`The <b>primary key</b> — this type's unique id.` },
+        { c:`@GeneratedValue(strategy = GenerationType.IDENTITY)`, e:`The database <b>auto-creates the id</b>.` },
+        { c:`@Column(name = "animal_type_id")`, e:`Maps to the <code>animal_type_id</code> column.` },
+        { c:`private Long animalTypeId;`, e:`Holds the id.   Example: 1 = Cow.` },
+        { c:`@Column(name = "type_name", nullable = false, unique = true, length = 50)`, e:`The name column: required, unique, max 50.` },
+        { c:`private String typeName;`, e:`Example: "Cow".` },
+        { c:`@Column(name = "type_name_tamil", length = 50)`, e:`Optional Tamil name.` },
+        { c:`private String typeNameTamil;`, e:`Example: "மாடு".` },
+        { c:`@Column(name = "type_name_hindi", length = 50)`, e:`Optional Hindi name.` },
+        { c:`private String typeNameHindi;`, e:`Example: "गाय".` },
+        { c:`@Column(name = "image_url", length = 500)`, e:`Stores a <b>link</b> to the picture, not the picture itself (images live in cheap cloud storage).` },
+        { c:`private String imageUrl;`, e:`The web address of the icon image.` },
+        { c:`@Column(name = "lottie_url", length = 500)`, e:`A link to an animated (Lottie) icon for the selection screen.` },
+        { c:`private String lottieUrl;`, e:`The web address of the animation.` },
+        { c:`@Enumerated(EnumType.STRING)`, e:`Store the produce type as a readable word (MILK), not a number.` },
+        { c:`@Column(name = "record_type", length = 20)`, e:`The column that records what this kind produces.` },
+        { c:`private RecordType recordType;`, e:`MILK (cow, goat…), EGG (hen, duck…), WEIGHT_YIELD (wool, honey…), or blank for animals with no produce (dog, horse).` },
+        { c:`@Column(name = "is_active", nullable = false)`, e:`Required "in use" flag.` },
+        { c:`private Boolean isActive = true;`, e:`Defaults to true.` },
+        { c:`}`, e:`Closes the class. Everything above defines the <code>animal_types</code> table.` }
+      ] },
+    { file:"enums/farmer/PrimaryActivity.java", sub:"a fixed 'pick one' list — what the farmer mainly does",
+      code:`<span class="cmt">// ==================== WHAT THIS FILE IS ====================</span>
+<span class="cmt">// A fixed list of how a farmer mainly works. Decides which screens show first.</span>
+
+<span class="kw">public enum</span> <span class="cls">PrimaryActivity</span> {
+
+    <span class="val">CROP</span>(<span class="str">"Crop Farming"</span>),
+    <span class="val">ANIMAL</span>(<span class="str">"Animal Husbandry"</span>),
+    <span class="val">BOTH</span>(<span class="str">"Crop Farming & Animals"</span>);
+
+    <span class="kw">private final</span> String displayName;
+
+    <span class="cls">PrimaryActivity</span>(String displayName){
+        <span class="kw">this</span>.displayName = displayName;
+    }
+
+    <span class="kw">public</span> String <span class="prop">getDisplayName</span>(){ <span class="kw">return</span> displayName; }
+}`,
+      lines:[
+        { c:`package com.flora.api.enums.farmer;`, e:`The <b>address of this file</b> — it lives in the <code>enums/farmer</code> folder.` },
+        { c:`public enum PrimaryActivity {`, e:`Declares an <b>enum</b> — a fixed "pick one" list. The only allowed values are the three below.` },
+        { c:`CROP("Crop Farming"),`, e:`First choice — stored as <b>CROP</b>, shown as <b>"Crop Farming"</b>.` },
+        { c:`ANIMAL("Animal Husbandry"),`, e:`Second choice — stored as <b>ANIMAL</b>, shown as <b>"Animal Husbandry"</b>.` },
+        { c:`BOTH("Crop Farming & Animals");`, e:`Third choice — for farmers who do both. The <b>semicolon</b> ends the list of choices.` },
+        { c:`private final String displayName;`, e:`The friendly label each choice carries. <b>private</b> + <b>final</b> = locked away and never changes.` },
+        { c:`PrimaryActivity(String displayName){`, e:`The <b>constructor</b> — runs once per choice, receiving its label.` },
+        { c:`this.displayName = displayName;`, e:`Saves the label onto the choice.` },
+        { c:`public String getDisplayName(){ return displayName; }`, e:`The <b>getter</b> — lets the screen read the friendly label, e.g. <code>PrimaryActivity.BOTH.getDisplayName()</code> → "Crop Farming & Animals".` },
+        { c:`}`, e:`Closes the enum.` }
+      ] },
+    { file:"enums/farmer/AnimalCountRange.java", sub:"a fixed 'pick one' list — rough herd size at sign-up",
+      code:`<span class="cmt">// ==================== WHAT THIS FILE IS ====================</span>
+<span class="cmt">// A fixed list of rough herd-size buckets, asked once during sign-up.</span>
+
+<span class="kw">public enum</span> <span class="cls">AnimalCountRange</span> {
+
+    <span class="val">ONE_TO_FIVE</span>(<span class="str">"1 - 5"</span>),
+    <span class="val">FIVE_TO_FIFTEEN</span>(<span class="str">"5 - 15"</span>),
+    <span class="val">FIFTEEN_TO_THIRTY</span>(<span class="str">"15 - 30"</span>),
+    <span class="val">ABOVE_THIRTY</span>(<span class="str">"30+"</span>);
+
+    <span class="kw">private final</span> String displayName;
+
+    <span class="cls">AnimalCountRange</span>(String displayName){
+        <span class="kw">this</span>.displayName = displayName;
+    }
+
+    <span class="kw">public</span> String <span class="prop">getDisplayName</span>(){ <span class="kw">return</span> displayName; }
+}`,
+      lines:[
+        { c:`package com.flora.api.enums.farmer;`, e:`The <b>address of this file</b> — in the <code>enums/farmer</code> folder.` },
+        { c:`public enum AnimalCountRange {`, e:`A fixed "pick one" list of rough herd sizes. We store a <b>bucket</b>, not an exact number, because at sign-up an exact count isn't needed.` },
+        { c:`ONE_TO_FIVE("1 - 5"),`, e:`Stored as <b>ONE_TO_FIVE</b>, shown as <b>"1 - 5"</b>.` },
+        { c:`FIVE_TO_FIFTEEN("5 - 15"),`, e:`The 5–15 bucket.` },
+        { c:`FIFTEEN_TO_THIRTY("15 - 30"),`, e:`The 15–30 bucket.` },
+        { c:`ABOVE_THIRTY("30+");`, e:`The "more than 30" bucket. The <b>semicolon</b> ends the list.` },
+        { c:`private final String displayName;`, e:`The friendly label each bucket carries.` },
+        { c:`AnimalCountRange(String displayName){`, e:`The <b>constructor</b> — runs once per bucket with its label.` },
+        { c:`this.displayName = displayName;`, e:`Saves the label onto the bucket.` },
+        { c:`public String getDisplayName(){ return displayName; }`, e:`The <b>getter</b> — reads the label back for the screen.` },
+        { c:`}`, e:`Closes the enum.` }
+      ] }
   ],
   extras:[
     { type:"flow", title:"How a table is born — we write Java, the app does the rest",
